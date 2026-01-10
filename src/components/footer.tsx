@@ -24,7 +24,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com/twaslowski/pulselog"
+                  href="https://github.com/twaslowski/grammr"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:transition-colors"
@@ -48,13 +48,13 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Connect</h4>
             <div className="flex gap-4">
               <a
-                href="mailto:hello@pulselog.me"
+                href="mailto:hello@grammr.io"
                 className="p-2 rounded-full bg-primary-500/20 text-primary-400 hover:bg-primary-500/40 hover:text-primary-300 transition-colors"
               >
                 <Mail className="w-5 h-5" />
               </a>
               <a
-                href="https://github.com/twaslowski/pulselog"
+                href="https://github.com/twaslowski/grammr"
                 className="p-2 rounded-full bg-primary-500/20 text-primary-400 hover:bg-primary-500/40 hover:text-primary-300 transition-colors"
               >
                 <GithubIcon className="w-5 h-5" />
@@ -65,8 +65,8 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-primary-400">
-          <p>&copy; {currentYear} Pulselog. All rights reserved.</p>
-          <p>Made with care to help you track what matters.</p>
+          <p>&copy; {currentYear} grammr. All rights reserved.</p>
+          <p>Made with care to help you learn languages systematically.</p>
         </div>
       </div>
     </footer>

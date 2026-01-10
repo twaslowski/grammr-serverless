@@ -1,2 +1,0 @@
-supabase_access_token = "sbp_a880d69a2553f0e13c03836779ab0826e9ed8570"
-vercel_api_key = "RzsfZb9w0pFJ4KucMq7c8Hfu"

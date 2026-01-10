@@ -3,7 +3,6 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
 import { Toaster } from "react-hot-toast";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -12,8 +11,9 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "grammr - Language Learning Toolkit",
+  description:
+    "Understand grammar with context. Analyze sentences, build flashcard decks, and learn languages systematically.",
 };
 
 const geistSans = Geist({
