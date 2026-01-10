@@ -214,10 +214,10 @@ Supabase Edge Functions can proxy requests to Lambda:
 ```typescript
 // POST /analysis/morphology
 // Supabase Edge Function acts as proxy to Lambda
-const response = await fetch(
-  `${LAMBDA_BASE_URL}/morphology`,
-  { method: 'POST', body: event.body }
-);
+const response = await fetch(`${LAMBDA_BASE_URL}/morphology`, {
+  method: "POST",
+  body: event.body,
+});
 return response;
 ```
 
@@ -241,7 +241,7 @@ Alternatively, expose Lambda functions directly:
 **Handler Logic**:
 
 ```typescript
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
 export default async (req: Request) => {
   const auth = await req.json(); // Supabase injects auth
@@ -251,15 +251,26 @@ export default async (req: Request) => {
   const userId = auth.user().id;
 
   // Call translation service (OpenAI, LibreTranslate, etc.)
-  const semanticTranslation = await translateText(text, source_language, target_language);
-  const wordTranslations = await getWordTranslations(text, source_language, target_language);
+  const semanticTranslation = await translateText(
+    text,
+    source_language,
+    target_language,
+  );
+  const wordTranslations = await getWordTranslations(
+    text,
+    source_language,
+    target_language,
+  );
 
-  return new Response(JSON.stringify({
-    semantic_translation: semanticTranslation,
-    tokens: wordTranslations,
-  }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return new Response(
+    JSON.stringify({
+      semantic_translation: semanticTranslation,
+      tokens: wordTranslations,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+    },
+  );
 };
 ```
 
@@ -287,7 +298,7 @@ export default async (req: Request) => {
 **Handler Pattern**:
 
 ```typescript
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
 export default async (req: Request) => {
   const auth = await req.json(); // Supabase auth context
@@ -295,26 +306,26 @@ export default async (req: Request) => {
 
   const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY // Or use anon key with RLS
+    process.env.SUPABASE_SERVICE_ROLE_KEY, // Or use anon key with RLS
   );
 
   // Route based on method + path
   const url = new URL(req.url);
   const method = req.method;
 
-  if (method === 'GET' && url.pathname === '/flashcards/decks') {
+  if (method === "GET" && url.pathname === "/flashcards/decks") {
     // RLS automatically filters to user's decks
     const { data } = await supabase
-      .from('decks')
-      .select('*')
-      .eq('user_id', userId);
+      .from("decks")
+      .select("*")
+      .eq("user_id", userId);
     return new Response(JSON.stringify(data));
   }
 
-  if (method === 'POST' && url.pathname === '/flashcards/decks') {
+  if (method === "POST" && url.pathname === "/flashcards/decks") {
     const { name, description } = await req.json();
     const { data } = await supabase
-      .from('decks')
+      .from("decks")
       .insert({ user_id: userId, name, description })
       .select();
     return new Response(JSON.stringify(data[0]));
@@ -342,7 +353,7 @@ export default async (req: Request) => {
 **Handler Logic**:
 
 ```typescript
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
 export default async (req: Request) => {
   const auth = await req.json();
@@ -351,19 +362,21 @@ export default async (req: Request) => {
 
   const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
   );
 
   // Fetch deck + cards (RLS ensures user ownership)
   const { data: deck } = await supabase
-    .from('decks')
-    .select('*, flashcards(*)')
-    .eq('id', deckId)
-    .eq('user_id', userId)
+    .from("decks")
+    .select("*, flashcards(*)")
+    .eq("id", deckId)
+    .eq("user_id", userId)
     .single();
 
   if (!deck) {
-    return new Response(JSON.stringify({ error: 'Deck not found' }), { status: 404 });
+    return new Response(JSON.stringify({ error: "Deck not found" }), {
+      status: 404,
+    });
   }
 
   // Generate APKG file
@@ -372,8 +385,8 @@ export default async (req: Request) => {
   // Option 1: Return binary directly (if under response size limit)
   return new Response(apkgBuffer, {
     headers: {
-      'Content-Type': 'application/vnd.anki.apkg',
-      'Content-Disposition': `attachment; filename="${deck.name}.apkg"`,
+      "Content-Type": "application/vnd.anki.apkg",
+      "Content-Disposition": `attachment; filename="${deck.name}.apkg"`,
     },
   });
 
@@ -396,7 +409,7 @@ export default async (req: Request) => {
 
 **Purpose**: Grammatical analysis of text (lemmatization, POS tagging, features)
 
-**Trigger**: 
+**Trigger**:
 
 - Direct Lambda function URL or API Gateway `POST /analysis/morphology`
 - Called by frontend directly (no authentication)
@@ -453,7 +466,7 @@ export default async (req: Request) => {
 - `inflections-de` (German): future expansion
 - etc.
 
-**Trigger**: 
+**Trigger**:
 
 - Direct Lambda function URL or API Gateway `GET /inflections/{language}/{word}`
 - Called by frontend directly (no authentication)
@@ -548,22 +561,22 @@ frontend/
 
 ```typescript
 // hooks/useAuth.ts
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import { User } from '@supabase/supabase-js'
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null)
-      setIsLoading(false)
-    })
-  }, [])
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+  }, []);
 
-  return { user, isLoading }
+  return { user, isLoading };
 }
 ```
 
@@ -629,49 +642,49 @@ export function TextAnalyzer() {
 
 ```typescript
 // lib/api.ts
-import { supabase } from './supabase'
+import { supabase } from "./supabase";
 
 export const api = {
   async createDeck(name: string, description?: string) {
-    const { data: session } = await supabase.auth.getSession()
-    const token = session?.session?.access_token
+    const { data: session } = await supabase.auth.getSession();
+    const token = session?.session?.access_token;
 
-    const response = await fetch('/api/flashcards/decks', {
-      method: 'POST',
+    const response = await fetch("/api/flashcards/decks", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ name, description }),
-    })
-    return response.json()
+    });
+    return response.json();
   },
 
   async getDecks() {
-    const { data: session } = await supabase.auth.getSession()
-    const token = session?.session?.access_token
+    const { data: session } = await supabase.auth.getSession();
+    const token = session?.session?.access_token;
 
-    const response = await fetch('/api/flashcards/decks', {
-      headers: { 'Authorization': `Bearer ${token}` },
-    })
-    return response.json()
+    const response = await fetch("/api/flashcards/decks", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.json();
   },
 
   async exportToAnki(deckId: string) {
-    const { data: session } = await supabase.auth.getSession()
-    const token = session?.session?.access_token
+    const { data: session } = await supabase.auth.getSession();
+    const token = session?.session?.access_token;
 
-    const response = await fetch('/api/export/anki', {
-      method: 'POST',
+    const response = await fetch("/api/export/anki", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ deckId }),
-    })
-    return response.blob()
+    });
+    return response.blob();
   },
-}
+};
 ```
 
 #### 4. **Inflections & Conjugation Tables**
@@ -755,13 +768,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#3B82F6',      // Blue
-        secondary: '#8B5CF6',    // Purple
-        accent: '#F59E0B',       // Amber
+        primary: "#3B82F6", // Blue
+        secondary: "#8B5CF6", // Purple
+        accent: "#F59E0B", // Amber
       },
     },
   },
-}
+};
 ```
 
 ### Development Workflow
@@ -806,10 +819,10 @@ The `lib/api.ts` module provides typed wrappers around all backend endpoints. Th
 
 ```typescript
 // Automatic token injection
-const token = await getAuthToken()
-const response = await fetch('/api/endpoint', {
-  headers: { 'Authorization': `Bearer ${token}` },
-})
+const token = await getAuthToken();
+const response = await fetch("/api/endpoint", {
+  headers: { Authorization: `Bearer ${token}` },
+});
 ```
 
 ### Deployment
@@ -1014,7 +1027,7 @@ paths:
     post:
       summary: Analyze text morphologically
       operationId: analyzeMorphology
-      security: []  # No auth required
+      security: [] # No auth required
       requestBody:
         required: true
         content:
@@ -1027,7 +1040,7 @@ paths:
                 language:
                   type: string
       responses:
-        '200':
+        "200":
           description: Morphological analysis
 
   /analysis/translate:
@@ -1035,7 +1048,7 @@ paths:
       summary: Translate text
       operationId: translateText
       security:
-        - bearerAuth: [ ]  # Auth required
+        - bearerAuth: [] # Auth required
       requestBody:
         required: true
         content:
@@ -1050,9 +1063,9 @@ paths:
                 target_language:
                   type: string
       responses:
-        '200':
+        "200":
           description: Translation with word-level data
-        '401':
+        "401":
           description: Unauthorized
 
   /flashcards/decks:
@@ -1060,17 +1073,17 @@ paths:
       summary: List user's decks
       operationId: listDecks
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: List of decks
-        '401':
+        "401":
           description: Unauthorized
     post:
       summary: Create a new deck
       operationId: createDeck
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1149,6 +1162,7 @@ curl -X POST http://localhost:9000/2015-03-31/functions/function/invocations \
 - Service Role Key: For Edge Functions database access
 
 2. **Environment Variables**:
+
    ```
    SUPABASE_URL=https://<project-id>.supabase.co
    SUPABASE_ANON_KEY=<public-key>
@@ -1156,14 +1170,15 @@ curl -X POST http://localhost:9000/2015-03-31/functions/function/invocations \
    ```
 
 3. **Frontend Auth Configuration**:
+
    ```typescript
    // frontend/src/lib/supabase.ts
-   import { createClient } from '@supabase/supabase-js'
-   
+   import { createClient } from "@supabase/supabase-js";
+
    export const supabase = createClient(
      process.env.NEXT_PUBLIC_SUPABASE_URL,
-     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-   )
+     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+   );
    ```
 
 4. **Migrations** (Supabase SQL Editor):
@@ -1193,11 +1208,13 @@ supabase db push  # Apply migrations to remote project
 ### Deployment Checklist
 
 1. **Supabase Edge Functions**:
+
    ```bash
    supabase functions deploy --project-ref <prod-project-id>
    ```
 
 2. **Lambda + Terraform**:
+
    ```bash
    cd terraform/application
    terraform plan -var-file=config/prod.tfvars
@@ -1205,6 +1222,7 @@ supabase db push  # Apply migrations to remote project
    ```
 
 3. **Database Migrations**:
+
    ```bash
    supabase db push --project-ref <prod-project-id>
    ```
@@ -1238,27 +1256,30 @@ supabase db push  # Apply migrations to remote project
 ### Adding a New Supabase Edge Function
 
 1. **Create function directory**:
+
    ```bash
    supabase functions new my-feature
    ```
 
 2. **Implement handler** (`supabase/functions/my-feature/index.ts`):
+
    ```typescript
-   import { createClient } from '@supabase/supabase-js'
-   
+   import { createClient } from "@supabase/supabase-js";
+
    export default async (req: Request) => {
-     const auth = req.headers.get('authorization')?.split(' ')[1];
+     const auth = req.headers.get("authorization")?.split(" ")[1];
      const supabase = createClient(
        process.env.SUPABASE_URL!,
-       process.env.SUPABASE_SERVICE_ROLE_KEY!
+       process.env.SUPABASE_SERVICE_ROLE_KEY!,
      );
-   
+
      // Use auth context and Supabase client
      return new Response(JSON.stringify({ success: true }));
-   }
+   };
    ```
 
 3. **Deploy**:
+
    ```bash
    supabase functions deploy my-feature
    ```
@@ -1270,12 +1291,13 @@ supabase db push  # Apply migrations to remote project
        post:
          operationId: myFeature
          security:
-           - bearerAuth: [ ]
+           - bearerAuth: []
    ```
 
 ### Adding a New Lambda Function (Python)
 
 1. **Create function directory**:
+
    ```
    microservices/new-python-service/
    ├── index.py
@@ -1285,12 +1307,13 @@ supabase db push  # Apply migrations to remote project
    ```
 
 2. **Define Terraform resource** (`terraform/application/lambda.tf`):
+
    ```hcl
    resource "aws_lambda_function" "new_service" {
      function_name = "grammr-new-service"
      ...
    }
-   
+
    resource "aws_lambda_function_url" "new_service" {
      function_name      = aws_lambda_function.new_service.function_name
      authorization_type = "NONE"
@@ -1376,4 +1399,3 @@ resource "aws_cloudwatch_metric_alarm" "morphology_errors" {
 - **Lambda**: AWS serverless function; auto-scales based on demand
 - **ECR**: Elastic Container Registry; AWS service for storing Docker images
 - **SAM**: Serverless Application Model; infrastructure-as-code for Lambda + API Gateway
-
