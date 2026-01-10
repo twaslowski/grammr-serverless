@@ -1,0 +1,3 @@
+cloudflare_api_key="nKmG3w-_g1nDH_PYxbMXz_dGe0adXt20csghYeyq"
+vercel_api_key = "RzsfZb9w0pFJ4KucMq7c8Hfu"
+vercel_project_id="prj_6Y3SmZWnVDWnCoLKLwUZoPnnqm7z"
