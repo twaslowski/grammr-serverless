@@ -28,7 +28,7 @@ const defaultNavItems: DashboardNavItem[] = [
   {
     title: "Translations",
     description: "Analyze and translate sentences with word-by-word breakdowns",
-    href: "/dashboard/translations",
+    href: "/dashboard/translate",
     icon: Languages,
   },
   {
