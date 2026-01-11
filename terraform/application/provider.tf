@@ -17,6 +17,10 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5.0"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
   }
 }
 
@@ -33,3 +37,8 @@ provider "cloudflare" {
   api_token = var.cloudflare_api_key
 }
 
+provider "aws" {
+  default_tags {
+    tags = local.default_tags
+  }
+}

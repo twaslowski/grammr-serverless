@@ -1,4 +1,4 @@
-vercel_source_branch     = "main"
+environment              = "prod"
 app_domain               = "grammr.app"
 zone_id                  = "fe0c8417e8c4c53f1806fca1bc09017c"
 supabase_project_url     = "https://wgngrrmngatubjsilhbj.supabase.co"

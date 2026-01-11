@@ -43,3 +43,17 @@ You can test the Lambda image locally using Docker and the Lambda Runtime Interf
 
 The Lambda is deployed behind an API Gateway. The deployment process involves building the Docker image
 and pushing it to AWS ECR, followed by updating the Lambda function to use the new image.
+
+Build instructions:
+
+```bash
+docker build --build-arg SPACY_MODEL=ru_core_news_md -t grammr/morphology:0.1.0-ru_core_news_md .
+docker tag grammr/morphology:0.1.0-ru_core_news_md $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/morphology:0.1.0-ru_core_news_md
+
+aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/morphology:0.1.0-ru_core_news_md
+```
+
+It is IMPORTANT to include the `Content-Type: application/json` header in your requests to the API Gateway,
+as the Lambda function expects JSON input. Otherwise, the API Gateway will base64-encode the post body,
+which the Lambda does not expect.

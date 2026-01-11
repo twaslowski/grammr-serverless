@@ -1,13 +1,18 @@
-# VERCEL VARS
+variable "environment" {
+  description = "The environment to deploy to (dev | prod)"
+  type        = string
+}
+
 variable "vercel_api_key" {
   description = "The API key for Vercel."
   type        = string
   sensitive   = true
 }
 
-variable "vercel_source_branch" {
-  description = "The source branch for Vercel preview deployments."
+variable "cloudflare_api_key" {
+  description = "The API key for Cloudflare."
   type        = string
+  sensitive   = true
 }
 
 variable "app_domain" {
@@ -18,13 +23,6 @@ variable "app_domain" {
 variable "zone_id" {
   description = "Cloudflare Zone ID for the domain."
   type        = string
-}
-
-# DNS & CERT VARS
-variable "cloudflare_api_key" {
-  description = "The API key for Cloudflare."
-  type        = string
-  sensitive   = true
 }
 
 variable "supabase_project_url" {

@@ -29,13 +29,12 @@ tasks:
       - terraform init -backend-config=config/{{.ENVIRONMENT}}.hcl -reconfigure
       - terraform apply -var-file=config/{{.ENVIRONMENT}}.tfvars -var-file=config/{{.ENVIRONMENT}}.secret.tfvars
 
-  deploy:*:
-    desc: Deploy to specified environment
-    vars:
-      ENVIRONMENT: "{{index .MATCH 0}}"
+  deploy-functions:
+    desc: Deploy supabase edge functions
     cmds:
-      - task: "apply:{{.ENVIRONMENT}}"
-      - npx supabase@beta secrets set --env-file supabase/functions/.env.{{.ENVIRONMENT}}
+      - supabase secrets set --env-file supabase/functions/.env.local
+      - supabase functions deploy literal-translation --no-verify-jwt
+      - supabase functions deploy phrase-translation --no-verify-jwt
 
   build:
     desc: Run formatter, linter, and tests
