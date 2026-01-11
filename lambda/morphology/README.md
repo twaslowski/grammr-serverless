@@ -1,0 +1,45 @@
+# morphology
+
+This Lambda function provides morphological analysis.
+Because the entrypoint of an AWS Lambda Docker image has to be `lambda_handler.handler_func`,
+the download of the image has to be performed at build time, resulting in larger image size
+but reduced startup time. You can specify a model when building the Docker image by setting the
+`SPACY_MODEL` build argument. For example, to use the `en_core_web_sm` model, you can run:
+
+```bash
+docker build --build-arg SPACY_MODEL=en_core_web_sm -t morphology-lambda:en_core_web_sm .
+```
+
+## Dependencies
+
+This Lambda primarily relies on spaCy for morphological analysis and Pydantic for data validation.
+Pydantic 1 is used, because currently spaCy does not support Pydantic 2.
+
+This limits the maximum Python version to 3.13, as Pydantic 1 does not support Python 3.14 currently.
+Read more: https://github.com/explosion/spaCy/issues/13895
+
+## Local Testing
+
+You can test the Lambda image locally using Docker and the Lambda Runtime Interface Emulator (RIE), which is included in the AWS Lambda base images.
+
+1. Build the image:
+   ```bash
+   docker build --build-arg SPACY_MODEL=en_core_web_sm -t morphology-lambda:en_core_web_sm .
+   ```
+
+2. Run the container:
+   ```bash
+   docker run -p 9000:8080 morphology-lambda:en_core_web_sm
+   ```
+
+3. Send a test request:
+   ```bash
+   curl -X POST "http://localhost:9000/2015-03-31/functions/function/invocations" \
+     -H "Content-Type: application/json" \
+     -d '{"body": "{\"phrase\": \"Hello world\"}"}'
+   ```
+
+## Deployment
+
+The Lambda is deployed behind an API Gateway. The deployment process involves building the Docker image
+and pushing it to AWS ECR, followed by updating the Lambda function to use the new image.

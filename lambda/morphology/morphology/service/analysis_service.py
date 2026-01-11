@@ -1,0 +1,19 @@
+import os
+import spacy
+
+from morphology.service.token_mapper import from_spacy_token
+from morphology.domain.analysis_request import AnalysisRequest
+from morphology.domain.morphological_analysis import (
+    MorphologicalAnalysis,
+)
+
+
+model = spacy.load(os.getenv("SPACY_MODEL"))
+
+
+def perform_analysis(request: AnalysisRequest) -> list:
+    spacy_tokens = model(request.phrase)
+    return MorphologicalAnalysis(
+        source_phrase=request.phrase,
+        tokens=[from_spacy_token(token) for token in spacy_tokens],
+    )
