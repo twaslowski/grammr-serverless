@@ -5,11 +5,6 @@ variable "vercel_api_key" {
   sensitive   = true
 }
 
-variable "vercel_project_id" {
-  type        = string
-  description = "The Vercel project ID. Can be derived from the project generated at terraform/shared/"
-}
-
 variable "vercel_source_branch" {
   description = "The source branch for Vercel preview deployments."
   type        = string
@@ -32,3 +27,12 @@ variable "cloudflare_api_key" {
   sensitive   = true
 }
 
+variable "supabase_project_url" {
+  type        = string
+  description = "The Supabase project URL."
+}
+
+variable "supabase_publishable_key" {
+  description = "The Supabase publishable key."
+  type        = string
+}

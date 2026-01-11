@@ -3,6 +3,15 @@
 resource "vercel_project_domain" "domain_prod" {
   count = var.vercel_source_branch == "main" ? 1 : 0
 
-  project_id = var.vercel_project_id
+  project_id = data.vercel_project.project.id
   domain     = var.app_domain
+}
+
+resource "vercel_project_environment_variable" "vercel_env" {
+  for_each = local.vercel_environment_variables
+
+  project_id = data.vercel_project.project.id
+  key        = each.key
+  value      = each.value
+  target     = [local.vercel_environment]
 }

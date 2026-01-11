@@ -1,6 +1,6 @@
 resource "vercel_project" "project" {
   name      = "grammr-serverless"
-  framework = "vite"
+  framework = "nextjs"
 
   git_repository = {
     type = "github"
