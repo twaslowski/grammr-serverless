@@ -1,8 +1,20 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (!authError && user) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="pb-24">
       <div className="relative mx-auto flex max-w-6xl flex-col gap-12 px-6 py-24 text-center lg:px-8">

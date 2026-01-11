@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import React from "react";
 
 export default async function ProtectedLayout({
   children,
@@ -21,12 +22,12 @@ export default async function ProtectedLayout({
   // Check if user has language preferences set
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("source_language, target_language")
+    .select("*")
     .eq("id", user.id)
     .single();
 
   if (error) {
-    throw new Error(`Failed to create metric: ${error.message}`);
+    throw new Error(`Failed to fetch profile data: ${error.message}`);
   }
 
   // If languages are not set, redirect to language selection

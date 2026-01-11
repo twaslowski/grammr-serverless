@@ -46,7 +46,7 @@ export function LanguageSelector({ userId }: LanguageSelectorProps) {
 
       if (updateError) throw updateError;
 
-      router.push("/protected");
+      router.push("/dashboard");
     } catch (err) {
       console.error("Failed to update profile:", err);
       setError(

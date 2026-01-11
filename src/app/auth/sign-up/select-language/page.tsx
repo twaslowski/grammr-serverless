@@ -24,7 +24,7 @@ export default async function SelectLanguagePage() {
 
   // If languages are already set, redirect to protected area
   if (profile?.source_language && profile?.target_language) {
-    redirect("/protected");
+    redirect("/dashboard");
   }
 
   return (

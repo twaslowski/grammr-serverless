@@ -13,7 +13,7 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm text-primary-300">
               <li>
-                <Link href="/protected" className="hover:transition-colors">
+                <Link href="/dashboard" className="hover:transition-colors">
                   Get Started
                 </Link>
               </li>

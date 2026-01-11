@@ -18,7 +18,7 @@ export function UserButton() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {/*<DropdownMenuItem onClick={() => router.push("/protected/account")}>*/}
+        {/*<DropdownMenuItem onClick={() => router.push("/dashboard/account")}>*/}
         {/*  <CogIcon />*/}
         {/*  Your Account*/}
         {/*</DropdownMenuItem>*/}
