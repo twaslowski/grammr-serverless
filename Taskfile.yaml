@@ -31,8 +31,8 @@ tasks:
     desc: Deploy supabase edge functions
     cmds:
       - supabase secrets set --env-file supabase/functions/.env.local
-      - supabase functions deploy literal-translation
-      - supabase functions deploy phrase-translation
+      - supabase functions deploy literal-translation --no-verify-jwt
+      - supabase functions deploy phrase-translation --no-verify-jwt
 
   build:
     desc: Run formatter, linter, and tests
