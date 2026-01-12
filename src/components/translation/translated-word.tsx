@@ -7,6 +7,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { translateWord } from "@/lib/translation";
+import { analyzeMorphology } from "@/lib/morphology";
+import { TokenMorphology } from "@/types/morphology";
 import { Loader2 } from "lucide-react";
 
 interface TranslatedWordProps {
@@ -32,6 +34,7 @@ export function TranslatedWord({
 }: TranslatedWordProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [translation, setTranslation] = useState<string | null>(null);
+  const [morphology, setMorphology] = useState<TokenMorphology | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,16 +49,29 @@ export function TranslatedWord({
       setError(null);
 
       try {
-        const result = await translateWord({
-          phrase,
-          word: cleanWord,
-          source_language: sourceLanguage,
-          target_language: targetLanguage,
-        });
-        setTranslation(result.translation);
+        // Fetch translation and morphology in parallel
+        const [translationResult, morphologyResult] = await Promise.all([
+          translateWord({
+            phrase,
+            word: cleanWord,
+            source_language: sourceLanguage,
+            target_language: targetLanguage,
+          }),
+          analyzeMorphology({ phrase }),
+        ]);
+
+        setTranslation(translationResult.translation);
+
+        // Find the token that matches the current word
+        const matchingToken = morphologyResult.tokens.find(
+          (token) => token.text.toLowerCase() === cleanWord.toLowerCase(),
+        );
+        if (matchingToken) {
+          setMorphology(matchingToken);
+        }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to translate word",
+          err instanceof Error ? err.message : "Failed to load word details",
         );
       } finally {
         setIsLoading(false);
@@ -103,7 +119,39 @@ export function TranslatedWord({
                 </p>
                 <p className="font-medium text-primary">{translation}</p>
               </div>
-              {/* Additional fields can be added here in the future */}
+              {morphology && (
+                <>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                      Lemma
+                    </p>
+                    <p className="font-medium">{morphology.lemma}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                      Part of Speech
+                    </p>
+                    <p className="font-medium">{morphology.pos}</p>
+                  </div>
+                  {morphology.features.length > 0 && (
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                        Features
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {morphology.features.map((feature, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary text-secondary-foreground"
+                          >
+                            {feature.type}: {feature.value}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )}
         </div>

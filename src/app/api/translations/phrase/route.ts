@@ -30,14 +30,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/${FUNCTION_NAME}`, {
-      method: 'POST',
-      headers: {
-        Authorization: 'Bearer ' + jwt,
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${SUPABASE_PROJECT_URL}/functions/v1/${FUNCTION_NAME}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + jwt,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(validationResult.data),
       },
-      body: JSON.stringify(validationResult.data),
-    })
+    );
 
     // Handle error cases
     if (response.status !== 200) {
