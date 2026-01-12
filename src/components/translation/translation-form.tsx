@@ -22,6 +22,11 @@ export function TranslationForm({ profile }: TranslationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Determine mode based on direction
+  // isReversed = false: Analysis Mode (learned language → spoken language)
+  // isReversed = true: Translation Mode (spoken language → learned language)
+  const isAnalysisMode = !isReversed;
+
   // Determine source and target languages based on direction
   const sourceLanguage = isReversed
     ? profile.source_language
@@ -74,7 +79,16 @@ export function TranslationForm({ profile }: TranslationFormProps) {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Translate</CardTitle>
+            <div>
+              <CardTitle className="text-lg">
+                {isAnalysisMode ? "Analysis Mode" : "Translation Mode"}
+              </CardTitle>
+              <p className="text-xs text-muted-foreground mt-1">
+                {isAnalysisMode
+                  ? "Practice reading in your learned language"
+                  : "Translate to your learned language"}
+              </p>
+            </div>
             <div className="flex items-center gap-2 text-sm">
               <span className="font-medium">
                 {sourceLanguageInfo?.flag} {sourceLanguageInfo?.name}
@@ -153,9 +167,13 @@ export function TranslationForm({ profile }: TranslationFormProps) {
               translatedText={translatedText}
               sourceLanguage={sourceLanguage}
               targetLanguage={targetLanguage}
+              isAnalysisMode={isAnalysisMode}
+              originalText={isAnalysisMode ? text.trim() : undefined}
             />
             <p className="text-xs text-muted-foreground mt-3">
-              Click on any word to see its literal translation
+              {isAnalysisMode
+                ? "Click on any word above to see its translation and analysis"
+                : "Click on any word to see its literal translation"}
             </p>
           </CardContent>
         </Card>
