@@ -2,18 +2,22 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { PhraseTranslationRequestSchema } from "@/types/translation";
 
+const SUPABASE_PROJECT_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const FUNCTION_NAME = "phrase-translation";
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
 
     // Check if user is authenticated
     const {
-      data: { user },
+      data: { session },
       error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
+    } = await supabase.auth.getSession();
+    if (authError || !session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const jwt = session.access_token;
 
     // Parse and validate request body
     const body = await request.json();
@@ -21,31 +25,31 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid request", details: validationResult.error.flatten() },
+        { error: "Invalid request", details: validationResult.error.message },
         { status: 400 },
       );
     }
 
-    // Forward to Supabase Edge Function
-    const { data, error } = await supabase.functions.invoke(
-      "phrase-translation",
-      {
-        body: validationResult.data,
+    const response = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/${FUNCTION_NAME}`, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + jwt,
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify(validationResult.data),
+    })
 
-    if (error) {
-      console.error("Edge function error:", error);
+    // Handle error cases
+    if (response.status !== 200) {
+      const error = await response.json();
+      console.error("Edge function error:", response.status);
       return NextResponse.json(
-        { error: error.message || "Translation failed" },
+        { error: error || "Translation failed" },
         { status: 500 },
       );
     }
 
-    if (data.error) {
-      return NextResponse.json({ error: data.error }, { status: 400 });
-    }
-
+    const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
     console.error("Phrase translation error:", error);

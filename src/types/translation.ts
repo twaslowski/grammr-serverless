@@ -6,20 +6,10 @@ export const PhraseTranslationRequestSchema = z.object({
   target_language: z.string(),
 });
 
-export type PhraseTranslationRequest = z.infer<
-  typeof PhraseTranslationRequestSchema
->;
-
-export const PhraseTranslationResponseSchema = z.object({
-  text: z.string(),
-  source_language: z.string(),
-  target_language: z.string(),
-  translation: z.string(),
-});
-
-export type PhraseTranslationResponse = z.infer<
-  typeof PhraseTranslationResponseSchema
->;
+export const PhraseTranslationResponseSchema =
+  PhraseTranslationRequestSchema.extend({
+    translation: z.string(),
+  });
 
 export const LiteralTranslationRequestSchema = z.object({
   phrase: z.string().min(1),
@@ -28,17 +18,23 @@ export const LiteralTranslationRequestSchema = z.object({
   target_language: z.string(),
 });
 
+export const LiteralTranslationResponseSchema =
+  LiteralTranslationRequestSchema.extend({
+    translation: z.string(),
+  });
+
+// type exports
 export type LiteralTranslationRequest = z.infer<
   typeof LiteralTranslationRequestSchema
 >;
 
-export const LiteralTranslationResponseSchema = z.object({
-  phrase: z.string(),
-  word: z.string(),
-  source_language: z.string(),
-  target_language: z.string(),
-  translation: z.string(),
-});
+export type PhraseTranslationRequest = z.infer<
+  typeof PhraseTranslationRequestSchema
+>;
+
+export type PhraseTranslationResponse = z.infer<
+  typeof PhraseTranslationResponseSchema
+>;
 
 export type LiteralTranslationResponse = z.infer<
   typeof LiteralTranslationResponseSchema
