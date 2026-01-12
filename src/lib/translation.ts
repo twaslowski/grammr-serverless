@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/client";
 import {
   PhraseTranslationRequest,
   PhraseTranslationResponse,
@@ -9,45 +8,37 @@ import {
 export async function translatePhrase(
   request: PhraseTranslationRequest,
 ): Promise<PhraseTranslationResponse> {
-  const supabase = createClient();
-
-  const { data, error } = await supabase.functions.invoke(
-    "phrase-translation",
-    {
-      body: request,
+  const response = await fetch("/api/translations/phrase", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify(request),
+  });
 
-  if (error) {
-    throw new Error(error.message || "Failed to translate phrase");
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to translate phrase");
   }
 
-  if (data.error) {
-    throw new Error(data.error);
-  }
-
-  return data as PhraseTranslationResponse;
+  return response.json();
 }
 
 export async function translateWord(
   request: LiteralTranslationRequest,
 ): Promise<LiteralTranslationResponse> {
-  const supabase = createClient();
-
-  const { data, error } = await supabase.functions.invoke(
-    "literal-translation",
-    {
-      body: request,
+  const response = await fetch("/api/translations/word", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify(request),
+  });
 
-  if (error) {
-    throw new Error(error.message || "Failed to translate word");
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to translate word");
   }
 
-  if (data.error) {
-    throw new Error(data.error);
-  }
-
-  return data as LiteralTranslationResponse;
+  return response.json();
 }

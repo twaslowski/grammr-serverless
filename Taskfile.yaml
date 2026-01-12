@@ -2,11 +2,9 @@ version: "3"
 tasks:
   start-env:
     desc: Start supabase
-    dotenv:
-      - supabase/functions/.env.local
     cmds:
       - supabase start
-      - supabase functions serve --no-verify-jwt --env-file supabase/functions/.env.local
+      - supabase functions serve --env-file supabase/functions/.env.local
 
   stop-env:
     desc: Start supabase
@@ -33,8 +31,8 @@ tasks:
     desc: Deploy supabase edge functions
     cmds:
       - supabase secrets set --env-file supabase/functions/.env.local
-      - supabase functions deploy literal-translation --no-verify-jwt
-      - supabase functions deploy phrase-translation --no-verify-jwt
+      - supabase functions deploy literal-translation
+      - supabase functions deploy phrase-translation
 
   build:
     desc: Run formatter, linter, and tests

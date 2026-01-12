@@ -1,6 +1,10 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
+import { handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { validateAuth } from "../_shared/auth.ts";
+import { createRequestLogger } from "../_shared/logging.ts";
+
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
 interface TranslationRequest {
@@ -16,39 +20,42 @@ interface TranslationResponse {
   translation: string;
 }
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+
+  // Initialize logger (will be updated with userId after auth)
+  let logger = createRequestLogger("phrase-translation");
 
   try {
+    // Validate authentication
+    const authResult = await validateAuth(req);
+    if (!authResult.success) {
+      logger.error(401, authResult.error || "Unauthorized");
+      return errorResponse(authResult.error || "Unauthorized", 401);
+    }
+
+    // Update logger with authenticated user ID
+    logger = createRequestLogger("phrase-translation", authResult.userId);
+
     if (!OPENAI_API_KEY) {
-      return new Response(JSON.stringify({ error: "OPENAI_API_KEY missing" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      logger.error(500, "OPENAI_API_KEY missing");
+      return errorResponse("Server configuration error", 500);
     }
 
     const { text, source_language, target_language }: TranslationRequest =
       await req.json();
 
     if (!text || !source_language || !target_language) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "Missing required fields: text, source_language, target_language",
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+      logger.error(400, "Missing required fields", {
+        text,
+        source_language,
+        target_language,
+      });
+      return errorResponse(
+        "Missing required fields: text, source_language, target_language",
+        400,
       );
     }
 
@@ -75,6 +82,9 @@ Do not include any other text, explanations, or formatting.`;
 
     if (!response.ok) {
       const errorText = await response.text();
+      logger.error(500, `OpenAI API error: ${response.status}`, {
+        openai_status: response.status,
+      });
       throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
@@ -82,6 +92,7 @@ Do not include any other text, explanations, or formatting.`;
     const content = data.choices[0]?.message?.content;
 
     if (!content) {
+      logger.error(500, "No response content from OpenAI");
       throw new Error("No response content from OpenAI");
     }
 
@@ -94,17 +105,16 @@ Do not include any other text, explanations, or formatting.`;
       translation: parsed.translation,
     };
 
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    logger.success(200, {
+      source_language,
+      target_language,
+      text_length: text.length,
     });
+    return jsonResponse(result);
   } catch (error) {
-    console.error("Translation error:", error);
-    return new Response(
-      JSON.stringify({ error: error.message || "Translation failed" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    const errorMessage =
+      error instanceof Error ? error.message : "Translation failed";
+    logger.error(500, errorMessage);
+    return errorResponse(errorMessage, 500);
   }
 });

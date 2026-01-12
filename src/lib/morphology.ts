@@ -1,0 +1,20 @@
+import { MorphologyRequest, MorphologicalAnalysis } from "@/types/morphology";
+
+export async function analyzeMorphology(
+  request: MorphologyRequest,
+): Promise<MorphologicalAnalysis> {
+  const response = await fetch("/api/morphology", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to analyze morphology");
+  }
+
+  return response.json();
+}
