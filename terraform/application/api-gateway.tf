@@ -8,7 +8,7 @@ module "api_gateway" {
 
   create_domain_name = false
 
-  stage_name = var.environment
+  stage_name   = var.environment
   create_stage = true
   deploy_stage = true
 
@@ -52,8 +52,8 @@ module "api_gateway" {
   routes = {
     "POST /morphology" = {
       integration = {
-        uri = module.morphology_lambda.lambda_function_invoke_arn
-        type = "AWS_PROXY"
+        uri    = module.morphology_lambda.lambda_function_invoke_arn
+        type   = "AWS_PROXY"
         method = "POST"
       }
     }

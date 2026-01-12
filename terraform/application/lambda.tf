@@ -6,8 +6,8 @@ module "morphology_lambda" {
   description   = "Lambda function for morphology analysis in grammr"
 
   create_package = false
-  package_type = "Image"
-  architectures = ["arm64"]
+  package_type   = "Image"
+  architectures  = ["arm64"]
   image_uri      = "${data.aws_ecr_repository.morphology_repository.repository_url}:${data.aws_ecr_repository.morphology_repository.most_recent_image_tags[0]}"
 
   memory_size = 1024
