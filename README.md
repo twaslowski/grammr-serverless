@@ -26,4 +26,3 @@ Deployment is therefore not straightforward. Instructions for deploying:
   Which are shared, which are separate? Design Terraform modules accordingly.
 - Docker images are built manually; need to automate this with CI/CD. Use release-please.
 - Also: CI/CD for Supabase Edge functions and database migrations.
-- Authenticate Edge functions

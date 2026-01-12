@@ -8,14 +8,16 @@ c) There is a button to submit the text for translation.
 d) Below the input box, there is an area where the translated text will be displayed.
 e) The translated text is interactive: clicking a word will trigger a pop-up/modal that shows the literal translation of the word.
 
-The initial translation functionality will be implemented with two Supabase Edge functions:
-`phrase-translation` and `literal-translation`.
+The translation functionality is implemented via Next.js API routes that call the OpenAI API directly:
+`/api/translations/phrase` and `/api/translations/word`.
 
-`phrase-translation` receives the source_language, target_language, and text as parameters and returns a translated
+The phrase translation route receives the source_language, target_language, and text as parameters and returns a translated
 phrase.
 It does so by utilizing the OpenAI API. This can be changed to DeepL or another service later;
-however, the `literal-translation` function will most likely always be LLM-based (OpenAI initially),
-therefore it makes sense to keep both functions using the same service for simplicity initially.
+however, the word translation will most likely always be LLM-based (OpenAI initially),
+therefore it makes sense to keep both routes using the same service for simplicity initially.
+
+Both routes require authentication via Supabase and the `OPENAI_API_KEY` environment variable to be set.
 
 Request body example:
 
