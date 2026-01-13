@@ -15,6 +15,7 @@ import {
   LucideIcon,
   ArrowRight,
 } from "lucide-react";
+import { LanguageCode } from "@/types/languages";
 
 export interface DashboardNavItem {
   title: string;
@@ -22,6 +23,8 @@ export interface DashboardNavItem {
   href: string;
   icon: LucideIcon;
   disabled?: boolean;
+  /** Languages for which this feature is available. If undefined, available for all languages. */
+  availableForLanguages?: LanguageCode[];
 }
 
 const defaultNavItems: DashboardNavItem[] = [
@@ -30,13 +33,14 @@ const defaultNavItems: DashboardNavItem[] = [
     description: "Analyze and translate sentences with word-by-word breakdowns",
     href: "/dashboard/translate",
     icon: Languages,
+    // Available for all languages
   },
   {
     title: "Inflection Tables",
     description: "Look up conjugation and declension tables for words",
     href: "/dashboard/inflect",
     icon: Table2,
-    disabled: false,
+    availableForLanguages: ["ru"],
   },
   {
     title: "Flashcards",
@@ -54,14 +58,37 @@ const defaultNavItems: DashboardNavItem[] = [
   },
 ];
 
-interface DashboardNavProps {
-  items?: DashboardNavItem[];
+/**
+ * Filters navigation items based on the user's learned language.
+ * Items without availableForLanguages are shown to all users.
+ */
+export function getNavItemsForLanguage(
+  learnedLanguage: LanguageCode,
+  items: DashboardNavItem[] = defaultNavItems,
+): DashboardNavItem[] {
+  return items.filter(
+    (item) =>
+      !item.availableForLanguages ||
+      item.availableForLanguages.includes(learnedLanguage),
+  );
 }
 
-export function DashboardNav({ items = defaultNavItems }: DashboardNavProps) {
+interface DashboardNavProps {
+  items?: DashboardNavItem[];
+  learnedLanguage?: LanguageCode;
+}
+
+export function DashboardNav({
+  items = defaultNavItems,
+  learnedLanguage,
+}: DashboardNavProps) {
+  const filteredItems = learnedLanguage
+    ? getNavItemsForLanguage(learnedLanguage, items)
+    : items;
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      {items.map((item) => (
+      {filteredItems.map((item) => (
         <DashboardNavCard key={item.href} item={item} />
       ))}
     </div>
