@@ -3,7 +3,7 @@ import { MorphologyRequest, MorphologicalAnalysis } from "@/types/morphology";
 export async function analyzeMorphology(
   request: MorphologyRequest,
 ): Promise<MorphologicalAnalysis> {
-  const response = await fetch("/api/morphology", {
+  const response = await fetch("/api/v1/morphology", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

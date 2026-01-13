@@ -8,7 +8,7 @@ import {
 export async function translatePhrase(
   request: PhraseTranslationRequest,
 ): Promise<PhraseTranslationResponse> {
-  const response = await fetch("/api/translations/phrase", {
+  const response = await fetch("/api/v1/translations/phrase", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -27,7 +27,7 @@ export async function translatePhrase(
 export async function translateWord(
   request: LiteralTranslationRequest,
 ): Promise<LiteralTranslationResponse> {
-  const response = await fetch("/api/translations/word", {
+  const response = await fetch("/api/v1/translations/word", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

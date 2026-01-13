@@ -1,0 +1,171 @@
+openapi: 3.0.3
+info:
+  title: Russian Inflections API
+  description: |
+    AWS Lambda service for generating inflected forms of Russian words.
+    Given a lemma (base form) and part of speech, this API returns all possible
+    inflected forms with their grammatical features.
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: https://grammr.app/api
+    description: Production server
+
+paths:
+  /v1/inflections:
+    post:
+      summary: Generate inflections for a Russian word
+      description: |
+        Processes a Russian word lemma and generates all possible inflected forms
+        based on its part of speech. Returns inflections with grammatical features
+        such as case, number, gender, person, and tense.
+      operationId: inflectWord
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InflectionRequest'
+            examples:
+              noun:
+                summary: Noun inflection
+                value:
+                  lemma: "дом"
+                  pos: "NOUN"
+              verb:
+                summary: Verb inflection
+                value:
+                  lemma: "говорить"
+                  pos: "VERB"
+              adjective:
+                summary: Adjective inflection
+                value:
+                  lemma: "красный"
+                  pos: "ADJ"
+      responses:
+        '200':
+          description: Successful inflection response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InflectionsResponse'
+              example:
+                partOfSpeech: "NOUN"
+                lemma: "дом"
+                inflections:
+                  - lemma: "дом"
+                    inflected: "дома"
+                    features:
+                      - type: "CASE"
+                        value: "GEN"
+                      - type: "NUMBER"
+                        value: "SING"
+        '400':
+          description: Bad request - inflection error (low confidence or POS mismatch)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    InflectionRequest:
+      type: object
+      required:
+        - lemma
+        - pos
+      properties:
+        lemma:
+          type: string
+          description: The base form (dictionary form) of the word to inflect
+          example: "дом"
+        pos:
+          $ref: '#/components/schemas/PartOfSpeech'
+
+    InflectionsResponse:
+      type: object
+      required:
+        - partOfSpeech
+        - lemma
+        - inflections
+      properties:
+        partOfSpeech:
+          type: string
+          description: The part of speech of the word
+          example: "NOUN"
+        lemma:
+          type: string
+          description: The base form of the word
+          example: "дом"
+        inflections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inflection'
+
+    Inflection:
+      type: object
+      required:
+        - lemma
+        - inflected
+        - features
+      properties:
+        lemma:
+          type: string
+          description: The base form of the word
+          example: "дом"
+        inflected:
+          type: string
+          description: The inflected form of the word
+          example: "дома"
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feature'
+          description: Grammatical features applied to produce this inflection
+
+    Feature:
+      type: object
+      required:
+        - type
+        - value
+      properties:
+        type:
+          type: string
+          description: The grammatical feature category
+          enum:
+            - CASE
+            - NUMBER
+            - GENDER
+            - PERSON
+            - TENSE
+          example: "CASE"
+        value:
+          type: string
+          description: The value of the grammatical feature
+          example: "GEN"
+
+    PartOfSpeech:
+      type: string
+      description: Part of speech following Universal Dependencies conventions
+      enum:
+        - NOUN
+        - ADJ
+        - VERB
+        - AUX
+      example: "NOUN"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message describing what went wrong
+

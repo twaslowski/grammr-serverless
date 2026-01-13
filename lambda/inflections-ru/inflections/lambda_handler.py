@@ -21,7 +21,7 @@ logger.setLevel(logging.INFO)
 _inflector = Inflector()
 
 
-def handle(event, _):
+def handler(event, _):
     """
     AWS Lambda handler function for inflection requests.
 

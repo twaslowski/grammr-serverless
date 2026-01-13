@@ -1,0 +1,152 @@
+openapi: 3.0.3
+info:
+  title: Morphological Analysis API
+  description: |
+    AWS Lambda service for performing morphological analysis of Russian text.
+    Given a phrase, this API returns detailed morphological information for each
+    token including lemmas, parts of speech, and grammatical features.
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: https://grammr.app/api
+    description: Production server
+
+paths:
+  /v1/morphology:
+    post:
+      summary: Perform morphological analysis on a phrase
+      description: |
+        Analyzes a Russian phrase and returns morphological information for each
+        token, including the lemma (base form), part of speech, and grammatical
+        features such as case, number, gender, person, and tense.
+      operationId: analyzePhrase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalysisRequest'
+            examples:
+              simple:
+                summary: Simple phrase analysis
+                value:
+                  phrase: "Я люблю русский язык"
+              sentence:
+                summary: Sentence analysis
+                value:
+                  phrase: "Мама мыла раму"
+      responses:
+        '200':
+          description: Successful morphological analysis response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MorphologicalAnalysis'
+              example:
+                source_phrase: "Я люблю"
+                tokens:
+                  - text: "Я"
+                    lemma: "я"
+                    pos: "PRON"
+                    features:
+                      - type: "CASE"
+                        value: "NOM"
+                      - type: "NUMBER"
+                        value: "SING"
+                      - type: "PERSON"
+                        value: "FIRST"
+                  - text: "люблю"
+                    lemma: "любить"
+                    pos: "VERB"
+                    features:
+                      - type: "PERSON"
+                        value: "FIRST"
+                      - type: "NUMBER"
+                        value: "SING"
+                      - type: "TENSE"
+                        value: "PRES"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    AnalysisRequest:
+      type: object
+      required:
+        - phrase
+      properties:
+        phrase:
+          type: string
+          description: The Russian phrase to analyze
+          example: "Я люблю русский язык"
+
+    MorphologicalAnalysis:
+      type: object
+      required:
+        - source_phrase
+        - tokens
+      properties:
+        source_phrase:
+          type: string
+          description: The original phrase that was analyzed
+          example: "Я люблю русский язык"
+        tokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/TokenMorphology'
+          description: List of tokens with their morphological analysis
+
+    TokenMorphology:
+      type: object
+      required:
+        - text
+        - lemma
+        - pos
+      properties:
+        text:
+          type: string
+          description: The original token text as it appears in the phrase
+          example: "люблю"
+        lemma:
+          type: string
+          description: The base form (dictionary form) of the token
+          example: "любить"
+        pos:
+          type: string
+          description: Part of speech tag (following Universal Dependencies)
+          example: "VERB"
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feature'
+          description: List of grammatical features for this token
+          default: []
+
+    Feature:
+      type: object
+      required:
+        - type
+        - value
+      properties:
+        type:
+          type: string
+          description: The grammatical feature category
+          example: "CASE"
+        value:
+          type: string
+          description: The value of the grammatical feature
+          example: "NOM"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message describing what went wrong
+
