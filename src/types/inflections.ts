@@ -14,7 +14,6 @@ export const InflectionsRequestSchema = z.object({
 });
 export type InflectionsRequest = z.infer<typeof InflectionsRequestSchema>;
 
-
 // Inflection schema
 export const InflectionSchema = z.object({
   lemma: z.string(),

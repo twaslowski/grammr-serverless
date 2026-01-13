@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
-import {InflectionsRequestSchema} from "@/types/inflections";
+import { InflectionsRequestSchema } from "@/types/inflections";
 
 const INFLECTIONS_API_URL = process.env.INFLECTIONS_API_URL;
 

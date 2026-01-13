@@ -49,3 +49,11 @@ next-env.d.ts
 *.secret.tfvars
 
 __pycache__
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+/e2e/.auth/
