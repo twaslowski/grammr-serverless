@@ -1,29 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
 import { InflectionForm } from "@/components/inflection";
-import { Profile } from "@/types/types";
-import { redirect } from "next/navigation";
+import { getProfile } from "@/lib/profile";
 
 export default async function InflectionsPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    redirect("/auth/login");
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  if (profileError || !profile) {
-    throw new Error("Failed to fetch profile");
-  }
+  const profile = await getProfile();
 
   return (
     <div className="flex-1 w-full flex flex-col items-center gap-8">
@@ -34,7 +13,7 @@ export default async function InflectionsPage() {
           to get accurate inflections.
         </p>
       </div>
-      <InflectionForm profile={profile as Profile} />
+      <InflectionForm learnedLanguage={profile.target_language} />
     </div>
   );
 }

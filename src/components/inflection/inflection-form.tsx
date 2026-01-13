@@ -9,7 +9,6 @@ import { Loader2 } from "lucide-react";
 import { getInflections, InflectionError } from "@/lib/inflections";
 import { InflectionsResponse, PartOfSpeech } from "@/types/inflections";
 import { InflectionsTable } from "./inflections-table";
-import { Profile } from "@/types/types";
 import { getLanguageByCode } from "@/lib/languages";
 import { LanguageCode } from "@/types/languages";
 
@@ -21,10 +20,10 @@ const POS_OPTIONS: { value: PartOfSpeech; label: string }[] = [
 ];
 
 interface InflectionFormProps {
-  profile: Profile;
+  learnedLanguage: LanguageCode;
 }
 
-export function InflectionForm({ profile }: InflectionFormProps) {
+export function InflectionForm({ learnedLanguage }: InflectionFormProps) {
   const [word, setWord] = useState("");
   const [pos, setPos] = useState<PartOfSpeech>("NOUN");
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +34,6 @@ export function InflectionForm({ profile }: InflectionFormProps) {
   const [result, setResult] = useState<InflectionsResponse | null>(null);
 
   // Get the user's learned language (target_language)
-  const learnedLanguage = profile.target_language as LanguageCode;
   const languageInfo = getLanguageByCode(learnedLanguage);
 
   const handleSubmit = async (e: React.FormEvent) => {

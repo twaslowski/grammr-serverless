@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TranslationResult } from "./translation-result";
 import { translatePhrase } from "@/lib/translation";
-import { Profile } from "@/types/types";
+import { Profile } from "@/types/profile";
 import { getLanguageByCode } from "@/lib/languages";
 import { LanguageCode } from "@/types/languages";
 import { ArrowRightLeft, Loader2 } from "lucide-react";
