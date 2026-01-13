@@ -27,7 +27,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AnalysisRequest'
+              $ref: "#/components/schemas/AnalysisRequest"
             examples:
               simple:
                 summary: Simple phrase analysis
@@ -38,12 +38,12 @@ paths:
                 value:
                   phrase: "Мама мыла раму"
       responses:
-        '200':
+        "200":
           description: Successful morphological analysis response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MorphologicalAnalysis'
+                $ref: "#/components/schemas/MorphologicalAnalysis"
               example:
                 source_phrase: "Я люблю"
                 tokens:
@@ -67,12 +67,12 @@ paths:
                         value: "SING"
                       - type: "TENSE"
                         value: "PRES"
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   schemas:
@@ -99,7 +99,7 @@ components:
         tokens:
           type: array
           items:
-            $ref: '#/components/schemas/TokenMorphology'
+            $ref: "#/components/schemas/TokenMorphology"
           description: List of tokens with their morphological analysis
 
     TokenMorphology:
@@ -124,7 +124,7 @@ components:
         features:
           type: array
           items:
-            $ref: '#/components/schemas/Feature'
+            $ref: "#/components/schemas/Feature"
           description: List of grammatical features for this token
           default: []
 
@@ -149,4 +149,3 @@ components:
         error:
           type: string
           description: Error message describing what went wrong
-

@@ -30,7 +30,9 @@ export function TranslationResult({
       <div className="space-y-4">
         {/* Original text in learned language - main focus with clickable words */}
         <div className="p-4 rounded-lg border bg-background">
-          <p className="text-sm text-muted-foreground mb-2">Original (click words to analyze):</p>
+          <p className="text-sm text-muted-foreground mb-2">
+            Original (click words to analyze):
+          </p>
           <p className="text-lg leading-relaxed">
             {originalWords.map((segment, index) => {
               // If the segment is whitespace, just render it

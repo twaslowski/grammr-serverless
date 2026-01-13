@@ -27,7 +27,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InflectionRequest'
+              $ref: "#/components/schemas/InflectionRequest"
             examples:
               noun:
                 summary: Noun inflection
@@ -45,12 +45,12 @@ paths:
                   lemma: "красный"
                   pos: "ADJ"
       responses:
-        '200':
+        "200":
           description: Successful inflection response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InflectionsResponse'
+                $ref: "#/components/schemas/InflectionsResponse"
               example:
                 partOfSpeech: "NOUN"
                 lemma: "дом"
@@ -62,18 +62,18 @@ paths:
                         value: "GEN"
                       - type: "NUMBER"
                         value: "SING"
-        '400':
+        "400":
           description: Bad request - inflection error (low confidence or POS mismatch)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   schemas:
@@ -88,7 +88,7 @@ components:
           description: The base form (dictionary form) of the word to inflect
           example: "дом"
         pos:
-          $ref: '#/components/schemas/PartOfSpeech'
+          $ref: "#/components/schemas/PartOfSpeech"
 
     InflectionsResponse:
       type: object
@@ -108,7 +108,7 @@ components:
         inflections:
           type: array
           items:
-            $ref: '#/components/schemas/Inflection'
+            $ref: "#/components/schemas/Inflection"
 
     Inflection:
       type: object
@@ -128,7 +128,7 @@ components:
         features:
           type: array
           items:
-            $ref: '#/components/schemas/Feature'
+            $ref: "#/components/schemas/Feature"
           description: Grammatical features applied to produce this inflection
 
     Feature:
@@ -168,4 +168,3 @@ components:
         error:
           type: string
           description: Error message describing what went wrong
-

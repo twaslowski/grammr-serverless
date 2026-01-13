@@ -34,9 +34,9 @@ const defaultNavItems: DashboardNavItem[] = [
   {
     title: "Inflection Tables",
     description: "Look up conjugation and declension tables for words",
-    href: "/dashboard/inflections",
+    href: "/dashboard/inflect",
     icon: Table2,
-    disabled: true,
+    disabled: false,
   },
   {
     title: "Flashcards",
