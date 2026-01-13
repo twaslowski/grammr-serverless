@@ -1,8 +1,8 @@
 import json
 
-from domain import Inflections, InflectionRequest
-from inflections.service import feature_retriever, inflector
+from domain import InflectionRequest, Inflections
 
+from inflections.service import feature_retriever, inflector
 
 if __name__ == "__main__":
     with open("test.json") as f:

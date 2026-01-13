@@ -1,40 +1,63 @@
+"""
+Grammatical feature enums for Russian language morphology.
+
+These enums represent grammatical features that can be applied to words
+during inflection. Each enum member's value corresponds to the pymorphy3
+tag for that feature.
+"""
+
 from enum import Enum
 
 
 class Feature(Enum):
-    pass
+    """
+    Base class for all grammatical features.
 
-    def json(self):
+    Provides common functionality for JSON serialization.
+    """
+
+    def json(self) -> dict:
+        """Serialize the feature to a JSON-compatible dictionary."""
         return {"type": self.__class__.__name__.upper(), "value": self.name}
 
 
 class Case(Feature):
-    NOM = "nomn"
-    GEN = "gent"
-    DAT = "datv"
-    ACC = "accs"
-    ABL = "ablt"
-    LOC = "loct"
+    """Russian grammatical cases."""
+
+    NOM = "nomn"  # Nominative (именительный)
+    GEN = "gent"  # Genitive (родительный)
+    DAT = "datv"  # Dative (дательный)
+    ACC = "accs"  # Accusative (винительный)
+    ABL = "ablt"  # Ablative/Instrumental (творительный)
+    LOC = "loct"  # Locative/Prepositional (предложный)
 
 
 class Number(Feature):
-    SING = "sing"
-    PLUR = "plur"
+    """Grammatical number."""
+
+    SING = "sing"  # Singular
+    PLUR = "plur"  # Plural
 
 
 class Gender(Feature):
-    MASC = "masc"
-    FEM = "femn"
-    NEUT = "neut"
+    """Grammatical gender."""
+
+    MASC = "masc"  # Masculine
+    FEM = "femn"  # Feminine
+    NEUT = "neut"  # Neuter
 
 
 class Person(Feature):
-    FIRST = "1per"
-    SECOND = "2per"
-    THIRD = "3per"
+    """Grammatical person for verb conjugation."""
+
+    FIRST = "1per"  # First person (I/we)
+    SECOND = "2per"  # Second person (you)
+    THIRD = "3per"  # Third person (he/she/it/they)
 
 
 class Tense(Feature):
-    PAST = "past"
-    PRES = "pres"
-    FUT = "futr"
+    """Verb tense."""
+
+    PAST = "past"  # Past tense
+    PRES = "pres"  # Present tense
+    FUT = "futr"  # Future tense
