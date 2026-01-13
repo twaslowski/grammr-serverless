@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { LanguageCodeSchema } from "@/types/languages";
+import { FeatureSchema } from "@/types/language";
 
 // Part of Speech enum
 export const PartOfSpeechEnum = z.enum(["NOUN", "ADJ", "VERB", "AUX"]);
@@ -11,16 +12,8 @@ export const InflectionsRequestSchema = z.object({
   pos: PartOfSpeechEnum,
   language: LanguageCodeSchema,
 });
-
 export type InflectionsRequest = z.infer<typeof InflectionsRequestSchema>;
 
-// Feature schema
-export const FeatureSchema = z.object({
-  type: z.enum(["CASE", "NUMBER", "GENDER", "PERSON", "TENSE"]),
-  value: z.string(),
-});
-
-export type Feature = z.infer<typeof FeatureSchema>;
 
 // Inflection schema
 export const InflectionSchema = z.object({
@@ -28,24 +21,15 @@ export const InflectionSchema = z.object({
   inflected: z.string(),
   features: z.array(FeatureSchema),
 });
-
 export type Inflection = z.infer<typeof InflectionSchema>;
 
 // Response schema
 export const InflectionsResponseSchema = z.object({
-  partOfSpeech: z.string(),
+  partOfSpeech: PartOfSpeechEnum,
   lemma: z.string(),
   inflections: z.array(InflectionSchema),
 });
-
 export type InflectionsResponse = z.infer<typeof InflectionsResponseSchema>;
-
-// Error response
-export const ErrorResponseSchema = z.object({
-  error: z.string(),
-});
-
-export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;
 
 // Helper to check if POS is noun-like (NOUN, ADJ)
 export function isNounLike(pos: string): boolean {

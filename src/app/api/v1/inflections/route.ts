@@ -1,23 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+
+import {InflectionsRequestSchema} from "@/types/inflections";
 
 const INFLECTIONS_API_URL = process.env.INFLECTIONS_API_URL;
-
-// Part of Speech enum matching the OpenAPI spec
-const PartOfSpeechEnum = z.enum(["NOUN", "ADJ", "VERB", "AUX"]);
-
-// Supported languages for inflections
-const LanguageCodeEnum = z.enum(["ru", "es"]);
-
-// Request schema for inflections - matching OpenAPI spec with language
-const InflectionsRequestSchema = z.object({
-  lemma: z.string().min(1),
-  pos: PartOfSpeechEnum,
-  language: LanguageCodeEnum,
-});
-
-export type InflectionsRequest = z.infer<typeof InflectionsRequestSchema>;
 
 export async function POST(request: NextRequest) {
   try {
