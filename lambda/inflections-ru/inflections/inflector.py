@@ -114,7 +114,9 @@ class Inflector:
             "Parsed '%s' with score %.2f, POS: %s", word, parsed.score, parsed.tag.POS
         )
 
-        return [self._create_inflection(parsed, feature_set) for feature_set in features]
+        return [
+            self._create_inflection(parsed, feature_set) for feature_set in features
+        ]
 
     def _get_validated_parse(
         self,

@@ -7,3 +7,7 @@ data "aws_caller_identity" "current" {}
 data "aws_ecr_repository" "morphology_repository" {
   name = "grammr/morphology"
 }
+
+data "aws_ecr_repository" "inflections_ru_repository" {
+  name = "grammr/inflections-ru"
+}

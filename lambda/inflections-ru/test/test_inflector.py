@@ -10,12 +10,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from domain.feature import Case, Number
 from domain.part_of_speech import PartOfSpeech
-from inflector import (
-    DEFAULT_CONFIDENCE_THRESHOLD,
-    Inflector,
-    LowConfidenceError,
-    POSMismatchError,
-)
+from inflector import (DEFAULT_CONFIDENCE_THRESHOLD, Inflector,
+                       LowConfidenceError, POSMismatchError)
 
 
 class TestInflect:
@@ -271,4 +267,3 @@ class TestInflectorConfiguration:
             expected_pos=PartOfSpeech.NOUN,
         )
         assert len(result) == 1
-

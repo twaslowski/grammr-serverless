@@ -25,7 +25,7 @@ def ok(res: dict | list) -> dict:
     }
 
 
-def fail(status: int) -> dict:
+def fail(status: int, error_message: str) -> dict:
     """
     Create an error HTTP response.
 
@@ -38,7 +38,7 @@ def fail(status: int) -> dict:
     return {
         "statusCode": status,
         "headers": {"Content-Type": "application/json"},
-        "body": json.dumps({}),
+        "body": json.dumps({"error": error_message}),
     }
 
 

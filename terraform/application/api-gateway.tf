@@ -57,5 +57,13 @@ module "api_gateway" {
         method = "POST"
       }
     }
+    "POST /inflections/ru" = {
+      integration = {
+        uri    = module.inflection_ru_lambda.lambda_function_invoke_arn
+        type   = "AWS_PROXY"
+        method = "POST"
+      }
+    }
+
   }
 }

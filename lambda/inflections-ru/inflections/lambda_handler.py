@@ -13,6 +13,7 @@ import lambda_util
 from domain.inflection import Inflections
 from domain.inflection_request import InflectionRequest
 from inflector import InflectionError, Inflector
+from pydantic.v1 import ValidationError
 
 logger = logging.getLogger("root")
 logger.setLevel(logging.INFO)
@@ -41,7 +42,18 @@ def handler(event, _):
             return keep_warm_response
 
         body = json.loads(event.get("body", {}))
-        request = InflectionRequest(**body)
+        try:
+            request = InflectionRequest(**body)
+        except ValidationError as e:
+            logger.warning(
+                json.dumps(
+                    {
+                        "success": False,
+                        "error": f"Invalid request body: {str(e)}",
+                    }
+                )
+            )
+            return lambda_util.fail(400, "Invalid request body")
 
         # Generate all possible feature combinations for the POS
         features = feature_retriever.derive_features(request.part_of_speech)
@@ -63,10 +75,10 @@ def handler(event, _):
     except InflectionError as e:
         # Handle expected inflection errors (low confidence, POS mismatch)
         logger.warning(json.dumps({"success": False, "error": str(e)}))
-        return lambda_util.fail(400)
+        return lambda_util.fail(400, "Encountered an error when performing inflection.")
 
     except Exception as e:
         logger.critical(
             json.dumps({"success": False, "error": str(e), "raw_event": event})
         )
-        return lambda_util.fail(500)
+        return lambda_util.fail(500, "Encountered unexpected error")

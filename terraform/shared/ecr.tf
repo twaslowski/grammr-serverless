@@ -1,8 +1,14 @@
+locals {
+  repositories = toset(["grammr/morphology", "grammr/inflections-ru"])
+}
+
 module "ecr" {
   source = "terraform-aws-modules/ecr/aws"
   version = "~> 3.0"
 
-  repository_name = "grammr/morphology"
+  for_each = local.repositories
+
+  repository_name = each.value
 
   repository_lifecycle_policy = jsonencode({
     rules = [
