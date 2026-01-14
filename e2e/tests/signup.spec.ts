@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import {randomUUID} from "crypto";
+import { randomUUID } from "crypto";
 
 // This test runs without authentication to test the signup flow itself
 test.use({ storageState: { cookies: [], origins: [] } });

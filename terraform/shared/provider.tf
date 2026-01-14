@@ -27,3 +27,9 @@ provider "supabase" {
 provider "vercel" {
   api_token = var.vercel_api_key
 }
+
+provider "aws" {
+  default_tags {
+    tags = local.default_tags
+  }
+}
