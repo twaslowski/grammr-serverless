@@ -11,6 +11,7 @@ import {
   PERSON_ORDER,
   PERSON_LABELS,
 } from "@/types/inflections";
+import { CreateFlashcardDialog } from "@/components/flashcard";
 
 interface InflectionsTableProps {
   response: InflectionsResponse;
@@ -80,9 +81,17 @@ function NounLikeTable({ lemma, inflections, pos }: TableProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">{lemma}</CardTitle>
-        <p className="text-sm text-muted-foreground">{posLabel}</p>
+      <CardHeader className="flex flex-row justify-between items-start">
+        <div>
+          <CardTitle className="text-xl">{lemma}</CardTitle>
+          <p className="text-sm text-muted-foreground">{posLabel}</p>
+        </div>
+        <CreateFlashcardDialog
+          front={lemma}
+          type="word"
+          translation=""
+          inflections={inflections}
+        />
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
@@ -128,9 +137,19 @@ function VerbLikeTable({ lemma, inflections, pos }: TableProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">{lemma}</CardTitle>
-        <p className="text-sm text-muted-foreground">{posLabel} (Infinitive)</p>
+      <CardHeader className="flex flex-row justify-between items-start">
+        <div>
+          <CardTitle className="text-xl">{lemma}</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {posLabel} (Infinitive)
+          </p>
+        </div>
+        <CreateFlashcardDialog
+          front={lemma}
+          type="word"
+          translation=""
+          inflections={inflections}
+        />
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

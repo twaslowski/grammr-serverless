@@ -13,7 +13,10 @@ export default async function InflectionsPage() {
           to get accurate inflections.
         </p>
       </div>
-      <InflectionForm learnedLanguage={profile.target_language} />
+      <InflectionForm
+        learnedLanguage={profile.target_language}
+        sourceLanguage={profile.source_language}
+      />
     </div>
   );
 }

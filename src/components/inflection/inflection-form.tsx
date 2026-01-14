@@ -22,6 +22,7 @@ const POS_OPTIONS: { value: PartOfSpeech; label: string }[] = [
 
 interface InflectionFormProps {
   learnedLanguage: LanguageCode;
+  sourceLanguage: LanguageCode;
 }
 
 export function InflectionForm({ learnedLanguage }: InflectionFormProps) {

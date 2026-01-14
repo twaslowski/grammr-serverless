@@ -13,11 +13,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Plus, AlertCircle } from "lucide-react";
+import { Loader2, Plus, AlertCircle, Sparkles } from "lucide-react";
 import { createFlashcard } from "@/lib/flashcards";
+import { translatePhrase } from "@/lib/translation";
 import { FlashcardType, FlashcardBack, Flashcard } from "@/types/flashcards";
 import { Inflection } from "@/types/inflections";
 import toast from "react-hot-toast";
+import { useProfile } from "@/hooks/use-profile";
 
 interface CreateFlashcardDialogProps {
   /** The front text (word or phrase in learned language) */
@@ -47,11 +49,15 @@ export function CreateFlashcardDialog({
 }: CreateFlashcardDialogProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [notes, setNotes] = useState("");
   const [front, setFront] = useState(initialFront);
   const [translation, setTranslation] = useState(initialTranslation);
-  const [notes, setNotes] = useState("");
+
+  const { profile } = useProfile();
+  const sourceLanguage = profile?.source_language;
+  const targetLanguage = profile?.target_language;
 
   // Reset form when dialog opens
   const handleOpenChange = (newOpen: boolean) => {
@@ -61,6 +67,32 @@ export function CreateFlashcardDialog({
       setTranslation(initialTranslation);
       setNotes("");
       setError(null);
+    }
+  };
+
+  // Fetch translation from API
+  const handleFetchTranslation = async () => {
+    if (!front.trim() || !sourceLanguage || !targetLanguage) {
+      return;
+    }
+
+    setIsTranslating(true);
+    setError(null);
+
+    try {
+      const result = await translatePhrase({
+        text: front,
+        source_language: sourceLanguage,
+        target_language: targetLanguage,
+      });
+      setTranslation(result.translation);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch translation";
+      setError(message);
+      toast.error(message);
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -133,13 +165,32 @@ export function CreateFlashcardDialog({
             </div>
             <div className="space-y-2">
               <Label htmlFor="translation">Translation</Label>
-              <Input
-                id="translation"
-                value={translation}
-                onChange={(e) => setTranslation(e.target.value)}
-                placeholder="Enter translation..."
-                disabled={isLoading}
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="translation"
+                  value={translation}
+                  onChange={(e) => setTranslation(e.target.value)}
+                  placeholder="Enter translation..."
+                  disabled={isLoading || isTranslating}
+                  className="flex-1"
+                />
+                {!translation && sourceLanguage && targetLanguage && front && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleFetchTranslation}
+                    disabled={isLoading || isTranslating}
+                    title="Fetch translation"
+                  >
+                    {isTranslating ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-4 w-4" />
+                    )}
+                  </Button>
+                )}
+              </div>
               {!translation && (
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <AlertCircle className="h-3 w-3" />

@@ -153,16 +153,14 @@ export function TranslatedWord({
                   )}
                 </>
               )}
-              {translation && (
-                <div className="pt-2 border-t">
-                  <CreateFlashcardDialog
-                    front={cleanWord}
-                    type="word"
-                    translation={translation}
-                    compact
-                  />
-                </div>
-              )}
+              <div className="pt-2 border-t">
+                <CreateFlashcardDialog
+                  front={cleanWord}
+                  type="word"
+                  translation={translation || ""}
+                  compact
+                />
+              </div>
             </div>
           )}
         </div>
