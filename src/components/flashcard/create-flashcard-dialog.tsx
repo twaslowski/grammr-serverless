@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Plus, AlertCircle, Sparkles } from "lucide-react";
+import { Loader2, Plus, AlertCircle, Sparkles, Layers } from "lucide-react";
 import { createFlashcard } from "@/lib/flashcards";
 import { translatePhrase } from "@/lib/translation";
 import { FlashcardType, FlashcardBack, Flashcard } from "@/types/flashcards";
@@ -129,8 +129,8 @@ export function CreateFlashcardDialog({
 
   const defaultTrigger = compact ? (
     <Button variant="outline" size="sm" className="gap-1">
+      <Layers className="h-4 w-4" />
       <Plus className="h-4 w-4" />
-      <span className="sr-only sm:not-sr-only">Add to Flashcards</span>
     </Button>
   ) : (
     <Button variant="outline" className="gap-2">

@@ -93,8 +93,14 @@ export function TranslatedWord({
         </span>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-0 shadow-lg" align="start">
-        <div className="border-b bg-muted/50 px-4 py-3">
-          <h4 className="font-semibold text-sm">Word Details</h4>
+        <div className="flex flex-row items-center justify-between text-center border-b bg-muted/50 px-2 py-2">
+          <h3 className="font-semibold text-sm">Word Details</h3>
+          <CreateFlashcardDialog
+            front={cleanWord}
+            type="word"
+            translation={translation || ""}
+            compact={true}
+          />
         </div>
         <div className="p-4">
           {isLoading ? (
@@ -153,14 +159,6 @@ export function TranslatedWord({
                   )}
                 </>
               )}
-              <div className="pt-2 border-t">
-                <CreateFlashcardDialog
-                  front={cleanWord}
-                  type="word"
-                  translation={translation || ""}
-                  compact
-                />
-              </div>
             </div>
           )}
         </div>

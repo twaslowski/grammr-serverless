@@ -1,10 +1,6 @@
 import { FlashcardList } from "@/components/flashcard";
-import { getProfile } from "@/lib/profile";
 
 export default async function FlashcardsPage() {
-  // Ensure user is authenticated
-  await getProfile();
-
   return (
     <div className="flex-1 w-full flex flex-col items-center gap-8">
       <div className="w-full max-w-2xl">
