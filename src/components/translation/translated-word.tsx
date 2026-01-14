@@ -10,6 +10,7 @@ import { translateWord } from "@/lib/translation";
 import { analyzeMorphology } from "@/lib/morphology";
 import { TokenMorphology } from "@/types/morphology";
 import { Loader2 } from "lucide-react";
+import { CreateFlashcardDialog } from "@/components/flashcard";
 
 interface TranslatedWordProps {
   word: string;
@@ -151,6 +152,16 @@ export function TranslatedWord({
                     </div>
                   )}
                 </>
+              )}
+              {translation && (
+                <div className="pt-2 border-t">
+                  <CreateFlashcardDialog
+                    front={cleanWord}
+                    type="word"
+                    translation={translation}
+                    compact
+                  />
+                </div>
               )}
             </div>
           )}

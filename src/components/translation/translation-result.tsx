@@ -1,6 +1,7 @@
 "use client";
 
 import { TranslatedWord } from "./translated-word";
+import { CreateFlashcardDialog } from "@/components/flashcard";
 
 interface TranslationResultProps {
   translatedText: string;
@@ -65,37 +66,57 @@ export function TranslationResult({
             {translatedText}
           </p>
         </div>
+
+        {/* Add phrase to flashcards */}
+        <div className="flex justify-end">
+          <CreateFlashcardDialog
+            front={originalText}
+            type="phrase"
+            translation={translatedText}
+          />
+        </div>
       </div>
     );
   }
 
   // Translation Mode: Show translated text with clickable words (existing behavior)
   return (
-    <div className="p-4 rounded-lg border bg-muted/50">
-      <p className="text-sm text-muted-foreground mb-2">Translation:</p>
-      <p className="text-lg leading-relaxed">
-        {translatedWords.map((segment, index) => {
-          // If the segment is whitespace, just render it
-          if (/^\s+$/.test(segment)) {
-            return <span key={index}>{segment}</span>;
-          }
+    <div className="space-y-4">
+      <div className="p-4 rounded-lg border bg-muted/50">
+        <p className="text-sm text-muted-foreground mb-2">Translation:</p>
+        <p className="text-lg leading-relaxed">
+          {translatedWords.map((segment, index) => {
+            // If the segment is whitespace, just render it
+            if (/^\s+$/.test(segment)) {
+              return <span key={index}>{segment}</span>;
+            }
 
-          // If it's a word (possibly with punctuation), make it interactive
-          if (segment.trim()) {
-            return (
-              <TranslatedWord
-                key={index}
-                word={segment}
-                phrase={translatedText}
-                sourceLanguage={targetLanguage}
-                targetLanguage={sourceLanguage}
-              />
-            );
-          }
+            // If it's a word (possibly with punctuation), make it interactive
+            if (segment.trim()) {
+              return (
+                <TranslatedWord
+                  key={index}
+                  word={segment}
+                  phrase={translatedText}
+                  sourceLanguage={targetLanguage}
+                  targetLanguage={sourceLanguage}
+                />
+              );
+            }
 
-          return null;
-        })}
-      </p>
+            return null;
+          })}
+        </p>
+      </div>
+
+      {/* Add translated phrase to flashcards */}
+      <div className="flex justify-end">
+        <CreateFlashcardDialog
+          front={translatedText}
+          type="phrase"
+          translation={originalText || ""}
+        />
+      </div>
     </div>
   );
 }

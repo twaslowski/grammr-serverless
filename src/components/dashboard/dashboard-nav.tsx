@@ -47,7 +47,6 @@ const defaultNavItems: DashboardNavItem[] = [
     description: "Create and manage flashcard decks for vocabulary practice",
     href: "/dashboard/flashcards",
     icon: Layers,
-    disabled: true,
   },
   {
     title: "Account Settings",

@@ -11,6 +11,7 @@ import { InflectionsResponse, PartOfSpeech } from "@/types/inflections";
 import { InflectionsTable } from "./inflections-table";
 import { getLanguageByCode } from "@/lib/languages";
 import { LanguageCode } from "@/types/languages";
+import { CreateFlashcardDialog } from "@/components/flashcard";
 
 const POS_OPTIONS: { value: PartOfSpeech; label: string }[] = [
   { value: "NOUN", label: "Noun" },
@@ -147,7 +148,19 @@ export function InflectionForm({ learnedLanguage }: InflectionFormProps) {
         </Card>
       )}
 
-      {result && <InflectionsTable response={result} />}
+      {result && (
+        <>
+          <InflectionsTable response={result} />
+          <div className="flex justify-end">
+            <CreateFlashcardDialog
+              front={result.lemma}
+              type="word"
+              translation=""
+              inflections={result.inflections}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
