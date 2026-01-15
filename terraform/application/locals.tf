@@ -8,8 +8,15 @@ locals {
     NEXT_PUBLIC_SUPABASE_URL             = var.supabase_project_url
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = var.supabase_publishable_key
     MORPHOLOGY_API_URL                   = module.api_gateway.stage_invoke_url
-    INFLECTIONS_API_URL                   = module.api_gateway.stage_invoke_url
+    INFLECTIONS_API_URL                  = module.api_gateway.stage_invoke_url
     OPENAI_API_KEY                       = var.openai_api_key
+  }
+
+  lambda_allowed_triggers = {
+    apigateway = {
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-central-1:${data.aws_caller_identity.current.account_id}:*"
+    },
   }
 
   default_tags = {

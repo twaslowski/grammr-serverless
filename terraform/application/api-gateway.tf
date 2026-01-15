@@ -64,6 +64,13 @@ module "api_gateway" {
         method = "POST"
       }
     }
+    "POST /tts" = {
+      integration = {
+        uri    = module.polly_lambda.lambda_function_invoke_arn
+        type   = "AWS_PROXY"
+        method = "POST"
+      }
+    }
 
   }
 }
