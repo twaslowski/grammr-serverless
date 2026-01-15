@@ -1,18 +1,10 @@
 import { z } from "zod";
-import { InflectionSchema } from "./inflections";
+import { ParadigmSchema } from "./inflections";
 
 // Flashcard type enum
 export const FlashcardTypeEnum = z.enum(["word", "phrase"]);
 export type FlashcardType = z.infer<typeof FlashcardTypeEnum>;
 
-// Flashcard back content schema
-export const FlashcardBackSchema = z.object({
-  translation: z.string(),
-  inflections: z.array(InflectionSchema).optional(),
-});
-export type FlashcardBack = z.infer<typeof FlashcardBackSchema>;
-
-// Deck schema
 export const DeckSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -24,7 +16,13 @@ export const DeckSchema = z.object({
 });
 export type Deck = z.infer<typeof DeckSchema>;
 
-// Flashcard schema
+// Flashcard back content schema
+export const FlashcardBackSchema = z.object({
+  translation: z.string(),
+  paradigm: ParadigmSchema.optional(),
+});
+export type FlashcardBack = z.infer<typeof FlashcardBackSchema>;
+
 export const FlashcardSchema = z.object({
   id: z.number(),
   deck_id: z.number(),

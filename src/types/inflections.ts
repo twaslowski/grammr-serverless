@@ -6,7 +6,7 @@ import { FeatureSchema } from "@/types/language";
 export const PartOfSpeechEnum = z.enum(["NOUN", "ADJ", "VERB", "AUX"]);
 export type PartOfSpeech = z.infer<typeof PartOfSpeechEnum>;
 
-// Request schema
+// Data structure for inflections request
 export const InflectionsRequestSchema = z.object({
   lemma: z.string().min(1),
   pos: PartOfSpeechEnum,
@@ -14,7 +14,7 @@ export const InflectionsRequestSchema = z.object({
 });
 export type InflectionsRequest = z.infer<typeof InflectionsRequestSchema>;
 
-// Inflection schema
+// Represents a single inflection of a word, e.g. "cat" -> "cats"
 export const InflectionSchema = z.object({
   lemma: z.string(),
   inflected: z.string(),
@@ -22,13 +22,16 @@ export const InflectionSchema = z.object({
 });
 export type Inflection = z.infer<typeof InflectionSchema>;
 
-// Response schema
-export const InflectionsResponseSchema = z.object({
+// A linguistic paradigm is the complete set of related word forms associated with a given lexeme.
+// Note that "lexeme" is not really part of the domain language, "lemma" is much more frequently used
+// This might not be entirely accurate terminology, but it's close enough for now.
+// https://en.wikipedia.org/wiki/Morphology_(linguistics)#Paradigms_and_morphosyntax
+export const ParadigmSchema = z.object({
   partOfSpeech: PartOfSpeechEnum,
   lemma: z.string(),
   inflections: z.array(InflectionSchema),
 });
-export type InflectionsResponse = z.infer<typeof InflectionsResponseSchema>;
+export type Paradigm = z.infer<typeof ParadigmSchema>;
 
 // Helper to check if POS is noun-like (NOUN, ADJ)
 export function isNounLike(pos: string): boolean {

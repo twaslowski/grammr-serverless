@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  InflectionsResponse,
+  Paradigm,
   Inflection,
   isNounLike,
   isVerbLike,
@@ -14,7 +14,8 @@ import {
 import { CreateFlashcardDialog } from "@/components/flashcard";
 
 interface InflectionsTableProps {
-  response: InflectionsResponse;
+  paradigm: Paradigm;
+  displayAddFlashcard?: boolean;
 }
 
 // Helper to find an inflection by its features
@@ -29,15 +30,17 @@ function findInflection(
   });
 }
 
-export function InflectionsTable({ response }: InflectionsTableProps) {
-  const { partOfSpeech, lemma, inflections } = response;
+export function InflectionsTable({
+  paradigm,
+  displayAddFlashcard = true,
+}: InflectionsTableProps) {
+  const { partOfSpeech, lemma } = paradigm;
 
   if (isNounLike(partOfSpeech)) {
     return (
       <NounLikeTable
-        lemma={lemma}
-        inflections={inflections}
-        pos={partOfSpeech}
+        paradigm={paradigm}
+        displayAddFlashcard={displayAddFlashcard}
       />
     );
   }
@@ -45,9 +48,8 @@ export function InflectionsTable({ response }: InflectionsTableProps) {
   if (isVerbLike(partOfSpeech)) {
     return (
       <VerbLikeTable
-        lemma={lemma}
-        inflections={inflections}
-        pos={partOfSpeech}
+        paradigm={paradigm}
+        displayAddFlashcard={displayAddFlashcard}
       />
     );
   }
@@ -70,14 +72,12 @@ export function InflectionsTable({ response }: InflectionsTableProps) {
   );
 }
 
-interface TableProps {
-  lemma: string;
-  inflections: Inflection[];
-  pos: string;
-}
-
-function NounLikeTable({ lemma, inflections, pos }: TableProps) {
-  const posLabel = pos === "NOUN" ? "Noun" : "Adjective";
+function NounLikeTable({
+  paradigm,
+  displayAddFlashcard,
+}: InflectionsTableProps) {
+  const { partOfSpeech, lemma, inflections } = paradigm;
+  const posLabel = partOfSpeech === "NOUN" ? "Noun" : "Adjective";
 
   return (
     <Card>
@@ -86,12 +86,14 @@ function NounLikeTable({ lemma, inflections, pos }: TableProps) {
           <CardTitle className="text-xl">{lemma}</CardTitle>
           <p className="text-sm text-muted-foreground">{posLabel}</p>
         </div>
-        <CreateFlashcardDialog
-          front={lemma}
-          type="word"
-          translation=""
-          inflections={inflections}
-        />
+        {displayAddFlashcard && (
+          <CreateFlashcardDialog
+            front={lemma}
+            type="word"
+            translation=""
+            paradigm={paradigm}
+          />
+        )}
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
@@ -132,8 +134,12 @@ function NounLikeTable({ lemma, inflections, pos }: TableProps) {
   );
 }
 
-function VerbLikeTable({ lemma, inflections, pos }: TableProps) {
-  const posLabel = pos === "VERB" ? "Verb" : "Auxiliary Verb";
+function VerbLikeTable({
+  paradigm,
+  displayAddFlashcard,
+}: InflectionsTableProps) {
+  const { partOfSpeech, lemma, inflections } = paradigm;
+  const posLabel = partOfSpeech === "VERB" ? "Verb" : "Auxiliary Verb";
 
   return (
     <Card>
@@ -144,12 +150,14 @@ function VerbLikeTable({ lemma, inflections, pos }: TableProps) {
             {posLabel} (Infinitive)
           </p>
         </div>
-        <CreateFlashcardDialog
-          front={lemma}
-          type="word"
-          translation=""
-          inflections={inflections}
-        />
+        {displayAddFlashcard && (
+          <CreateFlashcardDialog
+            front={lemma}
+            type="word"
+            translation=""
+            paradigm={paradigm}
+          />
+        )}
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

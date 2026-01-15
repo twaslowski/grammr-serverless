@@ -1,7 +1,7 @@
 import {
   InflectionsRequest,
-  InflectionsResponse,
-  InflectionsResponseSchema,
+  Paradigm,
+  ParadigmSchema,
 } from "@/types/inflections";
 
 export class InflectionError extends Error {
@@ -16,7 +16,7 @@ export class InflectionError extends Error {
 
 export async function getInflections(
   request: InflectionsRequest,
-): Promise<InflectionsResponse> {
+): Promise<Paradigm> {
   const response = await fetch("/api/v1/inflections", {
     method: "POST",
     headers: {
@@ -45,7 +45,7 @@ export async function getInflections(
   }
 
   // Validate response
-  const parseResult = InflectionsResponseSchema.safeParse(data);
+  const parseResult = ParadigmSchema.safeParse(data);
   if (!parseResult.success) {
     throw new InflectionError("Invalid response from server", false);
   }

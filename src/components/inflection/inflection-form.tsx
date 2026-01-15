@@ -7,11 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { getInflections, InflectionError } from "@/lib/inflections";
-import { InflectionsResponse, PartOfSpeech } from "@/types/inflections";
+import { Paradigm, PartOfSpeech } from "@/types/inflections";
 import { InflectionsTable } from "./inflections-table";
 import { getLanguageByCode } from "@/lib/languages";
 import { LanguageCode } from "@/types/languages";
-import { CreateFlashcardDialog } from "@/components/flashcard";
 
 const POS_OPTIONS: { value: PartOfSpeech; label: string }[] = [
   { value: "NOUN", label: "Noun" },
@@ -33,7 +32,7 @@ export function InflectionForm({ learnedLanguage }: InflectionFormProps) {
     message: string;
     isUserError: boolean;
   } | null>(null);
-  const [result, setResult] = useState<InflectionsResponse | null>(null);
+  const [result, setResult] = useState<Paradigm | null>(null);
 
   // Get the user's learned language (target_language)
   const languageInfo = getLanguageByCode(learnedLanguage);
@@ -149,19 +148,7 @@ export function InflectionForm({ learnedLanguage }: InflectionFormProps) {
         </Card>
       )}
 
-      {result && (
-        <>
-          <InflectionsTable response={result} />
-          <div className="flex justify-end">
-            <CreateFlashcardDialog
-              front={result.lemma}
-              type="word"
-              translation=""
-              inflections={result.inflections}
-            />
-          </div>
-        </>
-      )}
+      {result && <InflectionsTable paradigm={result} />}
     </div>
   );
 }

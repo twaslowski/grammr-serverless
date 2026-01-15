@@ -17,7 +17,7 @@ import { Loader2, Plus, AlertCircle, Sparkles, Layers } from "lucide-react";
 import { createFlashcard } from "@/lib/flashcards";
 import { translatePhrase } from "@/lib/translation";
 import { FlashcardType, FlashcardBack, Flashcard } from "@/types/flashcards";
-import { Inflection } from "@/types/inflections";
+import { Paradigm } from "@/types/inflections";
 import toast from "react-hot-toast";
 import { useProfile } from "@/hooks/use-profile";
 
@@ -29,7 +29,7 @@ interface CreateFlashcardDialogProps {
   /** Pre-populated translation */
   translation?: string;
   /** Pre-populated inflections */
-  inflections?: Inflection[];
+  paradigm?: Paradigm;
   /** Optional callback when flashcard is created */
   onCreated?: (flashcard: Flashcard) => void;
   /** Custom trigger button, defaults to a Plus button */
@@ -42,7 +42,7 @@ export function CreateFlashcardDialog({
   front: initialFront = "",
   type: initialType = "word",
   translation: initialTranslation = "",
-  inflections: initialInflections,
+  paradigm: paradigm,
   onCreated,
   trigger,
   compact = false,
@@ -104,7 +104,7 @@ export function CreateFlashcardDialog({
     try {
       const back: FlashcardBack = {
         translation,
-        inflections: initialInflections,
+        paradigm: paradigm,
       };
 
       const flashcard = await createFlashcard({
@@ -198,11 +198,11 @@ export function CreateFlashcardDialog({
                 </p>
               )}
             </div>
-            {initialInflections && initialInflections.length > 0 && (
+            {paradigm && paradigm.inflections.length > 0 && (
               <div className="space-y-2">
                 <Label>Inflections</Label>
                 <div className="text-sm text-muted-foreground bg-muted p-2 rounded-md">
-                  {initialInflections.length} inflection(s) will be saved
+                  {paradigm.inflections.length} inflection(s) will be saved
                 </div>
               </div>
             )}
