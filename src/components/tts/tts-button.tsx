@@ -15,7 +15,7 @@ interface TTSButtonProps {
 
 export function TTSButton({
   text,
-  variant = "ghost",
+  variant = "outline",
   size = "icon",
   className,
 }: TTSButtonProps) {

@@ -2,6 +2,7 @@
 
 import { TranslatedWord } from "./translated-word";
 import { CreateFlashcardDialog } from "@/components/flashcard";
+import { TTSButton } from "@/components/tts/tts-button";
 
 interface TranslationResultProps {
   translatedText: string;
@@ -31,9 +32,19 @@ export function TranslationResult({
       <div className="space-y-4">
         {/* Original text in learned language - main focus with clickable words */}
         <div className="p-4 rounded-lg border bg-background">
-          <p className="text-sm text-muted-foreground mb-2">
-            Original (click words to analyze):
-          </p>
+          <div className="flex flex-row justify-between">
+            <p className="text-sm text-muted-foreground mb-2">
+              Original (click words to analyze):
+            </p>
+            <div className="flex gap-x-2">
+              <CreateFlashcardDialog
+                compact={true}
+                front={originalText}
+                translation={translatedText}
+              />
+              <TTSButton text={originalText} />
+            </div>
+          </div>
           <p className="text-lg leading-relaxed">
             {originalWords.map((segment, index) => {
               // If the segment is whitespace, just render it
@@ -83,7 +94,18 @@ export function TranslationResult({
   return (
     <div className="space-y-4">
       <div className="p-4 rounded-lg border bg-muted/50">
-        <p className="text-sm text-muted-foreground mb-2">Translation:</p>
+        <div className="flex flex-row justify-between">
+          <p className="text-sm text-muted-foreground mb-2">Translation:</p>
+          <div className="flex gap-x-2">
+            <CreateFlashcardDialog
+              compact={true}
+              front={originalText}
+              translation={translatedText}
+            />
+            <TTSButton text={translatedText} />
+          </div>
+        </div>
+
         <p className="text-lg leading-relaxed">
           {translatedWords.map((segment, index) => {
             // If the segment is whitespace, just render it

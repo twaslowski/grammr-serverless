@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -70,7 +70,7 @@ export function TranslationForm({ profile }: TranslationFormProps) {
     // Submit on Ctrl+Enter or Cmd+Enter
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
       e.preventDefault();
-      handleTranslate();
+      void handleTranslate();
     }
   };
 
@@ -168,13 +168,8 @@ export function TranslationForm({ profile }: TranslationFormProps) {
               sourceLanguage={sourceLanguage}
               targetLanguage={targetLanguage}
               isAnalysisMode={isAnalysisMode}
-              originalText={isAnalysisMode ? text.trim() : undefined}
+              originalText={text.trim()}
             />
-            <p className="text-xs text-muted-foreground mt-3">
-              {isAnalysisMode
-                ? "Click on any word above to see its translation and analysis"
-                : "Click on any word to see its literal translation"}
-            </p>
           </CardContent>
         </Card>
       )}
