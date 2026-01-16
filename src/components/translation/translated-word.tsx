@@ -11,6 +11,7 @@ import { analyzeMorphology } from "@/lib/morphology";
 import { TokenMorphology } from "@/types/morphology";
 import { Loader2 } from "lucide-react";
 import { CreateFlashcardDialog } from "@/components/flashcard";
+import { Morphology } from "@/components/translation/morphology";
 
 interface TranslatedWordProps {
   word: string;
@@ -113,53 +114,14 @@ export function TranslatedWord({
           ) : error ? (
             <div className="text-sm text-destructive py-2">{error}</div>
           ) : (
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                  Word
-                </p>
-                <p className="font-medium">{cleanWord}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                  Translation
-                </p>
-                <p className="font-medium text-primary">{translation}</p>
-              </div>
-              {morphology && (
-                <>
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                      Lemma
-                    </p>
-                    <p className="font-medium">{morphology.lemma}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                      Part of Speech
-                    </p>
-                    <p className="font-medium">{morphology.pos}</p>
-                  </div>
-                  {morphology.features.length > 0 && (
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                        Features
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {morphology.features.map((feature, index) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary text-secondary-foreground"
-                          >
-                            {feature.type}: {feature.value}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
+            translation &&
+            morphology && (
+              <Morphology
+                word={cleanWord}
+                translation={translation}
+                morphology={morphology}
+              />
+            )
           )}
         </div>
       </PopoverContent>

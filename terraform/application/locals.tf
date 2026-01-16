@@ -14,7 +14,7 @@ locals {
   lambda_allowed_triggers = {
     apigateway = {
       service    = "apigateway"
-      source_arn = "arn:aws:execute-api:eu-central-1:${data.aws_caller_identity.current.account_id}:*"
+      source_arn = "${module.api_gateway.api_execution_arn}/*"
     },
   }
 

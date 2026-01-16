@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { LanguageCodeSchema } from "@/types/languages";
-import { FeatureSchema } from "@/types/language";
+import { FeatureSchema } from "@/types/feature";
 
 // Part of Speech enum
 export const PartOfSpeechEnum = z.enum(["NOUN", "ADJ", "VERB", "AUX"]);

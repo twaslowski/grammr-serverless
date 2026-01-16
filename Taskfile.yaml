@@ -32,4 +32,5 @@ tasks:
     cmds:
       - pnpm run fmt
       - pnpm run lint
+      - pnpm run test
       - pnpm run build

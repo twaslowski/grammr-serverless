@@ -1,4 +1,8 @@
-import { MorphologyRequest, MorphologicalAnalysis } from "@/types/morphology";
+import {
+  MorphologyRequest,
+  MorphologicalAnalysis,
+  MorphologicalAnalysisSchema,
+} from "@/types/morphology";
 
 export async function analyzeMorphology(
   request: MorphologyRequest,
@@ -16,5 +20,9 @@ export async function analyzeMorphology(
     throw new Error(errorData.error || "Failed to analyze morphology");
   }
 
-  return response.json();
+  const parsed = MorphologicalAnalysisSchema.safeParse(await response.json());
+  if (!parsed.success) {
+    throw new Error("Invalid morphology response format");
+  }
+  return parsed.data;
 }
