@@ -11,29 +11,29 @@ module "ecr" {
   repository_name = each.value
 
   create_repository_policy = true
-  repository_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Sid    = "LambdaPullImage",
-        Effect = "Allow",
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        },
-        Action = [
-          "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchCheckLayerAvailability"
-        ],
-        Condition = {
-          StringLike = {
-            "aws:sourceArn" = "arn:aws:lambda:eu-central-1:246770851643:function:*"
-          }
+  repository_policy_statements = {
+    lambda_access = {
+      sid     = "LambdaAccess"
+      effect  = "Allow"
+      actions = [
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+      ]
+      principals = [
+        {
+          type        = "Service"
+          identifiers = ["lambda.amazonaws.com"]
         }
-      }
-    ]
-  })
-
+      ]
+      conditions = [
+        {
+          test     = "StringEquals"
+          variable = "aws:SourceAccount"
+          values   = [data.aws_caller_identity.current.account_id]
+        }
+      ]
+    }
+  }
   repository_lifecycle_policy = jsonencode({
     rules = [
       {
