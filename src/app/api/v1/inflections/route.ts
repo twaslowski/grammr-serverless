@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { InflectionsRequestSchema } from "@/types/inflections";
 
-const INFLECTIONS_API_URL = process.env.INFLECTIONS_API_URL;
+const API_GW_URL = process.env.API_GW_URL;
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!INFLECTIONS_API_URL) {
-      console.error("INFLECTIONS_API_URL not configured");
+    if (!API_GW_URL) {
+      console.error("API_GW_URL not configured");
       return NextResponse.json(
         { error: "Service not configured" },
         { status: 503 },
@@ -40,16 +40,13 @@ export async function POST(request: NextRequest) {
     const { lemma, pos, language } = validationResult.data;
 
     // Forward to Lambda via API Gateway with language-specific endpoint
-    const response = await fetch(
-      `${INFLECTIONS_API_URL}/inflections/${language}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ lemma, pos }),
+    const response = await fetch(`${API_GW_URL}/inflections/${language}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({ lemma, pos }),
+    });
 
     // Parse response body
     const responseText = await response.text();

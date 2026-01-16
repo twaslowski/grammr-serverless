@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { MorphologyRequestSchema } from "@/types/morphology";
+import { createClient } from "@/lib/supabase/server";
+import { TTSRequestSchema } from "./schema";
 
 const API_GW_URL = process.env.API_GW_URL;
 
@@ -8,7 +8,6 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    // Check if user is authenticated
     const {
       data: { user },
       error: authError,
@@ -27,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Parse and validate request body
     const body = await request.json();
-    const validationResult = MorphologyRequestSchema.safeParse(body);
+    const validationResult = TTSRequestSchema.safeParse(body);
 
     if (!validationResult.success) {
       return NextResponse.json(
@@ -37,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Forward to Lambda via API Gateway
-    const response = await fetch(`${API_GW_URL}/morphology`, {
+    const response = await fetch(`${API_GW_URL}/tts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,17 +46,26 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Morphology API error:", response.status, errorText);
+      console.error("TTS Lambda error:", errorText);
       return NextResponse.json(
-        { error: "Morphology analysis failed" },
+        { error: "TTS service error" },
         { status: response.status },
       );
     }
 
-    const data = await response.json();
-    return NextResponse.json(data);
+    // Lambda returns base64 encoded audio with isBase64Encoded: true
+    // API Gateway automatically decodes it, so we receive the raw audio
+    const audioData = await response.arrayBuffer();
+
+    return new NextResponse(audioData, {
+      status: 200,
+      headers: {
+        "Content-Type": "audio/mpeg",
+        "Content-Disposition": 'inline; filename="speech.mp3"',
+      },
+    });
   } catch (error) {
-    console.error("Morphology error:", error);
+    console.error("TTS error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

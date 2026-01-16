@@ -12,6 +12,7 @@ import {
   PERSON_LABELS,
 } from "@/types/inflections";
 import { CreateFlashcardDialog } from "@/components/flashcard";
+import { TTSButton } from "@/components/tts/tts-button";
 
 interface InflectionsTableProps {
   paradigm: Paradigm;
@@ -144,11 +145,14 @@ function VerbLikeTable({
   return (
     <Card>
       <CardHeader className="flex flex-row justify-between items-start">
-        <div>
-          <CardTitle className="text-xl">{lemma}</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            {posLabel} (Infinitive)
-          </p>
+        <div className="flex items-center gap-2">
+          <div>
+            <CardTitle className="text-xl">{lemma}</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              {posLabel} (Infinitive)
+            </p>
+          </div>
+          <TTSButton text={lemma} />
         </div>
         {displayAddFlashcard && (
           <CreateFlashcardDialog

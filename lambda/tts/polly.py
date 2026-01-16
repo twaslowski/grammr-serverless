@@ -29,6 +29,7 @@ class Request:
     def __init__(self, text: str, language: str):
         if not text:
             raise ValueError("Text cannot be empty")
+        language = language.upper()
         if not language or language not in languages:
             raise ValueError("Invalid language supplied")
         self.text = text
