@@ -1,8 +1,10 @@
-import { InflectionForm } from "@/components/inflection";
-import { getProfile } from "@/lib/profile";
+"use client";
 
-export default async function InflectionsPage() {
-  const profile = await getProfile();
+import { InflectionForm } from "@/components/inflection";
+import { useProfile } from "@/components/dashboard/profile-provider";
+
+export default function InflectionsPage() {
+  const profile = useProfile();
 
   return (
     <div className="flex-1 w-full flex flex-col items-center gap-8">

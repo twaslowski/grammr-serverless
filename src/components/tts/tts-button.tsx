@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Volume2, Loader2 } from "lucide-react";
-import { useProfile } from "@/hooks/use-profile";
+import { useProfile } from "@/components/dashboard/profile-provider";
 import toast from "react-hot-toast";
 
 interface TTSButtonProps {
@@ -23,8 +23,8 @@ export function TTSButton({
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const { profile } = useProfile();
-  const language = profile?.target_language;
+  const profile = useProfile();
+  const language = profile.target_language;
 
   const handlePlay = async () => {
     if (isLoading || !language) return;

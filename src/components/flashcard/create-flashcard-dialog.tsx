@@ -19,7 +19,7 @@ import { translatePhrase } from "@/lib/translation";
 import { FlashcardType, FlashcardBack, Flashcard } from "@/types/flashcards";
 import { Paradigm } from "@/types/inflections";
 import toast from "react-hot-toast";
-import { useProfile } from "@/hooks/use-profile";
+import { useProfile } from "@/components/dashboard/profile-provider";
 
 interface CreateFlashcardDialogProps {
   /** The front text (word or phrase in learned language) */
@@ -55,9 +55,9 @@ export function CreateFlashcardDialog({
   const [front, setFront] = useState(initialFront);
   const [translation, setTranslation] = useState(initialTranslation);
 
-  const { profile } = useProfile();
-  const sourceLanguage = profile?.source_language;
-  const targetLanguage = profile?.target_language;
+  const profile = useProfile();
+  const sourceLanguage = profile.source_language;
+  const targetLanguage = profile.target_language;
 
   // Reset form when dialog opens
   const handleOpenChange = (newOpen: boolean) => {

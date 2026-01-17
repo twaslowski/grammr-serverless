@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import React from "react";
+import { ProfileProvider } from "@/components/dashboard/profile-provider";
+import { ProfileSchema } from "@/types/profile";
 
 export default async function ProtectedLayout({
   children,
@@ -20,7 +22,7 @@ export default async function ProtectedLayout({
   }
 
   // Check if user has language preferences set
-  const { data: profile, error } = await supabase
+  const { data: profileData, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
@@ -31,13 +33,23 @@ export default async function ProtectedLayout({
   }
 
   // If languages are not set, redirect to language selection
-  if (!profile?.source_language || !profile?.target_language) {
+  if (!profileData?.source_language || !profileData?.target_language) {
     redirect("/auth/sign-up/select-language");
   }
 
+  // Parse and validate the profile data
+  const { data: profile, error: parseError } =
+    ProfileSchema.safeParse(profileData);
+
+  if (parseError || !profile) {
+    throw new Error("Profile data is invalid");
+  }
+
   return (
-    <main className="min-h-screen flex flex-col items-center p-6">
-      {children}
-    </main>
+    <ProfileProvider profile={profile}>
+      <main className="min-h-screen flex flex-col items-center p-6">
+        {children}
+      </main>
+    </ProfileProvider>
   );
 }
