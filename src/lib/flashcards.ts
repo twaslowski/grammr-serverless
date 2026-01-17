@@ -1,13 +1,11 @@
+import { Deck, Flashcard, FlashcardWithDeck } from "@/types/flashcards";
 import {
-  Deck,
-  Flashcard,
-  FlashcardWithDeck,
   CreateDeckRequest,
-  UpdateDeckRequest,
   CreateFlashcardRequest,
-  UpdateFlashcardRequest,
   FlashcardListQuery,
-} from "@/types/flashcards";
+  UpdateDeckRequest,
+  UpdateFlashcardRequest,
+} from "@/app/api/v1/flashcards/schema";
 
 const BASE_URL = "/api/v1/flashcards";
 

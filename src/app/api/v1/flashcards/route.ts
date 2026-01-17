@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   CreateFlashcardRequestSchema,
   FlashcardListQuerySchema,
-} from "@/types/flashcards";
+} from "./schema";
 
 // GET /api/v1/flashcards - List flashcards with optional filtering
 export async function GET(request: NextRequest) {
@@ -60,9 +60,10 @@ export async function GET(request: NextRequest) {
       query = query.eq("deck_id", deck_id);
     }
 
-    // Search in front text
     if (search) {
-      query = query.ilike("front", `%${search}%`);
+      query = query.or(
+        `front.ilike.%${search}%,back->>translation.ilike.%${search}%`,
+      );
     }
 
     // Sort

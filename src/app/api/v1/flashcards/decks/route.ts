@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { CreateDeckRequestSchema } from "@/types/flashcards";
+import { CreateDeckRequestSchema } from "@/app/api/v1/flashcards/schema";
 
 // GET /api/v1/flashcards/decks - List all decks for the user
 export async function GET() {

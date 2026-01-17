@@ -1,50 +1,39 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Search, ChevronDown, ChevronUp } from "lucide-react";
-import {
-  FlashcardWithDeck,
-  Deck,
-  FlashcardListQuery,
-} from "@/types/flashcards";
-import { getFlashcards, deleteFlashcard, getDecks } from "@/lib/flashcards";
+import { Loader2, Search } from "lucide-react";
+import { FlashcardWithDeck } from "@/types/flashcards";
+import { getFlashcards, deleteFlashcard } from "@/lib/flashcards";
 import { Flashcard } from "./flashcard";
 import toast from "react-hot-toast";
+import { FlashcardListQuery } from "@/app/api/v1/flashcards/schema";
 
 interface FlashcardListProps {
   initialFlashcards?: FlashcardWithDeck[];
-  initialDecks?: Deck[];
 }
 
-export function FlashcardList({
-  initialFlashcards = [],
-  initialDecks = [],
-}: FlashcardListProps) {
+export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
+  const sortOrder = "desc";
+  const sortBy = "created_at";
+
   const [flashcards, setFlashcards] =
     useState<FlashcardWithDeck[]>(initialFlashcards);
-  const [decks, setDecks] = useState<Deck[]>(initialDecks);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDeckId, setSelectedDeckId] = useState<number | null>(null);
-  const [sortBy, setSortBy] = useState<"created_at" | "updated_at">(
-    "created_at",
-  );
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  const fetchFlashcards = async () => {
+  const fetchFlashcards = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
       const query: FlashcardListQuery = {
         search: searchQuery || undefined,
-        deck_id: selectedDeckId || undefined,
         sort_by: sortBy,
         sort_order: sortOrder,
       };
@@ -58,16 +47,7 @@ export function FlashcardList({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const fetchDecks = async () => {
-    try {
-      const data = await getDecks();
-      setDecks(data);
-    } catch (err) {
-      console.error("Failed to fetch decks:", err);
-    }
-  };
+  }, [searchQuery, sortBy, sortOrder]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this flashcard?")) {
@@ -85,10 +65,6 @@ export function FlashcardList({
     }
   };
 
-  const toggleSortOrder = () => {
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-  };
-
   // Fetch on mount and when filters change
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,11 +76,7 @@ export function FlashcardList({
     if (initialFlashcards.length === 0) {
       void fetchFlashcards();
     }
-    if (initialDecks.length === 0) {
-      void fetchDecks();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchFlashcards, initialFlashcards?.length]);
 
   return (
     <div className="space-y-6">
@@ -125,45 +97,6 @@ export function FlashcardList({
                 </div>
               </div>
               <div className="flex gap-2">
-                <select
-                  className="px-3 py-2 border rounded-md text-sm bg-background"
-                  value={selectedDeckId || ""}
-                  onChange={(e) =>
-                    setSelectedDeckId(
-                      e.target.value ? parseInt(e.target.value) : null,
-                    )
-                  }
-                >
-                  <option value="">All Decks</option>
-                  {decks.map((deck) => (
-                    <option key={deck.id} value={deck.id}>
-                      {deck.name}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className="px-3 py-2 border rounded-md text-sm bg-background"
-                  value={sortBy}
-                  onChange={(e) =>
-                    setSortBy(e.target.value as "created_at" | "updated_at")
-                  }
-                >
-                  <option value="created_at">Created Date</option>
-                  <option value="updated_at">Updated Date</option>
-                </select>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={toggleSortOrder}
-                  title={sortOrder === "asc" ? "Ascending" : "Descending"}
-                >
-                  {sortOrder === "asc" ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </Button>
                 <Button type="submit" disabled={isLoading}>
                   {isLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
