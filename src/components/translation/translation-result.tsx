@@ -3,11 +3,12 @@
 import { TranslatedWord } from "./translated-word";
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { TTSButton } from "@/components/tts/tts-button";
+import {LanguageCode} from "@/types/languages";
 
 interface TranslationResultProps {
   translatedText: string;
-  sourceLanguage: string;
-  targetLanguage: string;
+  sourceLanguage: LanguageCode;
+  targetLanguage: LanguageCode;
   isAnalysisMode?: boolean;
   originalText?: string;
 }
@@ -41,6 +42,7 @@ export function TranslationResult({
                 compact={true}
                 front={originalText}
                 translation={translatedText}
+                type="phrase"
               />
               <TTSButton text={originalText} />
             </div>

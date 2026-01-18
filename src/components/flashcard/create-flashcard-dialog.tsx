@@ -72,7 +72,7 @@ export function CreateFlashcardDialog({
 
   // Fetch translation from API
   const handleFetchTranslation = async () => {
-    if (!front.trim() || !sourceLanguage || !targetLanguage) {
+    if (!front || !front.trim() || !sourceLanguage || !targetLanguage) {
       return;
     }
 
@@ -139,7 +139,7 @@ export function CreateFlashcardDialog({
     </Button>
   );
 
-  const canSubmit = front.trim() && translation.trim();
+  const canSubmit = front && front.trim() && translation && translation.trim();
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

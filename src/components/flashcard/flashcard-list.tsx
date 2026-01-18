@@ -146,6 +146,11 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
               key={flashcard.id}
               flashcard={flashcard}
               onDelete={handleDelete}
+              onUpdate={(updated) => {
+                setFlashcards((prev) =>
+                  prev.map((f) => (f.id === updated.id ? updated : f)),
+                );
+              }}
             />
           ))}
         </div>

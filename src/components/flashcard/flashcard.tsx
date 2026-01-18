@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Trash2, ChevronDown, ChevronUp, Table2 } from "lucide-react";
 import { FlashcardWithDeck } from "@/types/flashcards";
 import { InflectionsTable } from "@/components/inflection";
+import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
 
 interface FlashcardProps {
   flashcard: FlashcardWithDeck;
   onDelete: (id: number) => void;
+  onUpdate?: (updatedFlashcard: FlashcardWithDeck) => void;
 }
 
-export function Flashcard({ flashcard, onDelete }: FlashcardProps) {
+export function Flashcard({ flashcard, onDelete, onUpdate }: FlashcardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpanded = () => {
@@ -30,6 +32,7 @@ export function Flashcard({ flashcard, onDelete }: FlashcardProps) {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <UpdateFlashcardDialog flashcard={flashcard} onUpdate={onUpdate} />
             <Button
               variant="ghost"
               size="sm"
@@ -42,12 +45,6 @@ export function Flashcard({ flashcard, onDelete }: FlashcardProps) {
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        {flashcard.notes && (
-          <p className="text-sm text-muted-foreground mb-2">
-            <span className="font-medium">Notes:</span> {flashcard.notes}
-          </p>
-        )}
-
         {flashcard.back.paradigm &&
           flashcard.back.paradigm.inflections.length > 0 && (
             <div className="mt-2">

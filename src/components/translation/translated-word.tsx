@@ -12,12 +12,13 @@ import { TokenMorphology } from "@/types/morphology";
 import { Loader2 } from "lucide-react";
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { Morphology } from "@/components/translation/morphology";
+import {LanguageCode} from "@/types/languages";
 
 interface TranslatedWordProps {
   word: string;
   phrase: string;
-  sourceLanguage: string;
-  targetLanguage: string;
+  sourceLanguage: LanguageCode;
+  targetLanguage: LanguageCode;
 }
 
 /**

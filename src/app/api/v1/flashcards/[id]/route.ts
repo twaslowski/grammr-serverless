@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { UpdateFlashcardRequestSchema } from "../schema";
+import { revalidatePath } from "next/cache";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -155,6 +156,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    revalidatePath(`/dashboard/flashcards`);
+    revalidatePath(`/flashcards/${flashcardId}`);
+
     return NextResponse.json(flashcard);
   } catch (error) {
     console.error("Flashcard update error:", error);
@@ -222,6 +226,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         { status: 500 },
       );
     }
+
+    revalidatePath(`/dashboard/flashcards`);
+    revalidatePath(`/flashcards/${flashcardId}`);
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {

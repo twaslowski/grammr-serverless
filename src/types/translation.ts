@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { LanguageCodeSchema } from "@/types/languages";
 
 export const PhraseTranslationRequestSchema = z.object({
   text: z.string().min(1),
-  source_language: z.string(),
-  target_language: z.string(),
+  source_language: LanguageCodeSchema,
+  target_language: LanguageCodeSchema,
 });
 
 export const PhraseTranslationResponseSchema =
@@ -14,8 +15,8 @@ export const PhraseTranslationResponseSchema =
 export const LiteralTranslationRequestSchema = z.object({
   phrase: z.string().min(1),
   word: z.string().min(1),
-  source_language: z.string(),
-  target_language: z.string(),
+  source_language: LanguageCodeSchema,
+  target_language: LanguageCodeSchema,
 });
 
 export const LiteralTranslationResponseSchema =
