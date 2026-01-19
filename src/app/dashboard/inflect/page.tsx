@@ -2,9 +2,13 @@
 
 import { InflectionForm } from "@/components/inflection";
 import { useProfile } from "@/components/dashboard/profile-provider";
+import { usePreflightWarmup } from "@/components/dashboard/use-preflight-warmup";
 
 export default function InflectionsPage() {
   const profile = useProfile();
+
+  // Trigger Lambda warmup on page load
+  usePreflightWarmup();
 
   return (
     <div className="flex-1 w-full flex flex-col items-center gap-8">

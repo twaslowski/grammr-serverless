@@ -28,11 +28,12 @@ export function UpdateFlashcardDialog({
   const [open, setOpen] = useState(false);
   const [front, setFront] = useState(flashcard.front);
   const [translation, setTranslation] = useState(flashcard.back.translation);
-  const [paradigm, _] = useState(flashcard.back.paradigm);
   const [notes, setNotes] = useState(flashcard.notes || "");
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const paradigm = flashcard.back.paradigm;
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);

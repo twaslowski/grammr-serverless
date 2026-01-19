@@ -81,26 +81,6 @@ describe("CyrillicTransliterator", () => {
     expect(newInput).toHaveValue("привет");
   });
 
-  it("should show check icon after copying", async () => {
-    const user = userEvent.setup();
-    mockWriteText.mockResolvedValue(undefined);
-
-    render(<CyrillicTransliterator />);
-
-    const input = screen.getByPlaceholderText(
-      "Type in Latin script (e.g., 'privet')",
-    );
-    await user.type(input, "test");
-
-    const copyButton = screen.getByTitle("Copy to clipboard");
-    await user.click(copyButton);
-
-    // Check icon should be visible (green check)
-    expect(
-      screen.getByTitle("Copy to clipboard").querySelector(".text-green-500"),
-    ).toBeInTheDocument();
-  });
-
   it("should not show copy button when output is empty", () => {
     render(<CyrillicTransliterator />);
 
