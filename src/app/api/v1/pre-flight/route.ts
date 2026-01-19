@@ -34,13 +34,13 @@ export async function POST() {
       fetch(`${API_GW_URL}/inflections/ru`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lemma: "тест", pos: "NOUN" }),
+        body: JSON.stringify({ "keep-warm": "true" }),
       }).catch(() => null),
       // Warm up morphology Lambda
       fetch(`${API_GW_URL}/morphology`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: "test", language: "en" }),
+        body: JSON.stringify({ "keep-warm": "true" }),
       }).catch(() => null),
     ];
 
