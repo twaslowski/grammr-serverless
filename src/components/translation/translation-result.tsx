@@ -3,7 +3,7 @@
 import { TranslatedWord } from "./translated-word";
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { TTSButton } from "@/components/tts/tts-button";
-import {LanguageCode} from "@/types/languages";
+import { LanguageCode } from "@/types/languages";
 
 interface TranslationResultProps {
   translatedText: string;
