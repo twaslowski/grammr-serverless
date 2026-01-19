@@ -11,24 +11,47 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { targetLanguages, Language, LanguageCode } from "@/types/languages";
+import { allLanguages, Language, LanguageCode } from "@/types/languages";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, Loader2, SaveIcon } from "lucide-react";
+import { Profile } from "@/types/profile";
+import toast from "react-hot-toast";
 
 interface LanguageSelectorProps {
   userId: string;
+  profile?: Profile | null;
+  mode?: "signup" | "edit";
 }
 
-export function LanguageSelector({ userId }: LanguageSelectorProps) {
-  const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode | null>(
-    null,
-  );
+type Step = "source" | "target";
+
+export function LanguageSelector({
+  userId,
+  profile,
+  mode,
+}: LanguageSelectorProps) {
+  const [step, setStep] = useState<Step>("source");
+  const [selectedSourceLanguage, setSelectedSourceLanguage] = useState<
+    LanguageCode | undefined
+  >(profile?.source_language);
+  const [selectedTargetLanguage, setSelectedTargetLanguage] = useState<
+    LanguageCode | undefined
+  >(profile?.target_language);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleContinue = async () => {
-    if (!selectedLanguage) return;
+  const handleContinueToTarget = () => {
+    if (!selectedSourceLanguage) return;
+    setStep("target");
+  };
+
+  const handleBackToSource = () => {
+    setStep("source");
+  };
+
+  const handleSave = async () => {
+    if (!selectedSourceLanguage || !selectedTargetLanguage) return;
 
     setIsLoading(true);
     setError(null);
@@ -36,28 +59,85 @@ export function LanguageSelector({ userId }: LanguageSelectorProps) {
     try {
       const supabase = createClient();
 
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({
-          source_language: "en", // English is the only source language for now
-          target_language: selectedLanguage,
-        })
-        .eq("id", userId);
+      // Use upsert to handle both new profiles and existing profiles without languages
+      const { error: upsertError } = await supabase.from("profiles").upsert({
+        id: userId,
+        source_language: selectedSourceLanguage,
+        target_language: selectedTargetLanguage,
+      });
 
-      if (updateError) throw updateError;
+      if (upsertError) throw upsertError;
 
+      toast.success("Updated language settings");
       router.push("/dashboard");
-    } catch (err) {
-      console.error("Failed to update profile:", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to save language selection",
-      );
+    } catch {
+      setError("Failed to save language selection");
     } finally {
       setIsLoading(false);
     }
   };
+
+  const saveButtonContents =
+    mode === "edit" ? (
+      <>
+        <SaveIcon className="h-4 w-4" />
+        <p>Save</p>
+      </>
+    ) : (
+      <>
+        <p>Continue</p>
+        <ArrowRight className="h-4 w-4" />
+      </>
+    );
+
+  // Filter out the selected source language from target options
+  const availableTargetLanguages = allLanguages.filter(
+    (lang) => lang.code !== selectedSourceLanguage,
+  );
+
+  if (step === "source") {
+    return (
+      <Card className="w-full max-w-lg">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">
+            What is your native language?
+          </CardTitle>
+          <CardDescription>
+            Select the language you speak fluently. This will be used for
+            translations and explanations.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {allLanguages.map((language) => (
+              <LanguageCard
+                key={language.code}
+                language={language}
+                isSelected={selectedSourceLanguage === language.code}
+                onClick={() => setSelectedSourceLanguage(language.code)}
+              />
+            ))}
+          </div>
+
+          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+
+          <Button
+            onClick={handleContinueToTarget}
+            disabled={!selectedSourceLanguage}
+            className="w-full"
+            size="lg"
+          >
+            Continue
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+
+          <p className="text-xs text-muted-foreground text-center">
+            Step 1 of 2
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-lg">
@@ -72,41 +152,46 @@ export function LanguageSelector({ userId }: LanguageSelectorProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {targetLanguages.map((language) => (
+          {availableTargetLanguages.map((language) => (
             <LanguageCard
               key={language.code}
               language={language}
-              isSelected={selectedLanguage === language.code}
-              onClick={() => setSelectedLanguage(language.code)}
+              isSelected={selectedTargetLanguage === language.code}
+              onClick={() => setSelectedTargetLanguage(language.code)}
             />
           ))}
         </div>
 
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
-        <Button
-          onClick={handleContinue}
-          disabled={!selectedLanguage || isLoading}
-          className="w-full"
-          size="lg"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              Continue
-              <ArrowRight className="h-4 w-4" />
-            </>
-          )}
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            onClick={handleBackToSource}
+            variant="outline"
+            className="flex-1"
+            size="lg"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={!selectedTargetLanguage || isLoading}
+            className="flex-1"
+            size="lg"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              saveButtonContents
+            )}
+          </Button>
+        </div>
 
-        <p className="text-xs text-muted-foreground text-center">
-          Currently, grammr assumes English as your native language. More source
-          languages will be available soon.
-        </p>
+        <p className="text-xs text-muted-foreground text-center">Step 2 of 2</p>
       </CardContent>
     </Card>
   );

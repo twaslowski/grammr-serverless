@@ -1,0 +1,248 @@
+/* eslint-disable testing-library/no-node-access */
+import { LanguageSelector } from "@/components/auth/language-selector";
+import { screen, render, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import userEvent from "@testing-library/user-event";
+import { allLanguages } from "@/types/languages";
+
+const mockPush = jest.fn();
+const mockUpsert = jest.fn();
+
+jest.mock("next/navigation", () => ({
+  useRouter() {
+    return {
+      push: mockPush,
+      prefetch: () => null,
+    };
+  },
+}));
+
+jest.mock("@/lib/supabase/client", () => ({
+  createClient: () => ({
+    from: () => ({
+      upsert: mockUpsert,
+    }),
+  }),
+}));
+
+// NOTE: Throughout this test suite, a common theme is that getByText does not work well with English,
+// because the language.name === language.nativeName and the selector returns multiple result.
+// Workarounds include simply querying for other languages (often German) or using getAllByText()[0].
+
+describe("LanguageSelector", () => {
+  const userId = "test-user-id";
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUpsert.mockResolvedValue({ error: null });
+  });
+
+  describe("Step 1 - Source Language Selection", () => {
+    it("should render the source language selection step initially", () => {
+      render(<LanguageSelector userId={userId} />);
+
+      expect(
+        screen.getByText("What is your native language?"),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Step 1 of 2")).toBeInTheDocument();
+    });
+
+    it("should display all available languages", () => {
+      render(<LanguageSelector userId={userId} />);
+
+      allLanguages.forEach((language) => {
+        expect(screen.getAllByText(language.name)).not.toHaveLength(0);
+        expect(screen.getAllByText(language.nativeName)).not.toHaveLength(0);
+      });
+    });
+
+    it("should have the continue button disabled when no language is selected", () => {
+      render(<LanguageSelector userId={userId} />);
+
+      const continueButton = screen.getByRole("button", { name: /continue/i });
+      expect(continueButton).toBeDisabled();
+    });
+
+    it("should enable the continue button when a language is selected", async () => {
+      const user = userEvent.setup();
+      render(<LanguageSelector userId={userId} />);
+
+      await user.click(screen.getAllByText("English")[0]);
+
+      const continueButton = screen.getByRole("button", { name: /continue/i });
+      expect(continueButton).toBeEnabled();
+    });
+
+    it("should pre-select source language from profile if provided", () => {
+      const profile = {
+        id: userId,
+        source_language: "de" as const,
+        target_language: "ru" as const,
+        created_at: "2024-01-01T00:00:00Z",
+      };
+
+      render(<LanguageSelector userId={userId} profile={profile} />);
+
+      // The German language card should have the selected styling
+      const germanButton = screen.getByText("German").closest("button");
+      expect(germanButton).toHaveClass("border-primary");
+    });
+  });
+
+  describe("Step 2 - Target Language Selection", () => {
+    it("should navigate to step 2 when continue is clicked", async () => {
+      const user = userEvent.setup();
+      render(<LanguageSelector userId={userId} />);
+
+      await user.click(screen.getByText("German"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+
+      expect(
+        screen.getByText("Which language are you learning?"),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Step 2 of 2")).toBeInTheDocument();
+    });
+
+    it("should not show the selected source language in target options", async () => {
+      const user = userEvent.setup();
+      render(<LanguageSelector userId={userId} />);
+
+      await user.click(screen.getByText("German"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+
+      // English should not be visible on step 2
+      expect(screen.queryByText("German")).not.toBeInTheDocument();
+      // Other languages should still be visible
+      expect(screen.getByText("Russian")).toBeInTheDocument();
+      expect(screen.getByText("French")).toBeInTheDocument();
+    });
+
+    it("should go back to step 1 when back button is clicked", async () => {
+      const user = userEvent.setup();
+      render(<LanguageSelector userId={userId} />);
+
+      await user.click(screen.getByText("German"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+      await user.click(screen.getByRole("button", { name: /back/i }));
+
+      expect(
+        screen.getByText("What is your native language?"),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Step 1 of 2")).toBeInTheDocument();
+    });
+
+    it("should preserve source language selection when going back", async () => {
+      const user = userEvent.setup();
+      render(<LanguageSelector userId={userId} />);
+
+      await user.click(screen.getByText("German"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+      await user.click(screen.getByRole("button", { name: /back/i }));
+
+      const germanButton = screen.getByText("German").closest("button");
+      expect(germanButton).toHaveClass("border-primary");
+    });
+
+    it("should have the continue button disabled when no target language is selected", async () => {
+      const user = userEvent.setup();
+      render(<LanguageSelector userId={userId} />);
+
+      await user.click(screen.getByText("German"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+
+      // The continue button on step 2 should be disabled
+      const buttons = screen.getAllByRole("button", { name: /continue/i });
+      const continueButton = buttons.find(
+        (b) => !b.textContent?.includes("Back"),
+      );
+      expect(continueButton).toBeDisabled();
+    });
+
+    it("should pre-select target language from profile if provided", async () => {
+      const user = userEvent.setup();
+      const profile = {
+        id: userId,
+        source_language: "en" as const,
+        target_language: "ru" as const,
+        created_at: "2024-01-01T00:00:00Z",
+      };
+
+      render(<LanguageSelector userId={userId} profile={profile} />);
+
+      // Navigate to step 2
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+
+      // Russian should be pre-selected
+      const russianButton = screen.getByText("Russian").closest("button");
+      expect(russianButton).toHaveClass("border-primary");
+    });
+  });
+
+  describe("Saving languages", () => {
+    it("should save languages and redirect to dashboard on success", async () => {
+      const user = userEvent.setup();
+      render(<LanguageSelector userId={userId} />);
+
+      await user.click(screen.getByText("German"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+      await user.click(screen.getByText("Russian"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+
+      await waitFor(() => {
+        expect(mockUpsert).toHaveBeenCalledWith({
+          id: userId,
+          source_language: "de",
+          target_language: "ru",
+        });
+      });
+
+      expect(mockPush).toHaveBeenCalledWith("/dashboard");
+    });
+
+    it("should display an error message on save failure", async () => {
+      mockUpsert.mockResolvedValueOnce({
+        error: { message: "Database error" },
+      });
+
+      const user = userEvent.setup();
+      render(<LanguageSelector userId={userId} />);
+
+      await user.click(screen.getByText("German"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+      await user.click(screen.getByText("Russian"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Failed to save language selection"),
+        ).toBeInTheDocument();
+      });
+
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it("should show loading state while saving", async () => {
+      // Make the upsert take some time
+      mockUpsert.mockImplementation(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ error: null }), 100),
+          ),
+      );
+
+      const user = userEvent.setup();
+      render(<LanguageSelector userId={userId} />);
+
+      await user.click(screen.getByText("German"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+      await user.click(screen.getByText("Russian"));
+      await user.click(screen.getByRole("button", { name: /continue/i }));
+
+      expect(screen.getByText("Saving...")).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith("/dashboard");
+      });
+    });
+  });
+});

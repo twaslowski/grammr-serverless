@@ -1,0 +1,133 @@
+import Link from "next/link";
+import {
+  ArrowLeft,
+  Languages,
+  User,
+  Bell,
+  Shield,
+  ArrowRight,
+  LucideIcon,
+} from "lucide-react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+
+interface ProfileNavItem {
+  title: string;
+  description: string;
+  href: string;
+  icon: LucideIcon;
+  disabled?: boolean;
+}
+
+const profileNavItems: ProfileNavItem[] = [
+  {
+    title: "Language Settings",
+    description: "Change your native language and the language you're learning",
+    href: "/dashboard/profile/language",
+    icon: Languages,
+  },
+  {
+    title: "Account",
+    description: "Manage your email, password, and account details",
+    href: "/dashboard/profile/account",
+    icon: User,
+    disabled: true,
+  },
+  {
+    title: "Notifications",
+    description: "Configure email and push notification preferences",
+    href: "/dashboard/profile/notifications",
+    icon: Bell,
+    disabled: true,
+  },
+  {
+    title: "Privacy & Security",
+    description: "Manage your data and security settings",
+    href: "/dashboard/profile/privacy",
+    icon: Shield,
+    disabled: true,
+  },
+];
+
+export default function ProfilePage() {
+  return (
+    <div className="flex-1 w-full flex flex-col gap-6 max-w-4xl">
+      <div className="flex items-center gap-4">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Dashboard
+        </Link>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <h1 className="font-bold text-3xl">Profile Settings</h1>
+        <p className="text-muted-foreground">
+          Manage your account, language preferences, and other settings.
+        </p>
+      </div>
+
+      <section>
+        <div className="grid gap-4 md:grid-cols-2">
+          {profileNavItems.map((item) => (
+            <ProfileNavCard key={item.href} item={item} />
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+interface ProfileNavCardProps {
+  item: ProfileNavItem;
+}
+
+function ProfileNavCard({ item }: ProfileNavCardProps) {
+  const Icon = item.icon;
+
+  if (item.disabled) {
+    return (
+      <Card className="opacity-50 cursor-not-allowed">
+        <CardHeader className="flex flex-row items-start gap-4">
+          <div className="p-2 bg-muted rounded-lg">
+            <Icon className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <div className="flex-1 space-y-1">
+            <CardTitle className="text-lg flex items-center gap-2">
+              {item.title}
+              <span className="text-xs font-normal text-muted-foreground">
+                Coming soon
+              </span>
+            </CardTitle>
+            <CardDescription>{item.description}</CardDescription>
+          </div>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  return (
+    <Link href={item.href} className="group">
+      <Card className="h-full transition-colors hover:bg-accent/50 hover:border-accent-foreground/20">
+        <CardHeader className="flex flex-row items-start gap-4">
+          <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+            <Icon className="h-6 w-6 text-primary" />
+          </div>
+          <div className="flex-1 space-y-1">
+            <CardTitle className="text-lg flex items-center gap-2">
+              {item.title}
+              <ArrowRight className="h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+            </CardTitle>
+            <CardDescription>{item.description}</CardDescription>
+          </div>
+        </CardHeader>
+      </Card>
+    </Link>
+  );
+}

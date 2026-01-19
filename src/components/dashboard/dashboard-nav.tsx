@@ -56,11 +56,10 @@ const defaultNavItems: DashboardNavItem[] = [
     icon: HammerIcon,
   },
   {
-    title: "Account Settings",
+    title: "Profile Settings",
     description: "Manage your profile, languages, and preferences",
-    href: "/dashboard/settings",
+    href: "/dashboard/profile",
     icon: Settings,
-    disabled: true,
   },
 ];
 

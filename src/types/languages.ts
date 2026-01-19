@@ -18,13 +18,19 @@ export interface Language {
   flag: string;
 }
 
-export const targetLanguages: Language[] = [
+export const allLanguages: Language[] = [
+  { code: "en", name: "English", nativeName: "English", flag: "🇬🇧" },
+  { code: "de", name: "German", nativeName: "Deutsch", flag: "🇩🇪" },
   { code: "ru", name: "Russian", nativeName: "Русский", flag: "🇷🇺" },
   { code: "it", name: "Italian", nativeName: "Italiano", flag: "🇮🇹" },
   { code: "fr", name: "French", nativeName: "Français", flag: "🇫🇷" },
   { code: "es", name: "Spanish", nativeName: "Español", flag: "🇪🇸" },
   { code: "pt", name: "Portuguese", nativeName: "Português", flag: "🇵🇹" },
 ];
+
+export const targetLanguages: Language[] = allLanguages.filter(
+  (lang) => lang.code !== "en" && lang.code !== "de",
+);
 
 export const sourceLanguages: Language[] = [
   { code: "en", name: "English", nativeName: "English", flag: "🇬🇧" },

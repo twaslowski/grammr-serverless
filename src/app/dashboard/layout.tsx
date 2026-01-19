@@ -21,20 +21,22 @@ export default async function ProtectedLayout({
     redirect("/auth/login");
   }
 
-  // Check if user has language preferences set
+  // Check if user has a profile with language preferences
   const { data: profileData, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
 
-  if (error) {
-    throw new Error(`Failed to fetch profile data: ${error.message}`);
+  // If no profile exists, redirect to language selection
+  // This happens when a user signs up but hasn't completed onboarding
+  if (error?.code === "PGRST116" || !profileData) {
+    redirect("/auth/sign-up/select-language");
   }
 
-  // If languages are not set, redirect to language selection
-  if (!profileData?.source_language || !profileData?.target_language) {
-    redirect("/auth/sign-up/select-language");
+  // Handle other database errors
+  if (error) {
+    throw new Error(`Failed to fetch profile data: ${error.message}`);
   }
 
   // Parse and validate the profile data

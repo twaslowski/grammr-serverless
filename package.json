@@ -7,7 +7,8 @@
     "fmt": "prettier --write .",
     "lint:fix": "eslint --fix .",
     "lint": "eslint src --ext .ts,.tsx",
-    "test": "jest"
+    "test": "jest",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.1",
