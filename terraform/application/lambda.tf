@@ -2,13 +2,15 @@ module "morphology_lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 8.0"
 
-  function_name = "grammr-morphology-${var.environment}"
+  for_each = local.morphology
+
+  function_name = "grammr-morphology-${each.key}-${var.environment}"
   description   = "Lambda function for morphology analysis in grammr"
 
   create_package = false
   package_type   = "Image"
   architectures  = ["arm64"]
-  image_uri      = "${data.aws_ecr_repository.morphology_repository.repository_url}:${data.aws_ecr_repository.morphology_repository.most_recent_image_tags[0]}"
+  image_uri      = "${data.aws_ecr_repository.morphology_repository.repository_url}:${var.morphology_lambda_version}-${each.value}"
 
   memory_size = 1024
   timeout     = 30

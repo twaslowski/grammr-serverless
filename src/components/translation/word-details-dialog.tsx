@@ -48,7 +48,7 @@ export function WordDetailsDialog({
   const [inflectionError, setInflectionError] = useState<string | null>(null);
 
   const profile = useProfile();
-  const sourceLanguage = profile.source_language;
+  const learnedLanguage = profile.target_language;
 
   const isDataAvailable = translation && morphology;
   const isDisabled = isLoading || !isDataAvailable;
@@ -79,7 +79,7 @@ export function WordDetailsDialog({
         const result = await getInflections({
           lemma: morphology.lemma,
           pos: inflectionPos,
-          language: sourceLanguage,
+          language: learnedLanguage,
         });
         setParadigm(result);
       } catch (err) {

@@ -36,14 +36,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const { phrase, language } = validationResult.data;
+
     // Forward to Lambda via API Gateway
-    const response = await fetch(`${API_GW_URL}/morphology`, {
+    const response = await fetch(`${API_GW_URL}/morphology/${language}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(validationResult.data),
+      body: JSON.stringify({ phrase: phrase }),
     });
+
+    console.log(`${API_GW_URL}/morphology/${language}`)
 
     if (!response.ok) {
       const errorText = await response.text();

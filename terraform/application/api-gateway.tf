@@ -49,28 +49,34 @@ module "api_gateway" {
   }
 
   # Routes & Integration(s)
-  routes = {
-    "POST /morphology" = {
-      integration = {
-        uri    = module.morphology_lambda.lambda_function_invoke_arn
-        type   = "AWS_PROXY"
-        method = "POST"
+  routes = merge(
+    # Dynamically generate morphology routes for each language
+    {
+      for lang, _ in local.morphology :
+      "POST /morphology/${lang}" => {
+        integration = {
+          uri    = module.morphology_lambda[lang].lambda_function_invoke_arn
+          type   = "AWS_PROXY"
+          method = "POST"
+        }
+      }
+    },
+    # Static routes
+    {
+      "POST /inflections/ru" = {
+        integration = {
+          uri    = module.inflection_ru_lambda.lambda_function_invoke_arn
+          type   = "AWS_PROXY"
+          method = "POST"
+        }
+      }
+      "POST /tts" = {
+        integration = {
+          uri    = module.polly_lambda.lambda_function_invoke_arn
+          type   = "AWS_PROXY"
+          method = "POST"
+        }
       }
     }
-    "POST /inflections/ru" = {
-      integration = {
-        uri    = module.inflection_ru_lambda.lambda_function_invoke_arn
-        type   = "AWS_PROXY"
-        method = "POST"
-      }
-    }
-    "POST /tts" = {
-      integration = {
-        uri    = module.polly_lambda.lambda_function_invoke_arn
-        type   = "AWS_PROXY"
-        method = "POST"
-      }
-    }
-
-  }
+  )
 }

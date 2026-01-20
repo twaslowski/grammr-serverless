@@ -14,6 +14,7 @@ import { CreateFlashcardDialog } from "@/components/flashcard";
 import { Morphology } from "@/components/translation/morphology";
 import { LanguageCode } from "@/types/languages";
 import { WordDetailsDialog } from "@/components/translation/word-details-dialog";
+import {useProfile} from "@/components/dashboard/profile-provider";
 
 interface TranslatedWordProps {
   word: string;
@@ -45,6 +46,9 @@ export function TranslatedWord({
   // Get the clean word without punctuation for translation
   const cleanWord = stripPunctuation(word);
 
+  // sourceLanguage and targetLanguage are not stable in this context; this is always consistent
+  const userLearnedLanguage = useProfile().target_language;
+
   const handleOpenChange = async (open: boolean) => {
     setIsOpen(open);
 
@@ -61,7 +65,7 @@ export function TranslatedWord({
             source_language: sourceLanguage,
             target_language: targetLanguage,
           }),
-          analyzeMorphology({ phrase }),
+          analyzeMorphology({ phrase, language: userLearnedLanguage }),
         ]);
 
         setTranslation(translationResult.translation);

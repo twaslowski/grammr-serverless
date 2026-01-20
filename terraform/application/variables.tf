@@ -40,3 +40,8 @@ variable "openai_api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "morphology_lambda_version" {
+  description = "Version of the morphology lambda"
+  type = string
+}
