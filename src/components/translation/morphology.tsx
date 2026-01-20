@@ -1,5 +1,4 @@
 import { TokenMorphology } from "@/types/morphology";
-import { FALLBACK_FEATURE_TYPE } from "@/types/feature";
 
 interface MorphologyProps {
   word: string;
@@ -36,25 +35,6 @@ export function Morphology({ word, translation, morphology }: MorphologyProps) {
             </p>
             <p className="font-medium">{morphology.pos}</p>
           </div>
-          {morphology.features.length > 0 && (
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                Features
-              </p>
-              <div className="flex flex-wrap gap-1">
-                {morphology.features
-                  .filter((f) => f.type !== FALLBACK_FEATURE_TYPE)
-                  .map((feature, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary text-secondary-foreground"
-                    >
-                      {feature.type}: {feature.value}
-                    </span>
-                  ))}
-              </div>
-            </div>
-          )}
         </>
       )}
     </div>
