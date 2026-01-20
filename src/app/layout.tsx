@@ -12,6 +12,12 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "grammr - Language Learning Toolkit",
+  icons: {
+    icon: "/favicon/favicon.ico",
+    shortcut: "/favicon/android-chrome-192x192.png",
+    apple: "/favicon/apple-touch-icon.png",
+  },
+  manifest: `/favicon/site.webmanifest`,
   description:
     "Understand grammar with context. Analyze sentences, build flashcard decks, and learn languages systematically.",
 };
