@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  getFeatureValueLabel,
+  getFeatureTypeLabel,
+} from "@/lib/feature-labels";
 
 export const FALLBACK_FEATURE_TYPE = "OTHER";
 
@@ -22,3 +26,17 @@ export const FeatureSchema = z.object({
   value: z.string(),
 });
 export type Feature = z.infer<typeof FeatureSchema>;
+
+/**
+ * Get the human-readable display name for a feature value.
+ */
+export function getFeatureDisplayValue(feature: Feature): string {
+  return getFeatureValueLabel(feature.type, feature.value);
+}
+
+/**
+ * Get the human-readable display name for a feature type.
+ */
+export function getFeatureDisplayType(feature: Feature): string {
+  return getFeatureTypeLabel(feature.type);
+}

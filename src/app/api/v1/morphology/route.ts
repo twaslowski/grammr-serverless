@@ -47,8 +47,6 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ phrase: phrase }),
     });
 
-    console.log(`${API_GW_URL}/morphology/${language}`)
-
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Morphology API error:", response.status, errorText);

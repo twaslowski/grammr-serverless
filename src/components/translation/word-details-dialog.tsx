@@ -17,7 +17,12 @@ import { getInflections } from "@/lib/inflections";
 import { InflectionsTable } from "@/components/inflection/inflections-table";
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { useProfile } from "@/components/dashboard/profile-provider";
-import { FALLBACK_FEATURE_TYPE } from "@/types/feature";
+import {
+  FALLBACK_FEATURE_TYPE,
+  getFeatureDisplayType,
+  getFeatureDisplayValue,
+} from "@/types/feature";
+import { getPosLabel } from "@/lib/feature-labels";
 
 interface WordDetailsDialogProps {
   word: string;
@@ -47,8 +52,7 @@ export function WordDetailsDialog({
   const [isLoadingInflections, setIsLoadingInflections] = useState(false);
   const [inflectionError, setInflectionError] = useState<string | null>(null);
 
-  const profile = useProfile();
-  const learnedLanguage = profile.target_language;
+  const learnedLanguage = useProfile().target_language;
 
   const isDataAvailable = translation && morphology;
   const isDisabled = isLoading || !isDataAvailable;
@@ -67,7 +71,7 @@ export function WordDetailsDialog({
 
       if (!inflectionPos) {
         setInflectionError(
-          `Inflections not available for part of speech: ${morphology.pos}`,
+          `Inflections not available for part of speech: ${getPosLabel(morphology.pos)}`,
         );
         return;
       }
@@ -124,10 +128,11 @@ export function WordDetailsDialog({
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
+          {/* The right-padding avoids collision with the X card close button */}
+          <div className="flex items-center justify-between pr-8">
             <DialogTitle>Word Details: {word}</DialogTitle>
             <CreateFlashcardDialog
-              front={word}
+              front={morphology?.lemma || word}
               type="word"
               translation={translation || ""}
               paradigm={paradigm || undefined}
@@ -165,7 +170,7 @@ export function WordDetailsDialog({
                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
                     Part of Speech
                   </p>
-                  <p className="font-medium">{morphology.pos}</p>
+                  <p className="font-medium">{getPosLabel(morphology.pos)}</p>
                 </div>
               </div>
             )}
@@ -184,9 +189,9 @@ export function WordDetailsDialog({
                         className="text-sm flex items-center gap-2"
                       >
                         <span className="font-medium text-muted-foreground">
-                          {feature.type}:
+                          {getFeatureDisplayType(feature)}:
                         </span>
-                        <span>{feature.value}</span>
+                        <span>{getFeatureDisplayValue(feature)}</span>
                       </div>
                     ))}
                 </div>

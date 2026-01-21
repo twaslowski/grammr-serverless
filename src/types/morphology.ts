@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { FeatureSchema } from "@/types/feature";
-import { LanguageCodeSchema} from "@/types/languages";
+import { LanguageCodeSchema } from "@/types/languages";
 
 // Request schema
 export const MorphologyRequestSchema = z.object({
   phrase: z.string().min(1),
-  language: LanguageCodeSchema
+  language: LanguageCodeSchema,
 });
 
 export type MorphologyRequest = z.infer<typeof MorphologyRequestSchema>;

@@ -1,4 +1,5 @@
 import { TokenMorphology } from "@/types/morphology";
+import { getPosLabel } from "@/lib/feature-labels";
 
 interface MorphologyProps {
   word: string;
@@ -33,7 +34,7 @@ export function Morphology({ word, translation, morphology }: MorphologyProps) {
             <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
               Part of Speech
             </p>
-            <p className="font-medium">{morphology.pos}</p>
+            <p className="font-medium">{getPosLabel(morphology.pos)}</p>
           </div>
         </>
       )}

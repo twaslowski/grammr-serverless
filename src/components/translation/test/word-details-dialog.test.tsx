@@ -65,14 +65,14 @@ describe("WordDetailsDialog", () => {
       expect(screen.getByText("Word Details: ran")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("VERB")).toBeInTheDocument();
+    expect(screen.getByText("Verb")).toBeInTheDocument();
 
-    // Features are rendered with type and value in separate spans within a parent div
-    const numberFeature = screen.getByText(/NUMBER/).closest("div");
-    expect(numberFeature).toHaveTextContent(/NUMBER\s*:\s*Singular/i);
+    // Features are rendered with human-readable labels
+    const numberFeature = screen.getByText(/Number/).closest("div");
+    expect(numberFeature).toHaveTextContent(/Number\s*:\s*Singular/i);
 
-    const tenseFeature = screen.getByText(/TENSE/).closest("div");
-    expect(tenseFeature).toHaveTextContent(/TENSE\s*:\s*Past/i);
+    const tenseFeature = screen.getByText(/Tense/).closest("div");
+    expect(tenseFeature).toHaveTextContent(/Tense\s*:\s*Past/i);
   });
 
   it("should disregard ignored features when parsing", () => {
@@ -145,11 +145,11 @@ describe("WordDetailsDialog", () => {
       expect(screen.getByText("Word Details: ran")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("VERB")).toBeInTheDocument();
+    expect(screen.getByText("Verb")).toBeInTheDocument();
 
-    // Features are rendered with type and value in separate spans within a parent div
-    const numberFeature = screen.getByText(/NUMBER/).closest("div");
-    expect(numberFeature).toHaveTextContent(/NUMBER\s*:\s*SING/i);
+    // Features are rendered with human-readable labels
+    const numberFeature = screen.getByText(/Number/).closest("div");
+    expect(numberFeature).toHaveTextContent(/Number\s*:\s*Singular/i);
 
     expect(screen.queryByText(/IGNORED/)).not.toBeInTheDocument();
   });

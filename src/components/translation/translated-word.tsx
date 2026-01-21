@@ -10,11 +10,10 @@ import { translateWord } from "@/lib/translation";
 import { analyzeMorphology } from "@/lib/morphology";
 import { TokenMorphology } from "@/types/morphology";
 import { Loader2 } from "lucide-react";
-import { CreateFlashcardDialog } from "@/components/flashcard";
 import { Morphology } from "@/components/translation/morphology";
 import { LanguageCode } from "@/types/languages";
 import { WordDetailsDialog } from "@/components/translation/word-details-dialog";
-import {useProfile} from "@/components/dashboard/profile-provider";
+import { useProfile } from "@/components/dashboard/profile-provider";
 
 interface TranslatedWordProps {
   word: string;
@@ -108,12 +107,6 @@ export function TranslatedWord({
               translation={translation}
               morphology={morphology}
               isLoading={isLoading}
-            />
-            <CreateFlashcardDialog
-              front={cleanWord}
-              type="word"
-              translation={translation || ""}
-              compact={true}
             />
           </div>
         </div>
