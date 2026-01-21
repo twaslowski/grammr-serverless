@@ -1,4 +1,5 @@
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
+import { StudyDueCards } from "@/components/study";
 
 export default async function DashboardPage() {
   return (
@@ -7,9 +8,13 @@ export default async function DashboardPage() {
         <h1 className="font-bold text-3xl">Welcome back!</h1>
       </div>
 
+      {/* Study Due Cards */}
+      <section>
+        <StudyDueCards />
+      </section>
+
       {/* Navigation Cards */}
       <section>
-        <h2 className="font-semibold text-xl mb-4">Get Started</h2>
         <DashboardNav />
       </section>
     </div>

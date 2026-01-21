@@ -15,6 +15,7 @@ import {
   LucideIcon,
   ArrowRight,
   HammerIcon,
+  BookOpen,
 } from "lucide-react";
 import { LanguageCode } from "@/types/languages";
 
@@ -48,6 +49,12 @@ const defaultNavItems: DashboardNavItem[] = [
     description: "Create and manage flashcard decks for vocabulary practice",
     href: "/dashboard/flashcards",
     icon: Layers,
+  },
+  {
+    title: "Study",
+    description: "Review your flashcards with spaced repetition",
+    href: "/dashboard/study",
+    icon: BookOpen,
   },
   {
     title: "Tools",
