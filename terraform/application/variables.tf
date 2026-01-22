@@ -43,5 +43,5 @@ variable "openai_api_key" {
 
 variable "morphology_lambda_version" {
   description = "Version of the morphology lambda"
-  type = string
+  type        = string
 }
