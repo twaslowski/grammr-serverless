@@ -4,7 +4,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "fmt": "prettier --write .",
+    "fmt": "prettier --write src",
     "lint:fix": "eslint --fix .",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "jest",

@@ -11,7 +11,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {allLanguages, Language, LanguageCode, targetLanguages} from "@/types/languages";
+import {
+  allLanguages,
+  Language,
+  LanguageCode,
+  targetLanguages,
+} from "@/types/languages";
 import { cn } from "@/lib/utils";
 import { ArrowRight, ArrowLeft, Loader2, SaveIcon } from "lucide-react";
 import { Profile } from "@/types/profile";

@@ -95,10 +95,16 @@ export const SchedulingInfoSchema = z.object({
 });
 export type SchedulingInfo = z.infer<typeof SchedulingInfoSchema>;
 
-// Study session response
-export const StudySessionSchema = z.object({
-  card: CardWithFlashcardSchema.nullable(),
+// Study card item with scheduling options
+export const StudyCardItemSchema = z.object({
+  card: CardWithFlashcardSchema,
   schedulingOptions: z.array(SchedulingInfoSchema),
+});
+export type StudyCardItem = z.infer<typeof StudyCardItemSchema>;
+
+// Study session response (batch)
+export const StudySessionSchema = z.object({
+  cards: z.array(StudyCardItemSchema),
   sessionProgress: z.object({
     reviewed: z.number(),
     remaining: z.number(),

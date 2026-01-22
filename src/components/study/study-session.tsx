@@ -1,22 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { StudyCard } from "./study-card";
 import { StudyProgress } from "./study-progress";
 import { StudyComplete } from "./study-complete";
 import { loadSession, submitReview } from "@/lib/study";
-import { CardWithFlashcard, SchedulingInfo, Rating } from "@/types/fsrs";
+import { StudyCardItem, Rating } from "@/types/fsrs";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+const BATCH_SIZE = 10;
+const REFETCH_THRESHOLD = 3; // Refetch when queue has this many cards left
+
 export function StudySession() {
-  const [currentCard, setCurrentCard] = useState<CardWithFlashcard | null>(
-    null,
-  );
-  const [schedulingOptions, setSchedulingOptions] = useState<SchedulingInfo[]>(
-    [],
-  );
+  const [cardQueue, setCardQueue] = useState<StudyCardItem[]>([]);
   const [progress, setProgress] = useState({
     reviewed: 0,
     remaining: 0,
@@ -24,47 +22,92 @@ export function StudySession() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fetchingRef = useRef(false);
 
-  const advanceSession = useCallback(async () => {
-    setIsLoading(true);
+  const fetchCards = useCallback(async (isInitialLoad: boolean = false) => {
+    // Prevent concurrent fetches
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+
+    if (isInitialLoad) {
+      setIsLoading(true);
+    } else {
+      setIsFetchingMore(true);
+    }
     setError(null);
+
     try {
-      const session = await loadSession();
-      setCurrentCard(session.card);
-      setSchedulingOptions(session.schedulingOptions);
-      setProgress((prev) => ({
-        reviewed: prev.reviewed,
-        remaining: session.sessionProgress.remaining,
-        total: prev.total || session.sessionProgress.total,
-      }));
+      const session = await loadSession(BATCH_SIZE);
+
+      if (isInitialLoad) {
+        setCardQueue(session.cards);
+        setProgress({
+          reviewed: 0,
+          remaining: session.sessionProgress.remaining,
+          total: session.sessionProgress.total,
+        });
+      } else {
+        // Append new cards to the queue, avoiding duplicates
+        setCardQueue((prev) => {
+          const existingIds = new Set(prev.map((item) => item.card.id));
+          const newCards = session.cards.filter(
+            (item) => !existingIds.has(item.card.id),
+          );
+          return [...prev, ...newCards];
+        });
+      }
     } catch (err) {
-      console.log(err instanceof Error ? err.message : "Failed to load card");
-      setError("Failed to load Flashcards");
+      console.log(err instanceof Error ? err.message : "Failed to load cards");
+      if (isInitialLoad) {
+        setError("Failed to load Flashcards");
+      }
+      // For background fetches, we silently fail and will retry later
     } finally {
-      setIsLoading(false);
+      if (isInitialLoad) {
+        setIsLoading(false);
+      } else {
+        setIsFetchingMore(false);
+      }
+      fetchingRef.current = false;
     }
   }, []);
 
   useEffect(() => {
-    void advanceSession();
-  }, [advanceSession]);
+    void fetchCards(true);
+  }, [fetchCards]);
+
+  // Background fetch when queue is running low
+  useEffect(() => {
+    if (
+      cardQueue.length <= REFETCH_THRESHOLD &&
+      cardQueue.length > 0 &&
+      !isFetchingMore &&
+      !fetchingRef.current
+    ) {
+      void fetchCards(false);
+    }
+  }, [cardQueue.length, isFetchingMore, fetchCards]);
 
   const handleReview = async (rating: Rating) => {
-    if (!currentCard) return;
+    if (cardQueue.length === 0) return;
 
+    const currentCard = cardQueue[0];
     setIsSubmitting(true);
     setError(null);
 
     try {
-      await submitReview(currentCard.id, rating);
+      await submitReview(currentCard.card.id, rating);
+
+      // Remove the reviewed card from the queue
+      setCardQueue((prev) => prev.slice(1));
+
       setProgress((prev) => ({
         reviewed: prev.reviewed + 1,
         remaining: Math.max(0, prev.remaining - 1),
         total: prev.total,
       }));
-      // Load the next card
-      await advanceSession();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to submit review");
     } finally {
@@ -74,7 +117,8 @@ export function StudySession() {
 
   const handleStudyMore = () => {
     setProgress({ reviewed: 0, remaining: 0, total: 0 });
-    void advanceSession();
+    setCardQueue([]);
+    void fetchCards(true);
   };
 
   if (isLoading) {
@@ -95,13 +139,13 @@ export function StudySession() {
           </h3>
           <p className="text-sm text-muted-foreground">{error}</p>
         </div>
-        <Button onClick={advanceSession}>Try again</Button>
+        <Button onClick={() => fetchCards(true)}>Try again</Button>
       </Card>
     );
   }
 
   // No more cards to study
-  if (!currentCard) {
+  if (cardQueue.length === 0) {
     return (
       <StudyComplete
         reviewed={progress.reviewed}
@@ -109,6 +153,8 @@ export function StudySession() {
       />
     );
   }
+
+  const currentItem = cardQueue[0];
 
   return (
     <div className="space-y-6">
@@ -118,8 +164,8 @@ export function StudySession() {
         total={progress.total}
       />
       <StudyCard
-        card={currentCard}
-        schedulingOptions={schedulingOptions}
+        card={currentItem.card}
+        schedulingOptions={currentItem.schedulingOptions}
         onReview={handleReview}
         isSubmitting={isSubmitting}
       />

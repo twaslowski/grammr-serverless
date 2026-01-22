@@ -1,12 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { scheduleCard } from "@/lib/fsrs";
 import { Card as DbCard } from "@/types/fsrs";
+import { DueCardsQuerySchema } from "@/app/api/v1/study/schema";
 
 /**
- * GET /api/v1/study - Get the next card to study with scheduling options
+ * GET /api/v1/study - Get a batch of cards to study with scheduling options
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
 
@@ -19,27 +20,28 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // todo: this could be used for batch retrieving flashcards in the future
-    // const searchParams = request.nextUrl.searchParams;
-    // const queryResult = StudySessionQuerySchema.safeParse({
-    //   limit: searchParams.get("limit"),
-    // });
-    //
-    // if (!queryResult.success) {
-    //   return NextResponse.json(
-    //     {
-    //       error: "Invalid query parameters",
-    //       details: queryResult.error.flatten(),
-    //     },
-    //     { status: 400 },
-    //   );
-    // }
+    const searchParams = request.nextUrl.searchParams;
+    const queryResult = DueCardsQuerySchema.safeParse({
+      limit: searchParams.get("limit"),
+    });
+
+    if (!queryResult.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid query parameters",
+          details: queryResult.error.flatten(),
+        },
+        { status: 400 },
+      );
+    }
+
+    const limit = queryResult.data.limit || 20;
 
     const now = new Date();
     const nowStr = now.toISOString();
 
-    // First, try to get a due review card (priority over new cards)
-    let { data: cards, error: cardError } = await supabase
+    // Fetch due review cards (priority over new cards)
+    const { data: reviewCards, error: reviewError } = await supabase
       .from("card")
       .select(
         `
@@ -56,11 +58,23 @@ export async function GET() {
       .neq("state", "New")
       .lte("due", nowStr)
       .order("due", { ascending: true })
-      .limit(1);
+      .limit(limit);
 
-    // If no review cards, get a new card
-    if (!cardError && (!cards || cards.length === 0)) {
-      const result = await supabase
+    if (reviewError) {
+      console.error("Failed to fetch review cards:", reviewError);
+      return NextResponse.json(
+        { error: "Failed to fetch cards" },
+        { status: 500 },
+      );
+    }
+
+    // Calculate how many new cards we need to fill the batch
+    const reviewCardCount = reviewCards?.length || 0;
+    const remainingSlots = limit - reviewCardCount;
+
+    let newCards: typeof reviewCards = [];
+    if (remainingSlots > 0) {
+      const { data: fetchedNewCards, error: newError } = await supabase
         .from("card")
         .select(
           `
@@ -76,24 +90,24 @@ export async function GET() {
         .eq("user_id", user.id)
         .eq("state", "New")
         .order("created_at", { ascending: true })
-        .limit(1);
+        .limit(remainingSlots);
 
-      cards = result.data;
-      cardError = result.error;
+      if (newError) {
+        console.error("Failed to fetch new cards:", newError);
+        return NextResponse.json(
+          { error: "Failed to fetch cards" },
+          { status: 500 },
+        );
+      }
+      newCards = fetchedNewCards || [];
     }
 
-    if (cardError) {
-      console.error("Failed to fetch cards:", cardError);
-      return NextResponse.json(
-        { error: "Failed to fetch cards" },
-        { status: 500 },
-      );
-    }
+    // Combine cards: review cards first, then new cards
+    const allCards = [...(reviewCards || []), ...newCards];
 
-    if (!cards || cards.length === 0) {
+    if (allCards.length === 0) {
       return NextResponse.json({
-        card: null,
-        schedulingOptions: [],
+        cards: [],
         sessionProgress: {
           reviewed: 0,
           remaining: 0,
@@ -101,8 +115,6 @@ export async function GET() {
         },
       });
     }
-
-    const cardData = cards[0];
 
     // Get total counts for progress
     const [dueResult, newResult] = await Promise.all([
@@ -121,36 +133,44 @@ export async function GET() {
 
     const remaining = (dueResult.count || 0) + (newResult.count || 0);
 
-    // Convert to DbCard format
-    const dbCard: DbCard = {
-      id: cardData.id,
-      flashcard_id: cardData.flashcard_id,
-      user_id: cardData.user_id,
-      due: new Date(cardData.due),
-      stability: cardData.stability,
-      difficulty: cardData.difficulty,
-      elapsed_days: cardData.elapsed_days,
-      scheduled_days: cardData.scheduled_days,
-      learning_steps: cardData.learning_steps,
-      reps: cardData.reps,
-      lapses: cardData.lapses,
-      state: cardData.state,
-      last_review: cardData.last_review ? new Date(cardData.last_review) : null,
-      created_at: cardData.created_at,
-      updated_at: cardData.updated_at,
-    };
+    // Convert all cards to the response format with scheduling options
+    const cardsWithScheduling = allCards.map((cardData) => {
+      const dbCard: DbCard = {
+        id: cardData.id,
+        flashcard_id: cardData.flashcard_id,
+        user_id: cardData.user_id,
+        due: new Date(cardData.due),
+        stability: cardData.stability,
+        difficulty: cardData.difficulty,
+        elapsed_days: cardData.elapsed_days,
+        scheduled_days: cardData.scheduled_days,
+        learning_steps: cardData.learning_steps,
+        reps: cardData.reps,
+        lapses: cardData.lapses,
+        state: cardData.state,
+        last_review: cardData.last_review
+          ? new Date(cardData.last_review)
+          : null,
+        created_at: cardData.created_at,
+        updated_at: cardData.updated_at,
+      };
 
-    // Generate scheduling options
-    const schedulingOptions = scheduleCard(dbCard, now);
+      // Generate scheduling options for this card
+      const schedulingOptions = scheduleCard(dbCard, now);
+
+      return {
+        card: {
+          ...dbCard,
+          due: dbCard.due.toISOString(),
+          last_review: dbCard.last_review?.toISOString() || null,
+          flashcard: cardData.flashcard,
+        },
+        schedulingOptions,
+      };
+    });
 
     return NextResponse.json({
-      card: {
-        ...dbCard,
-        due: dbCard.due.toISOString(),
-        last_review: dbCard.last_review?.toISOString() || null,
-        flashcard: cardData.flashcard,
-      },
-      schedulingOptions,
+      cards: cardsWithScheduling,
       sessionProgress: {
         reviewed: 0, // This would be tracked in session state
         remaining,
