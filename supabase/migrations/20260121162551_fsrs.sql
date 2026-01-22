@@ -64,7 +64,7 @@ ALTER TABLE card ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their own cards"
     ON card
     FOR SELECT
-    USING (auth.uid() = user_id);
+    USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can create their own cards"
     ON card
@@ -74,12 +74,12 @@ CREATE POLICY "Users can create their own cards"
 CREATE POLICY "Users can update their own cards"
     ON card
     FOR UPDATE
-    USING (auth.uid() = user_id);
+    USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can delete their own cards"
     ON card
     FOR DELETE
-    USING (auth.uid() = user_id);
+    USING ((select auth.uid()) = user_id);
 
 -- 7. RLS Policies for review_log (inherit through card ownership)
 ALTER TABLE review_log ENABLE ROW LEVEL SECURITY;
@@ -91,7 +91,7 @@ CREATE POLICY "Users can view their own review logs"
         EXISTS (
             SELECT 1 FROM card
             WHERE card.id = review_log.card_id
-            AND card.user_id = auth.uid()
+            AND card.user_id = (select auth.uid())
         )
     );
 
@@ -102,7 +102,7 @@ CREATE POLICY "Users can create their own review logs"
         EXISTS (
             SELECT 1 FROM card
             WHERE card.id = review_log.card_id
-            AND card.user_id = auth.uid()
+            AND card.user_id = (select auth.uid())
         )
     );
 

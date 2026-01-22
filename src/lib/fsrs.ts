@@ -139,7 +139,7 @@ export function mapCardToFsrs(dbCard: DbCard): TsFsrsCard {
     lapses: dbCard.lapses,
     state: mapStateToFsrs(dbCard.state),
     // todo: this nested ternary looks nasty. maybe solvable if we require stronger types on date
-      //  and make it not-nullable i.e. introduce initial default?
+    //  and make it not-nullable i.e. introduce initial default?
     last_review: dbCard.last_review
       ? dbCard.last_review instanceof Date
         ? dbCard.last_review

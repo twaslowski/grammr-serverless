@@ -7,6 +7,7 @@ import { StudyComplete } from "./study-complete";
 import { getNextStudyCard, submitReview } from "@/lib/study";
 import { CardWithFlashcard, SchedulingInfo, Rating } from "@/types/fsrs";
 import { Loader2 } from "lucide-react";
+import { ErrorField } from "@/components/ui/error";
 
 interface StudySessionProps {
   initialCard?: CardWithFlashcard | null;
@@ -100,7 +101,7 @@ export function StudySession({
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-destructive mb-4">{error}</p>
+        <ErrorField message={error} />
         <button onClick={loadNextCard} className="text-primary hover:underline">
           Try again
         </button>
