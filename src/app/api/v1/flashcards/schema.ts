@@ -1,4 +1,3 @@
-// Request schemas
 import { FlashcardBackSchema, FlashcardTypeEnum } from "@/types/flashcards";
 import { z } from "zod";
 
@@ -46,3 +45,32 @@ export const FlashcardListQuerySchema = z.object({
   sort_order: z.enum(["asc", "desc"]).optional().default("desc"),
 });
 export type FlashcardListQuery = z.infer<typeof FlashcardListQuerySchema>;
+
+// Export schema - for exporting flashcards (without progress data)
+export const ExportedFlashcardSchema = z.object({
+  front: z.string(),
+  type: FlashcardTypeEnum,
+  back: FlashcardBackSchema,
+  notes: z.string().nullable(),
+  deck_name: z.string(),
+});
+
+export const FlashcardExportSchema = z.object({
+  version: z.literal(1),
+  exported_at: z.string(),
+  flashcards: z.array(ExportedFlashcardSchema),
+});
+export type FlashcardExport = z.infer<typeof FlashcardExportSchema>;
+
+// Import schema - for importing flashcards
+export const ImportFlashcardSchema = z.object({
+  front: z.string().min(1, "Front content is required"),
+  type: FlashcardTypeEnum,
+  back: FlashcardBackSchema,
+  notes: z.string().nullable().optional(),
+});
+
+export const FlashcardImportRequestSchema = z.object({
+  version: z.number(),
+  flashcards: z.array(ImportFlashcardSchema),
+});

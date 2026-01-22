@@ -7,6 +7,7 @@ import {
   Shield,
   ArrowRight,
   LucideIcon,
+  Layers,
 } from "lucide-react";
 import {
   Card,
@@ -31,8 +32,14 @@ const profileNavItems: ProfileNavItem[] = [
     icon: Languages,
   },
   {
+    title: "Flashcards",
+    description: "Manage your flashcards and decks",
+    href: "/dashboard/profile/flashcards",
+    icon: Layers,
+  },
+  {
     title: "Account",
-    description: "Manage your email, password, and account details",
+    description: "Manage your data, export and import flashcards",
     href: "/dashboard/profile/account",
     icon: User,
     disabled: true,

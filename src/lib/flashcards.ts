@@ -182,3 +182,42 @@ export async function deleteFlashcard(id: number): Promise<void> {
     throw new Error(errorData.error || "Failed to delete flashcard");
   }
 }
+
+// --- Export/Import operations ---
+
+export async function exportFlashcards(): Promise<Blob> {
+  const response = await fetch(`${BASE_URL}/export`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to export flashcards");
+  }
+
+  return response.blob();
+}
+
+export async function importFlashcards(data: {
+  version: number;
+  flashcards: Array<{
+    front: string;
+    type: string;
+    back: { translation: string; paradigm?: unknown };
+    notes?: string | null;
+  }>;
+}): Promise<{ message: string; imported_count: number }> {
+  const response = await fetch(`${BASE_URL}/import`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to import flashcards");
+  }
+
+  return response.json();
+}
