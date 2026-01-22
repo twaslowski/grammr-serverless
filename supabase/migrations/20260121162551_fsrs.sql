@@ -69,7 +69,7 @@ CREATE POLICY "Users can view their own cards"
 CREATE POLICY "Users can create their own cards"
     ON card
     FOR INSERT
-    WITH CHECK (auth.uid() = user_id);
+    WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can update their own cards"
     ON card
@@ -151,6 +151,5 @@ WHERE NOT EXISTS (
     WHERE c.flashcard_id = f.id
 );
 
--- Note: We're keeping flashcard_progress for now for backwards compatibility
--- It can be dropped in a future migration after data is verified
+DROP TABLE IF EXISTS flashcard_progress;
 
