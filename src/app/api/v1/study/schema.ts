@@ -18,11 +18,3 @@ export const SubmitReviewRequestSchema = z.object({
   rating: RatingEnum,
 });
 export type SubmitReviewRequest = z.infer<typeof SubmitReviewRequestSchema>;
-
-/**
- * Query params for starting a study session
- */
-export const StudySessionQuerySchema = z.object({
-  limit: z.coerce.number().min(1).max(100).optional().nullable().default(20),
-});
-export type StudySessionQuery = z.infer<typeof StudySessionQuerySchema>;

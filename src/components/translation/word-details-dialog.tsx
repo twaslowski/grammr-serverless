@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,6 +28,7 @@ interface WordDetailsDialogProps {
   word: string;
   translation: string | null;
   morphology: TokenMorphology | null;
+  trigger?: React.ReactNode;
   isLoading?: boolean;
 }
 
@@ -45,6 +46,7 @@ export function WordDetailsDialog({
   word,
   translation,
   morphology,
+  trigger,
   isLoading = false,
 }: WordDetailsDialogProps) {
   const [open, setOpen] = useState(false);
@@ -96,36 +98,38 @@ export function WordDetailsDialog({
     }
   };
 
+  const defaultTrigger = (
+    <Button
+      variant="outline"
+      size="sm"
+      className="gap-1 h-8 text-xs"
+      disabled={isDisabled}
+      aria-label={
+        isLoading
+          ? "Loading word details"
+          : !isDataAvailable
+            ? "Translation data not available"
+            : `View detailed information for ${word}`
+      }
+      title={
+        isLoading
+          ? "Loading..."
+          : !isDataAvailable
+            ? "Translation data not available"
+            : "View detailed word information"
+      }
+    >
+      {isLoading ? (
+        <Loader2 className="h-3 w-3 animate-spin" />
+      ) : (
+        <Info className="h-3 w-3" />
+      )}
+    </Button>
+  );
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1 h-8 text-xs"
-          disabled={isDisabled}
-          aria-label={
-            isLoading
-              ? "Loading word details"
-              : !isDataAvailable
-                ? "Translation data not available"
-                : `View detailed information for ${word}`
-          }
-          title={
-            isLoading
-              ? "Loading..."
-              : !isDataAvailable
-                ? "Translation data not available"
-                : "View detailed word information"
-          }
-        >
-          {isLoading ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
-          ) : (
-            <Info className="h-3 w-3" />
-          )}
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           {/* The right-padding avoids collision with the X card close button */}

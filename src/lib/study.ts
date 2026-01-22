@@ -2,6 +2,7 @@ import {
   DueCardsCount,
   Rating,
   StudySession,
+  StudySessionSchema,
   SubmitReviewResponse,
 } from "@/types/fsrs";
 
@@ -32,7 +33,7 @@ export async function getDueCardsCount(
 /**
  * Fetch the next card to study with scheduling options
  */
-export async function getNextStudyCard(limit?: number): Promise<StudySession> {
+export async function loadSession(limit?: number): Promise<StudySession> {
   const params = new URLSearchParams();
   if (limit) params.set("limit", String(limit));
 
@@ -48,7 +49,14 @@ export async function getNextStudyCard(limit?: number): Promise<StudySession> {
     throw new Error(errorData.error || "Failed to fetch study card");
   }
 
-  return response.json();
+  const parsed = StudySessionSchema.safeParse(await response.json());
+
+  if (parsed.error) {
+    console.error(parsed.error);
+    throw new Error(parsed.error.message);
+  }
+
+  return parsed.data;
 }
 
 /**

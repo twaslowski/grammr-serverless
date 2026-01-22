@@ -4,44 +4,33 @@ import React, { useState, useEffect, useCallback } from "react";
 import { StudyCard } from "./study-card";
 import { StudyProgress } from "./study-progress";
 import { StudyComplete } from "./study-complete";
-import { getNextStudyCard, submitReview } from "@/lib/study";
+import { loadSession, submitReview } from "@/lib/study";
 import { CardWithFlashcard, SchedulingInfo, Rating } from "@/types/fsrs";
 import { Loader2 } from "lucide-react";
-import { ErrorField } from "@/components/ui/error";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
-interface StudySessionProps {
-  initialCard?: CardWithFlashcard | null;
-  initialSchedulingOptions?: SchedulingInfo[];
-  initialProgress?: {
-    reviewed: number;
-    remaining: number;
-    total: number;
-  };
-}
-
-export function StudySession({
-  initialCard,
-  initialSchedulingOptions,
-  initialProgress,
-}: StudySessionProps) {
+export function StudySession() {
   const [currentCard, setCurrentCard] = useState<CardWithFlashcard | null>(
-    initialCard || null,
+    null,
   );
   const [schedulingOptions, setSchedulingOptions] = useState<SchedulingInfo[]>(
-    initialSchedulingOptions || [],
+    [],
   );
-  const [progress, setProgress] = useState(
-    initialProgress || { reviewed: 0, remaining: 0, total: 0 },
-  );
-  const [isLoading, setIsLoading] = useState(!initialCard);
+  const [progress, setProgress] = useState({
+    reviewed: 0,
+    remaining: 0,
+    total: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadNextCard = useCallback(async () => {
+  const advanceSession = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const session = await getNextStudyCard();
+      const session = await loadSession();
       setCurrentCard(session.card);
       setSchedulingOptions(session.schedulingOptions);
       setProgress((prev) => ({
@@ -50,17 +39,16 @@ export function StudySession({
         total: prev.total || session.sessionProgress.total,
       }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load card");
+      console.log(err instanceof Error ? err.message : "Failed to load card");
+      setError("Failed to load Flashcards");
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (!initialCard) {
-      loadNextCard();
-    }
-  }, [initialCard, loadNextCard]);
+    void advanceSession();
+  }, [advanceSession]);
 
   const handleReview = async (rating: Rating) => {
     if (!currentCard) return;
@@ -76,7 +64,7 @@ export function StudySession({
         total: prev.total,
       }));
       // Load the next card
-      await loadNextCard();
+      await advanceSession();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to submit review");
     } finally {
@@ -86,7 +74,7 @@ export function StudySession({
 
   const handleStudyMore = () => {
     setProgress({ reviewed: 0, remaining: 0, total: 0 });
-    loadNextCard();
+    void advanceSession();
   };
 
   if (isLoading) {
@@ -100,12 +88,15 @@ export function StudySession({
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <ErrorField message={error} />
-        <button onClick={loadNextCard} className="text-primary hover:underline">
-          Try again
-        </button>
-      </div>
+      <Card className="min-h-[150px] bg-red-200/80 flex flex-col items-center justify-center gap-4 p-6">
+        <div className="text-center">
+          <h3 className="font-semibold text-lg text-destructive/90 mb-2">
+            Error Loading Flashcards
+          </h3>
+          <p className="text-sm text-muted-foreground">{error}</p>
+        </div>
+        <Button onClick={advanceSession}>Try again</Button>
+      </Card>
     );
   }
 

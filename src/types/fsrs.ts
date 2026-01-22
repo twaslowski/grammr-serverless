@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FlashcardSchema } from "@/types/flashcards";
 
 /**
  * FSRS (Free Spaced Repetition Scheduler) types
@@ -17,22 +18,6 @@ export type CardState = z.infer<typeof CardStateEnum>;
 // Rating enum - matches ts-fsrs Rating enum
 export const RatingEnum = z.enum(["Again", "Hard", "Good", "Easy"]);
 export type Rating = z.infer<typeof RatingEnum>;
-
-// Rating numeric values (for ts-fsrs compatibility)
-export const RATING_VALUES = {
-  Again: 1,
-  Hard: 2,
-  Good: 3,
-  Easy: 4,
-} as const;
-
-// State numeric values (for ts-fsrs compatibility)
-export const STATE_VALUES = {
-  New: 0,
-  Learning: 1,
-  Review: 2,
-  Relearning: 3,
-} as const;
 
 // Card schema - matches the database card table and ts-fsrs Card interface
 export const CardSchema = z.object({
@@ -63,14 +48,11 @@ export type Card = z.infer<typeof CardSchema>;
 
 // Card with flashcard data for study view
 export const CardWithFlashcardSchema = CardSchema.extend({
-  flashcard: z.object({
-    id: z.number(),
-    front: z.string(),
-    back: z.object({
-      translation: z.string(),
-      paradigm: z.any().optional(),
-    }),
-    notes: z.string().nullable(),
+  flashcard: FlashcardSchema.pick({
+    back: true,
+    front: true,
+    id: true,
+    notes: true,
   }),
 });
 export type CardWithFlashcard = z.infer<typeof CardWithFlashcardSchema>;
@@ -97,12 +79,11 @@ export const ReviewLogSchema = z.object({
     .transform((val) => new Date(val)),
   created_at: z.string(),
 });
-export type ReviewLog = z.infer<typeof ReviewLogSchema>;
 
 // Scheduling info for a single rating option
 export const SchedulingInfoSchema = z.object({
   rating: RatingEnum,
-  nextReviewInterval: z.string(), // Human readable interval (e.g., "1 day", "2 hours")
+  nextReviewInterval: z.string(),
   scheduledDays: z.number(),
   card: CardSchema.omit({
     id: true,
@@ -116,7 +97,7 @@ export type SchedulingInfo = z.infer<typeof SchedulingInfoSchema>;
 
 // Study session response
 export const StudySessionSchema = z.object({
-  card: CardWithFlashcardSchema,
+  card: CardWithFlashcardSchema.nullable(),
   schedulingOptions: z.array(SchedulingInfoSchema),
   sessionProgress: z.object({
     reviewed: z.number(),
@@ -138,7 +119,6 @@ export type DueCardsCount = z.infer<typeof DueCardsCountSchema>;
 export const SubmitReviewRequestSchema = z.object({
   rating: RatingEnum,
 });
-export type SubmitReviewRequest = z.infer<typeof SubmitReviewRequestSchema>;
 
 // Submit review response
 export const SubmitReviewResponseSchema = z.object({

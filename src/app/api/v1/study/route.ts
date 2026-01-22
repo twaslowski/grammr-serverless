@@ -1,13 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
-import { StudySessionQuerySchema } from "./schema";
+import { NextResponse } from "next/server";
 import { scheduleCard } from "@/lib/fsrs";
 import { Card as DbCard } from "@/types/fsrs";
 
 /**
  * GET /api/v1/study - Get the next card to study with scheduling options
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
 
@@ -20,21 +19,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Parse query params
-    const searchParams = request.nextUrl.searchParams;
-    const queryResult = StudySessionQuerySchema.safeParse({
-      limit: searchParams.get("limit"),
-    });
-
-    if (!queryResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid query parameters",
-          details: queryResult.error.flatten(),
-        },
-        { status: 400 },
-      );
-    }
+    // todo: this could be used for batch retrieving flashcards in the future
+    // const searchParams = request.nextUrl.searchParams;
+    // const queryResult = StudySessionQuerySchema.safeParse({
+    //   limit: searchParams.get("limit"),
+    // });
+    //
+    // if (!queryResult.success) {
+    //   return NextResponse.json(
+    //     {
+    //       error: "Invalid query parameters",
+    //       details: queryResult.error.flatten(),
+    //     },
+    //     { status: 400 },
+    //   );
+    // }
 
     const now = new Date();
     const nowStr = now.toISOString();

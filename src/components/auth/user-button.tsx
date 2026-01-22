@@ -3,26 +3,14 @@
 import { UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import React from "react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 export function UserButton() {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button aria-label="User Menu">
-          <UserIcon />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {/*<DropdownMenuItem onClick={() => router.push("/dashboard/account")}>*/}
-        {/*  <CogIcon />*/}
-        {/*  Your Account*/}
-        {/*</DropdownMenuItem>*/}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button aria-label="user-menu">
+      <Link href={"/dashboard"}>
+        <UserIcon />
+      </Link>
+    </Button>
   );
 }

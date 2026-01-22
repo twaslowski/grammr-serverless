@@ -15,10 +15,10 @@ interface StudyCardProps {
 }
 
 const RATING_COLORS: Record<Rating, string> = {
-  Again: "bg-red-500 hover:bg-red-600 text-white",
-  Hard: "bg-orange-500 hover:bg-orange-600 text-white",
-  Good: "bg-green-500 hover:bg-green-600 text-white",
-  Easy: "bg-blue-500 hover:bg-blue-600 text-white",
+  Again: "bg-red-500 hover:bg-red-600",
+  Hard: "bg-orange-500 hover:bg-orange-600",
+  Good: "bg-green-500 hover:bg-green-600",
+  Easy: "bg-blue-500 hover:bg-blue-600",
 };
 
 const RATING_LABELS: Record<Rating, string> = {
@@ -64,9 +64,23 @@ export function StudyCard({
               <h2 className="text-2xl text-muted-foreground">
                 {card.flashcard.front}
               </h2>
+              {/*{card.flashcard.back.paradigm && (*/}
+              {/*    <WordDetailsDialog*/}
+              {/*        word={card.flashcard.front}*/}
+              {/*        translation={card.flashcard.back.translation}*/}
+              {/*        morphology={null}*/}
+              {/*        trigger={*/}
+              {/*          <Button variant="ghost" className="text-3xl font-bold text-primary bg-primary/10 cursor-pointer">*/}
+              {/*            {card.flashcard.back.translation}*/}
+              {/*          </Button>*/}
+              {/*        }*/}
+              {/*    />*/}
+              {/*)}*/}
+              {/*{!card.flashcard.back.paradigm && (*/}
               <p className="text-3xl font-bold text-primary">
                 {card.flashcard.back.translation}
               </p>
+              {/*)}*/}
               {card.flashcard.notes && (
                 <p className="text-sm text-muted-foreground italic">
                   {card.flashcard.notes}
