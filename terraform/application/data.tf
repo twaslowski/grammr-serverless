@@ -9,3 +9,7 @@ data "aws_ecr_repository" "morphology_repository" {
 data "aws_ecr_repository" "inflections_ru_repository" {
   name = "grammr/inflections-ru"
 }
+
+data "aws_secretsmanager_secret_version" "bootstrap_secret" {
+  secret_id = "/grammr/bootstrap"
+}

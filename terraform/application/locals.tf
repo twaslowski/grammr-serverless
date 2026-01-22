@@ -8,7 +8,7 @@ locals {
     NEXT_PUBLIC_SUPABASE_URL             = var.supabase_project_url
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = var.supabase_publishable_key
     API_GW_URL                           = module.api_gateway.stage_invoke_url
-    OPENAI_API_KEY                       = var.openai_api_key
+    OPENAI_API_KEY                       = jsondecode(data.aws_secretsmanager_secret_version.bootstrap_secret.secret_string)["OPENAI_API_KEY"]
   }
 
   morphology = {
