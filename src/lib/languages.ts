@@ -1,10 +1,9 @@
 import {
+  allLanguages,
   Language,
   LanguageCode,
-  sourceLanguages,
-  targetLanguages,
 } from "@/types/languages";
 
 export function getLanguageByCode(code: LanguageCode): Language | undefined {
-  return [...targetLanguages, ...sourceLanguages].find((l) => l.code === code);
+  return allLanguages.find((l) => l.code === code);
 }

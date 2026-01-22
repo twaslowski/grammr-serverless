@@ -11,10 +11,12 @@ locals {
     OPENAI_API_KEY                       = var.openai_api_key
   }
 
-  # todo: large models are approx. 1GB larger, may lead to loading issues
-  # let's see how much pre-flight requests help, otherwise revert these back or create multiple lambdas
   morphology = {
     ru = "ru_core_news_md"
+    it = "it_core_news_md"
+    es = "es_core_news_md"
+    pt = "pt_core_news_md"
+    fr = "fr_core_news_md"
   }
 
   lambda_allowed_triggers = {

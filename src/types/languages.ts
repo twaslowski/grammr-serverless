@@ -31,8 +31,3 @@ export const allLanguages: Language[] = [
 export const targetLanguages: Language[] = allLanguages.filter(
   (lang) => lang.code !== "en" && lang.code !== "de",
 );
-
-export const sourceLanguages: Language[] = [
-  { code: "en", name: "English", nativeName: "English", flag: "🇬🇧" },
-  { code: "de", name: "German", nativeName: "Deutsch", flag: "🇩🇪" },
-];

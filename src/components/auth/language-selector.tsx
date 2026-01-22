@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { allLanguages, Language, LanguageCode } from "@/types/languages";
+import {allLanguages, Language, LanguageCode, targetLanguages} from "@/types/languages";
 import { cn } from "@/lib/utils";
 import { ArrowRight, ArrowLeft, Loader2, SaveIcon } from "lucide-react";
 import { Profile } from "@/types/profile";
@@ -91,7 +91,7 @@ export function LanguageSelector({
     );
 
   // Filter out the selected source language from target options
-  const availableTargetLanguages = allLanguages.filter(
+  const availableTargetLanguages = targetLanguages.filter(
     (lang) => lang.code !== selectedSourceLanguage,
   );
 
