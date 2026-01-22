@@ -13,10 +13,12 @@ import {
 } from "@/types/inflections";
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { TTSButton } from "@/components/tts/tts-button";
+import { getPosLabel } from "@/lib/feature-labels";
 
 interface InflectionsTableProps {
   paradigm: Paradigm;
   displayAddFlashcard?: boolean;
+  displayHeader?: boolean;
 }
 
 // Helper to find an inflection by its features
@@ -34,6 +36,7 @@ function findInflection(
 export function InflectionsTable({
   paradigm,
   displayAddFlashcard = true,
+  displayHeader = true,
 }: InflectionsTableProps) {
   const { partOfSpeech, lemma } = paradigm;
 
@@ -42,6 +45,7 @@ export function InflectionsTable({
       <NounLikeTable
         paradigm={paradigm}
         displayAddFlashcard={displayAddFlashcard}
+        displayHeader={displayHeader}
       />
     );
   }
@@ -51,6 +55,7 @@ export function InflectionsTable({
       <VerbLikeTable
         paradigm={paradigm}
         displayAddFlashcard={displayAddFlashcard}
+        displayHeader={displayHeader}
       />
     );
   }
@@ -73,20 +78,22 @@ export function InflectionsTable({
   );
 }
 
-function NounLikeTable({
+function InflectionsTableHeader({
   paradigm,
   displayAddFlashcard,
 }: InflectionsTableProps) {
-  const { partOfSpeech, lemma, inflections } = paradigm;
-  const posLabel = partOfSpeech === "NOUN" ? "Noun" : "Adjective";
+  const { partOfSpeech, lemma } = paradigm;
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row justify-between items-start">
-        <div>
-          <CardTitle className="text-xl">{lemma}</CardTitle>
-          <p className="text-sm text-muted-foreground">{posLabel}</p>
-        </div>
+    <CardHeader className="flex flex-row justify-between items-start">
+      <div>
+        <CardTitle className="text-xl">{lemma}</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {getPosLabel(partOfSpeech)}
+        </p>
+      </div>
+      <div className="flex gap-x-2">
+        <TTSButton text={lemma} />
         {displayAddFlashcard && (
           <CreateFlashcardDialog
             front={lemma}
@@ -95,7 +102,26 @@ function NounLikeTable({
             paradigm={paradigm}
           />
         )}
-      </CardHeader>
+      </div>
+    </CardHeader>
+  );
+}
+
+function NounLikeTable({
+  paradigm,
+  displayAddFlashcard,
+  displayHeader,
+}: InflectionsTableProps) {
+  const { inflections } = paradigm;
+
+  return (
+    <Card>
+      {displayHeader && (
+        <InflectionsTableHeader
+          paradigm={paradigm}
+          displayAddFlashcard={displayAddFlashcard}
+        />
+      )}
       <CardContent>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -138,31 +164,18 @@ function NounLikeTable({
 function VerbLikeTable({
   paradigm,
   displayAddFlashcard,
+  displayHeader,
 }: InflectionsTableProps) {
-  const { partOfSpeech, lemma, inflections } = paradigm;
-  const posLabel = partOfSpeech === "VERB" ? "Verb" : "Auxiliary Verb";
+  const { inflections } = paradigm;
 
   return (
     <Card>
-      <CardHeader className="flex flex-row justify-between items-start">
-        <div className="flex items-center gap-2">
-          <div>
-            <CardTitle className="text-xl">{lemma}</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              {posLabel} (Infinitive)
-            </p>
-          </div>
-          <TTSButton text={lemma} />
-        </div>
-        {displayAddFlashcard && (
-          <CreateFlashcardDialog
-            front={lemma}
-            type="word"
-            translation=""
-            paradigm={paradigm}
-          />
-        )}
-      </CardHeader>
+      {displayHeader && (
+        <InflectionsTableHeader
+          paradigm={paradigm}
+          displayAddFlashcard={displayAddFlashcard}
+        />
+      )}
       <CardContent>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

@@ -75,7 +75,7 @@ export function TranslationForm({ profile }: TranslationFormProps) {
   };
 
   return (
-    <div className="w-full max-w-2xl space-y-6">
+    <div className="w-full space-y-6">
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">

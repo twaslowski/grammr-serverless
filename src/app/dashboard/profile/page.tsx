@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  ArrowLeft,
   Languages,
   User,
   Bell,
@@ -15,6 +14,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { PageLayout } from "@/components/page-header";
 
 interface ProfileNavItem {
   title: string;
@@ -62,32 +62,23 @@ const profileNavItems: ProfileNavItem[] = [
 
 export default function ProfilePage() {
   return (
-    <div className="flex-1 w-full flex flex-col gap-6 max-w-4xl">
-      <div className="flex items-center gap-4">
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Dashboard
-        </Link>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <h1 className="font-bold text-3xl">Profile Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your account, language preferences, and other settings.
-        </p>
-      </div>
-
-      <section>
+    <PageLayout
+      header={{
+        title: "Profile Settings",
+        description:
+          "Manage your account, language preferences, and other settings.",
+        backHref: "/dashboard",
+        backLabel: "Back to Dashboard",
+      }}
+    >
+      <div className="flex-1 w-full flex flex-col gap-6 max-w-4xl">
         <div className="grid gap-4 md:grid-cols-2">
           {profileNavItems.map((item) => (
             <ProfileNavCard key={item.href} item={item} />
           ))}
         </div>
-      </section>
-    </div>
+      </div>
+    </PageLayout>
   );
 }
 

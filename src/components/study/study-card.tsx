@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CardWithFlashcard, SchedulingInfo, Rating } from "@/types/fsrs";
 import { cn } from "@/lib/utils";
 import { RotateCcw } from "lucide-react";
+import { InflectionsDialog } from "@/components/inflection";
 
 interface StudyCardProps {
   card: CardWithFlashcard;
@@ -64,23 +65,23 @@ export function StudyCard({
               <h2 className="text-2xl text-muted-foreground">
                 {card.flashcard.front}
               </h2>
-              {/*{card.flashcard.back.paradigm && (*/}
-              {/*    <WordDetailsDialog*/}
-              {/*        word={card.flashcard.front}*/}
-              {/*        translation={card.flashcard.back.translation}*/}
-              {/*        morphology={null}*/}
-              {/*        trigger={*/}
-              {/*          <Button variant="ghost" className="text-3xl font-bold text-primary bg-primary/10 cursor-pointer">*/}
-              {/*            {card.flashcard.back.translation}*/}
-              {/*          </Button>*/}
-              {/*        }*/}
-              {/*    />*/}
-              {/*)}*/}
-              {/*{!card.flashcard.back.paradigm && (*/}
-              <p className="text-3xl font-bold text-primary">
-                {card.flashcard.back.translation}
-              </p>
-              {/*)}*/}
+              {card.flashcard.back.paradigm && (
+                <InflectionsDialog
+                  paradigm={card.flashcard.back.paradigm}
+                  displayHeader={true}
+                  displayAddToFlashcards={false}
+                  trigger={
+                    <p className="text-3xl font-bold bg-primary/10 text-primary cursor-pointer">
+                      {card.flashcard.back.translation}
+                    </p>
+                  }
+                />
+              )}
+              {!card.flashcard.back.paradigm && (
+                <p className="text-3xl font-bold text-primary">
+                  {card.flashcard.back.translation}
+                </p>
+              )}
               {card.flashcard.notes && (
                 <p className="text-sm text-muted-foreground italic">
                   {card.flashcard.notes}

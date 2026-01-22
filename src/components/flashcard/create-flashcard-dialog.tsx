@@ -80,10 +80,12 @@ export function CreateFlashcardDialog({
     setError(null);
 
     try {
+      // The sourceLanguage of the word will always be the user's targetLanguage, as they can only inflect in the language they learn
+      // I realize this can be a bit confusing.
       const result = await translatePhrase({
         text: front,
-        source_language: sourceLanguage,
-        target_language: targetLanguage,
+        source_language: targetLanguage,
+        target_language: sourceLanguage,
       });
       setTranslation(result.translation);
     } catch (err) {
