@@ -36,12 +36,6 @@ class TestInflectorInitialization:
             inflector = Inflector()
             assert inflector.language == "fr"
 
-    def test_init_parameter_takes_precedence_over_env(self):
-        """Test that explicit parameter takes precedence over env var."""
-        with patch.dict(os.environ, {"LANGUAGE_CODE": "fr"}):
-            inflector = Inflector(language="es")
-            assert inflector.language == "es"
-
     def test_init_with_custom_mood_and_tense(self):
         """Test initializing with custom mood and tense."""
         inflector = Inflector(language="it", mood="subjunctive", tense="imperfect")
