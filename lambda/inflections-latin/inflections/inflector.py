@@ -12,8 +12,7 @@ from conjugation_mapper import map_conjugation
 from domain.feature import Number, Person
 from domain.inflection import Inflection
 from domain.language import LanguageCode
-from verbecc import (CompleteConjugator, LangCodeISO639_1, TenseConjugation,
-                     localization)
+from verbecc import CompleteConjugator, LangCodeISO639_1, TenseConjugation, localization
 
 # Default mood and tense for conjugation
 DEFAULT_MOOD = "indicative"

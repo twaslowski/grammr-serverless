@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class LanguageCode(str, Enum):
+class LanguageCode(StrEnum):
     """Supported Romance languages with their ISO 639-1 codes."""
 
     ITALIAN = "it"

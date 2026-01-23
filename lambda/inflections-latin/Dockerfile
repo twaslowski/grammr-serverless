@@ -31,4 +31,4 @@ ENV FLASK_APP=webserver.py
 WORKDIR ${APP_DIR}
 
 # Run the Flask application with gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "webserver:app"]
+CMD ["python3", "-m", "gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "webserver:app"]

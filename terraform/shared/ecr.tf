@@ -1,5 +1,5 @@
 locals {
-  repositories = toset(["grammr/morphology", "grammr/inflections-ru"])
+  repositories = toset(["grammr/morphology", "grammr/inflections-ru", "grammr/inflections-latin"])
 }
 
 module "ecr" {

@@ -21,3 +21,11 @@ export AWS_REGION=<AWS_REGION>
 docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-latin:0.1.0
 docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-latin:0.1.0
 ```
+
+## Testing
+
+```shell
+docker run -p 5002:5000 grammr/inflections-latin:0.2.0
+
+curl -X POST http://localhost:5002/inflect -d '{"lemma": "essere", "pos": "VERB", "language": "it"}'
+```

@@ -24,7 +24,7 @@ logger = logging.getLogger("root")
 app = Flask(__name__)
 
 
-@app.route("/conjugate", methods=["POST"])
+@app.route("/inflect", methods=["POST"])
 def conjugate():
     """
     HTTP endpoint for verb conjugation requests.
