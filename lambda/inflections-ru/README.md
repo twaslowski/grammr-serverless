@@ -4,7 +4,7 @@ This Lambda function provides inflections for the Russian language.
 Build it like this:
 
 ```bash
-docker build -t grammr/inflections-ru:0.1.0 .
+docker build -t grammr/inflections-latin:0.1.0 .
 ```
 
 ## Local Testing
@@ -14,7 +14,7 @@ You can test the Lambda image locally using Docker and the Lambda Runtime Interf
 1. Run the container:
 
    ```bash
-   docker run -p 9000:8080 morphology-lambda:en_core_web_sm
+   docker run -p 9000:8080 grammr/inflections-latin:0.1.0
    ```
 
 2. Send a test request:

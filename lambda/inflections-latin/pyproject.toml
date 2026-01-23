@@ -1,0 +1,15 @@
+[project]
+name = "inflections-latin"
+version = "0.1.0"
+description = "Romance language verb conjugation service"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.12.5",
+    "verbecc>=2.0.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]

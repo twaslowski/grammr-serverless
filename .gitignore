@@ -60,3 +60,6 @@ __pycache__
 /e2e/.auth/
 
 builds/
+
+test.json
+*.log

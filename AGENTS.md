@@ -462,7 +462,7 @@ export default async (req: Request) => {
 **Variants**:
 
 - `inflections-ru` (Russian): uses `pymorphy3`
-- `inflections-romanic` (French, Italian, Spanish, Portuguese, Romanian): uses `verbecc`
+- `inflections-latin` (French, Italian, Spanish, Portuguese, Romanian): uses `verbecc`
 - `inflections-de` (German): future expansion
 - etc.
 
@@ -496,7 +496,7 @@ GET /inflections/ru/идти?pos=VERB
 **Dependencies**:
 
 - `pymorphy3` (Russian)
-- `verbecc` (Romanic languages)
+- `verbecc` (Latin languages)
 - May be Docker images or Python zip packages depending on size
 
 **Notes**:
