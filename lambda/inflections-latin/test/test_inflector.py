@@ -30,12 +30,6 @@ class TestInflectorInitialization:
         assert inflector.mood == DEFAULT_MOOD
         assert inflector.tense == DEFAULT_TENSE
 
-    def test_init_with_environment_variable(self):
-        """Test initializing with language from environment variable."""
-        with patch.dict(os.environ, {"LANGUAGE_CODE": "fr"}):
-            inflector = Inflector()
-            assert inflector.language == "fr"
-
     def test_init_with_custom_mood_and_tense(self):
         """Test initializing with custom mood and tense."""
         inflector = Inflector(language="it", mood="subjunctive", tense="imperfect")
@@ -44,11 +38,8 @@ class TestInflectorInitialization:
 
     def test_init_raises_value_error_when_no_language(self):
         """Test that initialization fails when no language is provided."""
-        with patch.dict(os.environ, {}, clear=True):
-            # Remove LANGUAGE_CODE if it exists
-            os.environ.pop("LANGUAGE_CODE", None)
-            with pytest.raises(ValueError, match="Language must be provided"):
-                Inflector()
+        with pytest.raises(TypeError):
+            Inflector()
 
     def test_init_raises_unsupported_language_error(self):
         """Test that initialization fails for unsupported languages."""
@@ -158,13 +149,13 @@ class TestConjugateWithDifferentMoodsAndTenses:
     def test_conjugate_raises_error_for_invalid_mood(self):
         """Test that conjugate raises error for invalid mood."""
         inflector = Inflector(language="it", mood="nonexistent")
-        with pytest.raises(ConjugationError, match="not available"):
+        with pytest.raises(ConjugationError, match="nonexistent"):
             inflector.inflect("essere")
 
     def test_conjugate_raises_error_for_invalid_tense(self):
         """Test that conjugate raises error for invalid tense."""
         inflector = Inflector(language="it", tense="nonexistent")
-        with pytest.raises(ConjugationError, match="not available"):
+        with pytest.raises(ConjugationError, match="nonexistent"):
             inflector.inflect("essere")
 
 

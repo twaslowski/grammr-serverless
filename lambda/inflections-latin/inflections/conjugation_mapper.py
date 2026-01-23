@@ -7,13 +7,12 @@ to domain Inflection objects.
 
 from typing import Optional
 
-from verbecc import Conjugation
-from verbecc.src.defs.types.person import Person as VerbeccPerson
-from verbecc.src.defs.types.number import Number as VerbeccNumber
-from verbecc.src.defs.types.gender import Gender as VerbeccGender
-
+from domain.feature import Feature, Gender, Number, Person
 from domain.inflection import Inflection
-from domain.feature import Feature, Person, Number, Gender
+from verbecc import Conjugation
+from verbecc.src.defs.types.gender import Gender as VerbeccGender
+from verbecc.src.defs.types.number import Number as VerbeccNumber
+from verbecc.src.defs.types.person import Person as VerbeccPerson
 
 
 class ConjugationMappingError(Exception):
@@ -137,9 +136,7 @@ def map_conjugation(conjugation: Conjugation, lemma: str) -> Inflection:
     # Get conjugated forms - must have at least one
     conjugations = conjugation.get_conjugations()
     if not conjugations:
-        raise ConjugationMappingError(
-            "Conjugation has no inflected forms", conjugation
-        )
+        raise ConjugationMappingError("Conjugation has no inflected forms", conjugation)
 
     # Use the primary (first) conjugated form
     inflected_form = conjugations[0]

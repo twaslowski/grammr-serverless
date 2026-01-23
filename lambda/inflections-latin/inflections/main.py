@@ -57,7 +57,7 @@ Example event.json:
 
     try:
         with open(args.input_file, "r", encoding="utf-8") as f:
-            event = {'body': f.read()}
+            event = {"body": f.read()}
     except FileNotFoundError:
         print(f"Error: File not found: {args.input_file}", file=sys.stderr)
         sys.exit(1)

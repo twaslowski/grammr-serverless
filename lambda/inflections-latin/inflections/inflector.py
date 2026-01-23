@@ -9,11 +9,11 @@ import logging
 from typing import Optional
 
 from conjugation_mapper import map_conjugation
+from domain.feature import Number, Person
 from domain.inflection import Inflection
-from domain.feature import Person, Number
 from domain.language import LanguageCode
-from verbecc import CompleteConjugator, TenseConjugation, localization, LangCodeISO639_1
-
+from verbecc import (CompleteConjugator, LangCodeISO639_1, TenseConjugation,
+                     localization)
 
 # Default mood and tense for conjugation
 DEFAULT_MOOD = "indicative"
@@ -33,7 +33,7 @@ class UnsupportedLanguageError(InflectionError):
 
     def __init__(self, language: str):
         self.language = language
-        supported = ', '.join(sorted(lc.value for lc in LanguageCode))
+        supported = ", ".join(sorted(lc.value for lc in LanguageCode))
         super().__init__(
             f"Language '{language}' is not supported. "
             f"Supported languages: {supported}"
@@ -47,7 +47,9 @@ class ConjugationError(InflectionError):
         self.lemma = lemma
         self.language = language
         self.reason = reason
-        super().__init__(f"Failed to conjugate '{lemma}' in language '{language}': {reason}")
+        super().__init__(
+            f"Failed to conjugate '{lemma}' in language '{language}': {reason}"
+        )
 
 
 class Inflector:
@@ -90,7 +92,10 @@ class Inflector:
             )
 
         # Raises ValueError if it doesn't match the enum
-        self.language = LangCodeISO639_1(language)
+        try:
+            self.language = LangCodeISO639_1(language)
+        except ValueError:
+            raise UnsupportedLanguageError(language)
         self.mood = mood
         self.tense = tense
 
@@ -123,8 +128,7 @@ class Inflector:
 
         # Map verbecc Conjugation objects to domain Inflection objects
         inflections = [
-            map_conjugation(conjugation, lemma)
-            for conjugation in tense_conjugation
+            map_conjugation(conjugation, lemma) for conjugation in tense_conjugation
         ]
 
         # Merge inflections that differ only in gender (same person/number)
@@ -156,8 +160,12 @@ class Inflector:
 
         for inflection in inflections:
             # Extract person and number from features
-            person = next((f for f in inflection.features if isinstance(f, Person)), None)
-            number = next((f for f in inflection.features if isinstance(f, Number)), None)
+            person = next(
+                (f for f in inflection.features if isinstance(f, Person)), None
+            )
+            number = next(
+                (f for f in inflection.features if isinstance(f, Number)), None
+            )
             key = (person, number)
 
             if key not in grouped:
@@ -170,12 +178,16 @@ class Inflector:
             if len(group) == 1:
                 # No merging needed - just remove gender from features
                 inflection = group[0]
-                features = {f for f in inflection.features if isinstance(f, (Person, Number))}
-                merged.append(Inflection(
-                    lemma=inflection.lemma,
-                    inflected=inflection.inflected,
-                    features=features,
-                ))
+                features = {
+                    f for f in inflection.features if isinstance(f, (Person, Number))
+                }
+                merged.append(
+                    Inflection(
+                        lemma=inflection.lemma,
+                        inflected=inflection.inflected,
+                        features=features,
+                    )
+                )
             else:
                 # Multiple inflections for same person/number - merge them
                 # Combine unique inflected forms with "/"
@@ -212,11 +224,15 @@ class Inflector:
                     features.add(number)
 
                 # Use first unique form (or merged form)
-                merged.append(Inflection(
-                    lemma=group[0].lemma,
-                    inflected=unique_forms[0] if unique_forms else group[0].inflected,
-                    features=features,
-                ))
+                merged.append(
+                    Inflection(
+                        lemma=group[0].lemma,
+                        inflected=(
+                            unique_forms[0] if unique_forms else group[0].inflected
+                        ),
+                        features=features,
+                    )
+                )
 
         return merged
 
