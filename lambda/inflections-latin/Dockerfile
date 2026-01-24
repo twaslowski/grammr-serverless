@@ -23,5 +23,7 @@ COPY inflections/ ${LAMBDA_TASK_ROOT}
 COPY models/trained_model-${LANGUAGE_CODE}.zip ${LAMBDA_TASK_ROOT}/verbecc/data/models
 COPY logging_config.yaml ${LAMBDA_TASK_ROOT}/verbecc/config/logging_config.yaml
 
+ENV LANGUAGE_CODE=${LANGUAGE_CODE}
+
 # Run the Flask application with gunicorn for production
 CMD [ "lambda_handler.handler" ]

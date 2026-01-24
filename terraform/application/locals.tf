@@ -23,8 +23,8 @@ locals {
   }
 
   inflections_latin = {
-    languages = toset(["es"])
-    version = "0.2.1"
+    languages = toset(["es", "it", "pt"])
+    version = "0.3.0"
   }
 
   lambda_allowed_triggers = {

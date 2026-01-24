@@ -95,6 +95,7 @@ def handler(event, _):
         return lambda_util.fail(500, "Encountered unexpected error")
 
 
+# todo: maybe doing this via environment variables is smarter
 def extract_language(event: dict):
     """
     In order to keep the expected payloads consistent when inflecting, extract the language from the

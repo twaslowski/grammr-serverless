@@ -61,6 +61,16 @@ module "api_gateway" {
         }
       }
     },
+    {
+      for lang in local.inflections_latin.languages :
+      "POST /inflections/${lang}" => {
+      integration = {
+        uri    = module.inflection_latin_lambda[lang].lambda_function_invoke_arn
+        type   = "AWS_PROXY"
+        method = "POST"
+      }
+    }
+    },
     # Static routes
     {
       "POST /inflections/ru" = {
