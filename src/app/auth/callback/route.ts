@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
 
   // if "next" is in param, use it as the redirect URL
-  let next = searchParams.get("next") ?? "/auth/sign-up/select-language";
+  const next = searchParams.get("next") ?? "/auth/sign-up/select-language";
 
   if (code) {
     const supabase = await createClient();

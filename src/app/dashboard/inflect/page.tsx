@@ -9,7 +9,7 @@ export default function InflectionsPage() {
   const profile = useProfile();
 
   // Trigger Lambda warmup on page load
-  usePreflightWarmup();
+  usePreflightWarmup(profile.target_language);
 
   return (
     <PageLayout

@@ -15,7 +15,6 @@
     "lambda/inflections-latin": {
       "release-type": "python",
       "separate-pull-requests": true,
-      "release-as": "0.3.0"
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"

@@ -1,3 +1,5 @@
+import { LanguageCode } from "@/types/languages";
+
 const PREFLIGHT_STORAGE_KEY = "grammr_preflight_last_warmup";
 const DEFAULT_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
 
@@ -36,6 +38,7 @@ export function isWarmupNeeded(
  * Returns true if warmup was triggered, false otherwise.
  */
 export async function triggerPreflightWarmup(
+  language: LanguageCode,
   cooldownMs: number = DEFAULT_COOLDOWN_MS,
 ): Promise<boolean> {
   if (!isWarmupNeeded(cooldownMs)) {
@@ -44,7 +47,7 @@ export async function triggerPreflightWarmup(
 
   try {
     // Fire and forget - we don't wait for the response
-    fetch("/api/v1/pre-flight", {
+    fetch(`/api/v1/pre-flight?language=${language}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     }).catch(() => {
