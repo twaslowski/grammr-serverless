@@ -69,7 +69,9 @@ def handler(event, _):
                 f"Part of speech '{request.part_of_speech.value}' cannot be conjugated",
             )
 
-        inflector = Inflector(request.language)
+        language = extract_language(event)
+
+        inflector = Inflector(language)
         inflections = inflector.inflect(lemma=request.lemma)
 
         inflections_container = Inflections(
@@ -91,3 +93,26 @@ def handler(event, _):
             json.dumps({"success": False, "error": str(e), "raw_event": event})
         )
         return lambda_util.fail(500, "Encountered unexpected error")
+
+
+def extract_language(event: dict):
+    """
+    In order to keep the expected payloads consistent when inflecting, extract the language from the
+    event rather than expect it in the payload.
+
+    Splits the request path (e.g. "/prod/inflections/it" and returns the last fragment ("it")).
+
+    :param event: API Gateway integration forwarded event
+    :return:
+    """
+    path = event.get("path")
+    if not path:
+        logger.error(
+            {
+                "success": False,
+                "error": "Unable to determine language",
+                "raw_event": event,
+            }
+        )
+        raise ValueError("Unable to determine language from incoming event")
+    return path.split("/")[-1]

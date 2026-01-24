@@ -52,7 +52,7 @@ module "api_gateway" {
   routes = merge(
     # Dynamically generate morphology routes for each language
     {
-      for lang, _ in local.morphology :
+      for lang, _ in local.morphology.models :
       "POST /morphology/${lang}" => {
         integration = {
           uri    = module.morphology_lambda[lang].lambda_function_invoke_arn

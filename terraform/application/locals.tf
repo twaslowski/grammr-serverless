@@ -12,11 +12,19 @@ locals {
   }
 
   morphology = {
-    ru = "ru_core_news_md"
-    it = "it_core_news_md"
-    es = "es_core_news_md"
-    pt = "pt_core_news_md"
-    fr = "fr_core_news_md"
+    models = {
+      ru = "ru_core_news_md"
+      it = "it_core_news_md"
+      es = "es_core_news_md"
+      pt = "pt_core_news_md"
+      fr = "fr_core_news_md"
+    }
+    version = var.morphology_lambda_version
+  }
+
+  inflections_latin = {
+    languages = toset(["es"])
+    version = "0.2.1"
   }
 
   lambda_allowed_triggers = {

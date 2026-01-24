@@ -2,7 +2,7 @@ module "morphology_lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 8.0"
 
-  for_each = local.morphology
+  for_each = local.morphology.models
 
   function_name = "grammr-morphology-${each.key}-${var.environment}"
   description   = "Lambda function for morphology analysis in grammr"
@@ -10,7 +10,7 @@ module "morphology_lambda" {
   create_package = false
   package_type   = "Image"
   architectures  = ["arm64"]
-  image_uri      = "${data.aws_ecr_repository.morphology_repository.repository_url}:${var.morphology_lambda_version}-${each.value}"
+  image_uri      = "${data.aws_ecr_repository.morphology_repository.repository_url}:${local.morphology.version}-${each.value}"
 
   memory_size = 1024
   timeout     = 30
@@ -50,16 +50,18 @@ module "inflection_latin_lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 8.0"
 
-  function_name = "grammr-inflections-latin-${var.environment}"
-  description   = "Lambda function to inflect neo-latin (fr, it, es, pt, ro) words"
+  for_each = local.inflections_latin.languages
+
+  function_name = "grammr-inflections-latin-${each.value}-${var.environment}"
+  description   = "Lambda function to inflect words for ${each.value}"
 
   create_package = false
   package_type   = "Image"
   architectures  = ["arm64"]
-  image_uri      = "${data.aws_ecr_repository.inflections_latin_repository.repository_url}:${data.aws_ecr_repository.inflections_latin_repository.most_recent_image_tags[0]}"
+  image_uri      = "${data.aws_ecr_repository.inflections_latin_repository.repository_url}:${local.inflections_latin.version}-${each.value}"
 
   memory_size = 1024
-  timeout     = 30
+  timeout     = 60
 
   cloudwatch_logs_retention_in_days = 14
   attach_cloudwatch_logs_policy     = true
