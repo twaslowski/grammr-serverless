@@ -63,3 +63,6 @@ builds/
 
 test.json
 *.log
+*.zip
+
+models/

@@ -1,34 +1,26 @@
-FROM python:3.12-slim AS builder
+FROM public.ecr.aws/lambda/python:3.12 AS builder
+
+ARG LANGUAGE_CODE
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-WORKDIR /app
-
 COPY pyproject.toml uv.lock ./
 RUN uv export --frozen --no-dev > requirements.txt && \
-    pip install --no-cache-dir -r requirements.txt --target /app/dependencies
+    pip install --no-cache-dir -r requirements.txt --target ${LAMBDA_TASK_ROOT}
 
 
-FROM python:3.12-slim
+FROM public.ecr.aws/lambda/python:3.12
 
-WORKDIR /app
+ARG LANGUAGE_CODE
 
-# Copy dependencies from builder stage
-COPY --from=builder /app/dependencies /usr/local/lib/python3.12/site-packages/
+# Copy dependencies from first stage
+COPY --from=builder ${LAMBDA_TASK_ROOT}/ ${LAMBDA_TASK_ROOT}/
 
 # Copy application code
-ENV APP_DIR=/app
+COPY inflections/ ${LAMBDA_TASK_ROOT}
 
-COPY inflections/ ${APP_DIR}/
-
-# Expose the Flask port
-EXPOSE 5000
-
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV FLASK_APP=webserver.py
-
-WORKDIR ${APP_DIR}
+# Copy pre-trained model
+COPY models/trained_model-${LANGUAGE_CODE}.zip ${LAMBDA_TASK_ROOT}/verbecc/data/models
 
 # Run the Flask application with gunicorn for production
-CMD ["python3", "-m", "gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "webserver:app"]
+CMD [ "lambda_handler.handler" ]

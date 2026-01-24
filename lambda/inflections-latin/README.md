@@ -5,13 +5,6 @@ Portuguese and Romanian. It is based on the `verbecc` library, so any features a
 
 Most notably, only conjugations are supported.
 
-## Deployment
-
-This component is not deployed to Lambda, because models cannot be downloaded at runtime.
-It is built as a webserver instead. This webserver is likely (?) to be deployed onto ECS/Fargate,
-with a Lambda scaling down to zero to minimize costs. Start-up times and memory consumption have to be
-measured to weigh UX against cost-effectiveness.
-
 ## Build instructions
 
 ```shell
@@ -22,10 +15,25 @@ docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflect
 docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-latin:0.1.0
 ```
 
-## Testing
+## Local Testing
 
-```shell
-docker run -p 5002:5000 grammr/inflections-latin:0.2.0
+You can test the Lambda image locally using Docker and the Lambda Runtime Interface Emulator (RIE),
+which is included in the AWS Lambda base images.
 
-curl -X POST http://localhost:5002/inflect -d '{"lemma": "essere", "pos": "VERB", "language": "it"}'
-```
+1. Run the container:
+
+   ```bash
+   docker run -p 9000:8080 grammr/inflections-latin:0.2.0
+   ```
+
+2. Send a test request:
+
+   ```bash
+   curl -X POST "http://localhost:9000/2015-03-31/functions/function/invocations" \
+     -H "Content-Type: application/json" \
+     -d '{"body": "{\"lemma\": \"essere\", \"pos\": \"VERB\", \"language\": \"it\"}"}'
+   ```
+
+**Note:** When testing locally with RIE, the request must wrap the body in a Lambda event structure with a `body`
+field containing JSON-encoded content. The response will also be in Lambda response format with `statusCode` and `body`.
+You also need to explicitly specify the `application/json` Content-Type.

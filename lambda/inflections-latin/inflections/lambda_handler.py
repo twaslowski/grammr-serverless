@@ -14,9 +14,7 @@ import lambda_util
 from domain.inflection import Inflections
 from domain.inflection_request import InflectionRequest
 from inflector import InflectionError, Inflector
-from model_utils import download_model_from_s3, is_model_present
 from pydantic.v1 import ValidationError
-from verbecc import LangCodeISO639_1
 
 logger = logging.getLogger("root")
 logger.setLevel(logging.INFO)
@@ -70,10 +68,6 @@ def handler(event, _):
                 422,
                 f"Part of speech '{request.part_of_speech.value}' cannot be conjugated",
             )
-
-        # Fetch model
-        if not is_model_present(request.language):
-            download_model_from_s3(request.language)
 
         inflector = Inflector(request.language)
         inflections = inflector.inflect(lemma=request.lemma)
