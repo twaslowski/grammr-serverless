@@ -19,6 +19,7 @@ import json
 import sys
 
 import lambda_handler
+from inflector import Inflector
 
 
 def main():
@@ -77,6 +78,13 @@ Example event.json:
     # Exit with non-zero status if the request failed
     if response.get("statusCode", 200) >= 400:
         sys.exit(1)
+
+
+def generate_models():
+    # Use this to generate the pre-trained model archives
+    for lang in ["fr", "es", "it", "pt"]:
+        inflector = Inflector(lang)
+        print("Initialized inflector, model generated")
 
 
 if __name__ == "__main__":

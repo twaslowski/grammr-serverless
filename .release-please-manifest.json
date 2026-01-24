@@ -1,5 +1,5 @@
 {
-  "morphology": "0.1.1",
-  "inflections-ru": "0.1.1",
-  "inflections-latin": "0.1.0"
+  "./lambda/morphology": "0.1.1",
+  "./lambda/inflections-ru": "0.1.1",
+  "./lambda/inflections-latin": "0.1.0"
 }

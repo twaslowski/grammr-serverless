@@ -4,16 +4,13 @@
   "tag-separator": "@",
   "separate-pull-requests": true,
   "packages": {
-    "morphology": {
-      "path": "lambda/morphology",
+    "lambda/morphology": {
       "release-type": "python"
     },
-    "inflections-ru": {
-      "path": "lambda/inflections-ru",
+    "lambda/inflections-ru": {
       "release-type": "python"
     },
-    "inflections-latin": {
-      "path": "lambda/inflections-latin",
+    "lambda/inflections-latin": {
       "release-type": "python"
     }
   },
