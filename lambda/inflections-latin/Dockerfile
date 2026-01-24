@@ -19,8 +19,9 @@ COPY --from=builder ${LAMBDA_TASK_ROOT}/ ${LAMBDA_TASK_ROOT}/
 # Copy application code
 COPY inflections/ ${LAMBDA_TASK_ROOT}
 
-# Copy pre-trained model
+# Copy pre-trained model, overwrite verbecc config (as the library exposes no way to provide configuration explicitly)
 COPY models/trained_model-${LANGUAGE_CODE}.zip ${LAMBDA_TASK_ROOT}/verbecc/data/models
+COPY logging_config.yaml ${LAMBDA_TASK_ROOT}/verbecc/config/logging_config.yaml
 
 # Run the Flask application with gunicorn for production
 CMD [ "lambda_handler.handler" ]
