@@ -5,6 +5,7 @@ This module provides functionality to inflect Russian words based on
 grammatical features using pymorphy3.
 """
 
+import json
 import logging
 
 import feature_retriever
@@ -110,9 +111,11 @@ class Inflector:
             POSMismatchError: If the parsed POS doesn't match the expected POS.
         """
         parsed = self._get_validated_parse(word, expected_pos)
-        logger.info(
-            "Parsed '%s' with score %.2f, POS: %s", word, parsed.score, parsed.tag.POS
-        )
+        logger.info(json.dumps({
+            "word": word,
+            "score": parsed.score,
+            "pos": parsed.tag.POS
+        }))
 
         return [
             self._create_inflection(parsed, feature_set) for feature_set in features
