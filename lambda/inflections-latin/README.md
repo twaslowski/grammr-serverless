@@ -37,3 +37,13 @@ which is included in the AWS Lambda base images.
 **Note:** When testing locally with RIE, the request must wrap the body in a Lambda event structure with a `body`
 field containing JSON-encoded content. The response will also be in Lambda response format with `statusCode` and `body`.
 You also need to explicitly specify the `application/json` Content-Type.
+
+## Building all
+
+Use this script until proper CI is built.
+
+```shell
+export LANGUAGE_CODE=es
+docker build --build-arg LANGUAGE_CODE=$LANGUAGE_CODE -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-latin:0.2.0-$LANGUAGE_CODE .
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-latin:0.2.0-$LANGUAGE_CODE
+```
