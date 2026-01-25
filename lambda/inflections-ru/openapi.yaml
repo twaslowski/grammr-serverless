@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Russian Inflections API
   description: |
-    AWS Lambda service for generating inflected forms of Russian words.
+    AWS Lambda service for generating inflected forms of words in various languages.
     Given a lemma (base form) and part of speech, this API returns all possible
     inflected forms with their grammatical features.
   version: 1.0.0
@@ -64,6 +64,12 @@ paths:
                         value: "SING"
         "400":
           description: Bad request - inflection error (low confidence or POS mismatch)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Bad request - POS cannot be inflected
           content:
             application/json:
               schema:

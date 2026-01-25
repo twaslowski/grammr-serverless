@@ -15,6 +15,7 @@ import {
   LucideIcon,
   ArrowRight,
   HammerIcon,
+  HelpCircleIcon,
 } from "lucide-react";
 import { LanguageCode } from "@/types/languages";
 
@@ -60,6 +61,12 @@ const defaultNavItems: DashboardNavItem[] = [
     description: "Manage your profile, languages, and preferences",
     href: "/dashboard/profile",
     icon: Settings,
+  },
+  {
+    title: "Help & Support",
+    description: "Ask questions, get help & submit feedback",
+    href: "/dashboard/help",
+    icon: HelpCircleIcon,
   },
 ];
 
