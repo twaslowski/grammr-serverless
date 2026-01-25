@@ -101,8 +101,8 @@ export function TranslationResult({
           <div className="flex gap-x-2">
             <CreateFlashcardDialog
               compact={true}
-              front={originalText}
-              translation={translatedText}
+              front={translatedText}
+              translation={originalText}
             />
             <TTSButton text={translatedText} />
           </div>
@@ -131,15 +131,6 @@ export function TranslationResult({
             return null;
           })}
         </p>
-      </div>
-
-      {/* Add translated phrase to flashcards */}
-      <div className="flex justify-end">
-        <CreateFlashcardDialog
-          front={translatedText}
-          type="phrase"
-          translation={originalText || ""}
-        />
       </div>
     </div>
   );

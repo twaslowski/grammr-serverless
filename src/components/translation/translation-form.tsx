@@ -8,7 +8,6 @@ import { TranslationResult } from "./translation-result";
 import { translatePhrase } from "@/lib/translation";
 import { Profile } from "@/types/profile";
 import { getLanguageByCode } from "@/lib/languages";
-import { LanguageCode } from "@/types/languages";
 import { ArrowRightLeft, Loader2 } from "lucide-react";
 
 interface TranslationFormProps {
@@ -35,8 +34,8 @@ export function TranslationForm({ profile }: TranslationFormProps) {
     ? profile.target_language
     : profile.source_language;
 
-  const sourceLanguageInfo = getLanguageByCode(sourceLanguage as LanguageCode);
-  const targetLanguageInfo = getLanguageByCode(targetLanguage as LanguageCode);
+  const sourceLanguageInfo = getLanguageByCode(sourceLanguage);
+  const targetLanguageInfo = getLanguageByCode(targetLanguage);
 
   const handleTranslate = async () => {
     if (!text.trim()) return;

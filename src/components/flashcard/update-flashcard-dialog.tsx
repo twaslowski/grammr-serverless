@@ -81,7 +81,7 @@ export function UpdateFlashcardDialog({
     }
   };
 
-  const handleSwapSides = () => {
+  const handleSwap = () => {
     const oldFront = front;
     setFront(translation);
     setTranslation(oldFront);
@@ -113,8 +113,9 @@ export function UpdateFlashcardDialog({
                 <Label htmlFor="front">Front (Word/Phrase)</Label>
                 <Button
                   type="button"
-                  onClick={handleSwapSides}
-                  className="w-4 h-4 bg-transparent hover:bg-transparent text-white"
+                  onClick={handleSwap}
+                  className="h-4 w-4 p-2"
+                  variant="ghost"
                 >
                   <ArrowLeftRight />
                 </Button>
@@ -132,8 +133,9 @@ export function UpdateFlashcardDialog({
                 <Label htmlFor="translation">Translation</Label>
                 <Button
                   type="button"
-                  onClick={handleSwapSides}
-                  className="w-4 h-4 bg-transparent hover:bg-transparent text-white"
+                  onClick={handleSwap}
+                  className="h-4 w-4 p-2"
+                  variant="ghost"
                 >
                   <ArrowLeftRight />
                 </Button>
