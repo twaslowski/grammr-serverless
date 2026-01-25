@@ -8,7 +8,7 @@ import Link from "next/link";
 export function UserButton() {
   return (
     <Button aria-label="user-menu">
-      <Link href={"/dashboard"}>
+      <Link href={"/dashboard/profile"}>
         <UserIcon />
       </Link>
     </Button>
