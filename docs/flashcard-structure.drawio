@@ -1,9 +1,48 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" version="29.3.4">
   <diagram name="Page-1" id="lqAODSovcobwGRqJnA8J">
-    <mxGraphModel>
+    <mxGraphModel dx="1018" dy="660" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-4" edge="1" parent="1" source="BFNeEF5j6ymg7yZ4KrtI-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="BFNeEF5j6ymg7yZ4KrtI-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=24;" value="слово" vertex="1">
+          <mxGeometry height="120" width="240" x="40" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=24;" value="wort" vertex="1">
+          <mxGeometry height="120" width="240" x="440" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="additional notes" vertex="1">
+          <mxGeometry height="30" width="140" x="490" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-6" edge="1" parent="1" source="BFNeEF5j6ymg7yZ4KrtI-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="BFNeEF5j6ymg7yZ4KrtI-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=24;" value="&lt;div&gt;Предложение состоит из нескольких слов&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="240" x="40" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontSize=24;" value="" vertex="1">
+          <mxGeometry height="120" width="240" x="440" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-14" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="150" width="390" x="380" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-10" parent="BFNeEF5j6ymg7yZ4KrtI-14" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="140" width="360" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-12" parent="BFNeEF5j6ymg7yZ4KrtI-14" style="rounded=0;whiteSpace=wrap;html=1;" value="Singular" vertex="1">
+          <mxGeometry height="40" width="150" x="30" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-13" parent="BFNeEF5j6ymg7yZ4KrtI-14" style="rounded=0;whiteSpace=wrap;html=1;" value="Plural" vertex="1">
+          <mxGeometry height="40" width="150" x="180" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-11" parent="BFNeEF5j6ymg7yZ4KrtI-14" style="rounded=0;whiteSpace=wrap;html=1;" value="Inflection Table" vertex="1">
+          <mxGeometry height="30" width="170" x="230" as="geometry" />
+        </mxCell>
+        <mxCell id="BFNeEF5j6ymg7yZ4KrtI-15" parent="BFNeEF5j6ymg7yZ4KrtI-14" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="70" width="300" x="30" y="60" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
