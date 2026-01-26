@@ -3,7 +3,14 @@ import { LanguageCodeSchema } from "@/types/languages";
 import { FeatureSchema } from "@/types/feature";
 
 // Part of Speech enum
-export const PartOfSpeechEnum = z.enum(["NOUN", "ADJ", "VERB", "AUX"]);
+export const PartOfSpeechEnum = z.enum([
+    // Open class words
+    "ADJ", "ADV", "INTJ", "NOUN", "PROPN", "VERB",
+    // Closed class words
+    "ADP", "AUX", "CCONJ", "DET", "NUM", "PART", "PRON", "SCONJ",
+    // Other
+    "PUNCT", "SYM", "X"
+]);
 export type PartOfSpeech = z.infer<typeof PartOfSpeechEnum>;
 
 // Data structure for inflections request
