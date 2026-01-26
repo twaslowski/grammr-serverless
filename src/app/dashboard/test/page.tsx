@@ -1,28 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { PageLayout } from "@/components/page-header";
 import { WordDetailsDialogFull } from "@/components/translation/word-details-dialog-full";
-import {TokenMorphology} from "@/types/morphology";
-import {Paradigm} from "@/types/inflections";
+import {InflectionSchema, ParadigmSchema, PartOfSpeechEnum} from "@/types/inflections";
+import { z } from "zod";
+import {FeatureSchema} from "@/types/feature";
+
+const NewTypeSchema = z.object({
+  phrase: z.string(),
+  tokens: z.array(
+    z.object({
+        text: z.string(),
+        lemma: z.string(),
+        pos: PartOfSpeechEnum,
+        features: z.array(FeatureSchema).default([]),
+        paradigm: ParadigmSchema.optional()
+    })
+  ),
+});
+type NewType = z.infer<typeof NewTypeSchema>;
 
 export default function TestPage() {
   // State for JSON input and parsed object
   const [jsonInput, setJsonInput] = useState("");
-  const [parsed, setParsed] = useState<{ morphology: TokenMorphology; paradigm: Paradigm, word: string, translation: string } | undefined>(undefined);
+  const [parsed, setParsed] = useState<NewType | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
 
   const handleJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setJsonInput(e.target.value);
     try {
       const obj = JSON.parse(e.target.value);
-      setParsed({
-        morphology: obj.morphology as TokenMorphology,
-        paradigm: obj.paradigm as Paradigm,
-        translation: obj.translation,
-        word: obj.word
-      });
-      setError(null);
+      const p = NewTypeSchema.safeParse(obj);
+      if (p.success) {
+          setParsed(p.data);
+      } else {
+          setError(p.error.message)
+      }
     } catch (err) {
       setError("Invalid JSON");
     }
@@ -52,14 +66,18 @@ export default function TestPage() {
           />
           {error && <div style={{ color: "red" }}>{error}</div>}
         </div>
-        {parsed && (
+      <div className="flex flex-row gap-x-2">
+        {parsed?.tokens && parsed.tokens.map((t, index) => (
           <WordDetailsDialogFull
-            word={parsed.word}
-            translation={parsed.translation}
-            morphology={parsed.morphology || {}}
-            paradigm={parsed.paradigm || {}}
+            key={index}
+            word={t.text}
+            translation={""}
+            morphology={t || {}}
+            paradigm={t.paradigm}
+            trigger={<p className="cursor-pointer">{t.text}</p>}
           />
-        )}
+        ))}
+      </div>
       </>
     </PageLayout>
   );

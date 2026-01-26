@@ -26,7 +26,7 @@ interface WordDetailsDialogProps {
   word: string;
   translation: string;
   morphology: TokenMorphology;
-  paradigm: Paradigm;
+  paradigm?: Paradigm;
   trigger?: React.ReactNode;
 }
 
@@ -68,10 +68,14 @@ export function WordDetailsDialogFull({
               <p className="font-medium text-lg">{word}</p>
             </div>
             <div>
+            {translation && (
+              <>
               <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
                 Translation
               </p>
               <p className="font-medium text-lg text-primary">{translation}</p>
+              </>
+            )}
             </div>
             {morphology && (
               <div className="grid grid-cols-2 gap-4">
@@ -115,10 +119,12 @@ export function WordDetailsDialogFull({
           </div>
 
           {/* Inflections section */}
+          {paradigm && (
           <div>
             <h3 className="font-semibold mb-3">Inflections</h3>
             <InflectionsTable paradigm={paradigm} displayAddFlashcard={false} />
           </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
