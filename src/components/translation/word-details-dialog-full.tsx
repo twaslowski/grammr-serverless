@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,64 +24,23 @@ import { getPosLabel } from "@/lib/feature-labels";
 
 interface WordDetailsDialogProps {
   word: string;
-  translation: string | null;
-  morphology: TokenMorphology | null;
+  translation: string;
+  morphology: TokenMorphology;
+  paradigm: Paradigm;
   trigger?: React.ReactNode;
-  isLoading?: boolean;
 }
 
-export function WordDetailsDialog({
+export function WordDetailsDialogFull({
   word,
   translation,
   morphology,
   trigger,
-  isLoading = false,
+  paradigm,
 }: WordDetailsDialogProps) {
   const [open, setOpen] = useState(false);
-  const [paradigm, setParadigm] = useState<Paradigm | null>(null);
-  const [isLoadingInflections, setIsLoadingInflections] = useState(false);
-  const [inflectionError, setInflectionError] = useState<string | null>(null);
-
-  const learnedLanguage = useProfile().target_language;
-
-  const isDataAvailable = translation && morphology;
-  const isDisabled = isLoading || !isDataAvailable;
 
   const handleOpenChange = async (newOpen: boolean) => {
-    // Don't allow opening if data isn't ready
-    if (newOpen && !isDataAvailable) {
-      return;
-    }
-
     setOpen(newOpen);
-
-    // Fetch inflections when dialog opens
-    if (newOpen && morphology && !paradigm && !isLoadingInflections) {
-      if (!morphology.pos) {
-        setInflectionError(
-          `Inflections not available for part of speech: ${getPosLabel(morphology.pos)}`,
-        );
-        return;
-      }
-
-      setIsLoadingInflections(true);
-      setInflectionError(null);
-
-      try {
-        const result = await getInflections({
-          lemma: morphology.lemma,
-          pos: morphology.pos,
-          language: learnedLanguage,
-        });
-        setParadigm(result);
-      } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Failed to load inflections";
-        setInflectionError(message);
-      } finally {
-        setIsLoadingInflections(false);
-      }
-    }
   };
 
   const defaultTrigger = (
@@ -91,27 +48,9 @@ export function WordDetailsDialog({
       variant="outline"
       size="sm"
       className="gap-1 h-8 text-xs"
-      disabled={isDisabled}
-      aria-label={
-        isLoading
-          ? "Loading word details"
-          : !isDataAvailable
-            ? "Translation data not available"
-            : `View detailed information for ${word}`
-      }
-      title={
-        isLoading
-          ? "Loading..."
-          : !isDataAvailable
-            ? "Translation data not available"
-            : "View detailed word information"
-      }
+      title="View detailed information"
     >
-      {isLoading ? (
-        <Loader2 className="h-3 w-3 animate-spin" />
-      ) : (
-        <Info className="h-3 w-3" />
-      )}
+      <Info className="h-3 w-3" />
     </Button>
   );
 
@@ -119,22 +58,6 @@ export function WordDetailsDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          {/* The right-padding avoids collision with the X card close button */}
-          <div className="flex items-center justify-between pr-8">
-            <DialogTitle>Word Details: {word}</DialogTitle>
-            <CreateFlashcardDialog
-              front={morphology?.lemma || word}
-              type="word"
-              translation={translation || ""}
-              paradigm={paradigm || undefined}
-              compact={true}
-            />
-          </div>
-          <DialogDescription>
-            View translation, morphology, and inflections for this word
-          </DialogDescription>
-        </DialogHeader>
         <div className="space-y-4">
           {/* Basic word info */}
           <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
@@ -194,23 +117,7 @@ export function WordDetailsDialog({
           {/* Inflections section */}
           <div>
             <h3 className="font-semibold mb-3">Inflections</h3>
-            {isLoadingInflections ? (
-              <div className="flex items-center justify-center gap-2 py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                <span className="text-sm text-muted-foreground">
-                  Loading inflections...
-                </span>
-              </div>
-            ) : inflectionError ? (
-              <div className="text-sm text-muted-foreground p-4 bg-muted rounded-lg">
-                {inflectionError}
-              </div>
-            ) : paradigm ? (
-              <InflectionsTable
-                paradigm={paradigm}
-                displayAddFlashcard={false}
-              />
-            ) : null}
+            <InflectionsTable paradigm={paradigm} displayAddFlashcard={false} />
           </div>
         </div>
       </DialogContent>
