@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { FeatureSchema } from "@/types/feature";
 import { LanguageCodeSchema } from "@/types/languages";
+import { PartOfSpeechEnum } from "@/types/inflections";
 
 // Request schema
 export const MorphologyRequestSchema = z.object({
@@ -13,7 +14,7 @@ export type MorphologyRequest = z.infer<typeof MorphologyRequestSchema>;
 export const TokenMorphologySchema = z.object({
   text: z.string(),
   lemma: z.string(),
-  pos: z.string(),
+  pos: PartOfSpeechEnum,
   features: z.array(FeatureSchema).default([]),
 });
 export type TokenMorphology = z.infer<typeof TokenMorphologySchema>;

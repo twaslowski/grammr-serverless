@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
 
     const { text, source_language, target_language } = validationResult.data;
 
+    // todo: could use the actual zod schema here
     const systemPrompt = `You are a professional translator. Translate the given text from ${source_language} to ${target_language}. 
 Respond ONLY with a JSON object in this exact format: {"translation": "your translation here"}
 Do not include any other text, explanations, or formatting.`;
@@ -71,6 +72,7 @@ Do not include any other text, explanations, or formatting.`;
       );
     }
 
+    // todo: extract tokens and count towards user rate limit
     const data = await response.json();
     const content = data.choices[0]?.message?.content;
 
