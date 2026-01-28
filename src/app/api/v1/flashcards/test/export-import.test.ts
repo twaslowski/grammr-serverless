@@ -212,7 +212,6 @@ describe("Deck ID Independence", () => {
         id: 101,
         deck_id: 2, // User A's deck ID
         front: "кошка",
-        type: "word" as const,
         back: { translation: "cat" },
         notes: "Animal",
         deck: { name: "Animals", user_id: "user-a-id" },
@@ -221,7 +220,6 @@ describe("Deck ID Independence", () => {
       // Transform to export format (same logic as export route)
       const exported = {
         front: userAFlashcard.front,
-        type: userAFlashcard.type,
         back: userAFlashcard.back,
         notes: userAFlashcard.notes,
         deck_name: userAFlashcard.deck.name,

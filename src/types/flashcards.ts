@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { ParadigmSchema } from "./inflections";
+import { ParadigmSchema, PartOfSpeechEnum } from "./inflections";
+import { FeatureSchema } from "@/types/feature";
 
 // Flashcard type enum
-export const FlashcardTypeEnum = z.enum(["word", "phrase"]);
+export const FlashcardTypeEnum = z.enum(["word", "phrase", "analysis"]);
 export type FlashcardType = z.infer<typeof FlashcardTypeEnum>;
 
 export const DeckSchema = z.object({
@@ -16,18 +17,47 @@ export const DeckSchema = z.object({
 });
 export type Deck = z.infer<typeof DeckSchema>;
 
-// Flashcard back content schema
-export const FlashcardBackSchema = z.object({
+// Separate schemas for each type
+export const ParadigmFlashcardBackSchema = z.object({
   translation: z.string(),
-  paradigm: ParadigmSchema.optional(),
+  type: z.literal("word"),
+  paradigm: ParadigmSchema,
 });
+export type ParadigmFlashcardBack = z.infer<typeof ParadigmFlashcardBackSchema>;
+
+export const PhraseFlashcardBackSchema = z.object({
+  translation: z.string(),
+  type: z.literal("phrase"),
+});
+export type PhraseFlashcardBack = z.infer<typeof PhraseFlashcardBackSchema>;
+
+export const AnalysisFlashcardBackSchema = z.object({
+  translation: z.string(),
+  type: z.literal("analysis"),
+  source_phrase: z.string(),
+  tokens: z.array(
+    z.object({
+      text: z.string(),
+      lemma: z.string(),
+      pos: PartOfSpeechEnum,
+      features: z.array(FeatureSchema).default([]),
+      paradigm: ParadigmSchema.optional(),
+    }),
+  ),
+});
+export type AnalysisFlashcardBack = z.infer<typeof AnalysisFlashcardBackSchema>;
+
+export const FlashcardBackSchema = z.discriminatedUnion("type", [
+  ParadigmFlashcardBackSchema,
+  PhraseFlashcardBackSchema,
+  AnalysisFlashcardBackSchema,
+]);
 export type FlashcardBack = z.infer<typeof FlashcardBackSchema>;
 
 export const FlashcardSchema = z.object({
   id: z.number(),
   deck_id: z.number(),
   front: z.string(),
-  type: FlashcardTypeEnum,
   back: FlashcardBackSchema,
   notes: z.string().nullable(),
   version: z.number(),

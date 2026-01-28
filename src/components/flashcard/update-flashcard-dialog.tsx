@@ -1,4 +1,4 @@
-import { Flashcard } from "@/types/flashcards";
+import {Flashcard, ParadigmFlashcardBack} from "@/types/flashcards";
 import {
   Dialog,
   DialogContent,
@@ -54,8 +54,7 @@ export function UpdateFlashcardDialog({
       // Reading response is not required, success can be derived from error or lack thereof
       await updateFlashcard(flashcard.id, {
         front,
-        type: flashcard.type,
-        back: { translation, paradigm },
+        back: { translation, paradigm, type: flashcard.back.type } as ParadigmFlashcardBack,
         notes,
       });
 
@@ -64,7 +63,7 @@ export function UpdateFlashcardDialog({
         onUpdate({
           ...flashcard,
           front,
-          back: { translation, paradigm },
+          back: { translation, paradigm, type: flashcard.back.type },
           notes,
         });
       }

@@ -3,20 +3,20 @@
 import React, { useState } from "react";
 import { PageLayout } from "@/components/page-header";
 import { WordDetailsDialogFull } from "@/components/translation/word-details-dialog-full";
-import { ParadigmSchema, PartOfSpeechEnum} from "@/types/inflections";
+import { ParadigmSchema, PartOfSpeechEnum } from "@/types/inflections";
 import { z } from "zod";
-import {FeatureSchema} from "@/types/feature";
+import { FeatureSchema } from "@/types/feature";
 
 const NewTypeSchema = z.object({
   source_phrase: z.string(),
   tokens: z.array(
     z.object({
-        text: z.string(),
-        lemma: z.string(),
-        pos: z.string().pipe(PartOfSpeechEnum).catch('X'),
-        features: z.array(FeatureSchema).default([]),
-        paradigm: ParadigmSchema.optional()
-    })
+      text: z.string(),
+      lemma: z.string(),
+      pos: z.string().pipe(PartOfSpeechEnum).catch("X"),
+      features: z.array(FeatureSchema).default([]),
+      paradigm: ParadigmSchema.optional(),
+    }),
   ),
 });
 type NewType = z.infer<typeof NewTypeSchema>;
@@ -33,9 +33,9 @@ export default function TestPage() {
       const obj = JSON.parse(e.target.value);
       const p = NewTypeSchema.safeParse(obj);
       if (p.success) {
-          setParsed(p.data);
+        setParsed(p.data);
       } else {
-          setError(p.error.message)
+        setError(p.error.message);
       }
     } catch (err) {
       setError("Invalid JSON");
@@ -66,18 +66,19 @@ export default function TestPage() {
           />
           {error && <div style={{ color: "red" }}>{error}</div>}
         </div>
-      <div className="flex flex-row gap-x-2">
-        {parsed?.tokens && parsed.tokens.map((t, index) => (
-          <WordDetailsDialogFull
-            key={index}
-            word={t.text}
-            translation={""}
-            morphology={t || {}}
-            paradigm={t.paradigm}
-            trigger={<p className="cursor-pointer">{t.text}</p>}
-          />
-        ))}
-      </div>
+        <div className="flex flex-row gap-x-2">
+          {parsed?.tokens &&
+            parsed.tokens.map((t, index) => (
+              <WordDetailsDialogFull
+                key={index}
+                word={t.text}
+                translation={""}
+                morphology={t || {}}
+                paradigm={t.paradigm}
+                trigger={<p className="cursor-pointer">{t.text}</p>}
+              />
+            ))}
+        </div>
       </>
     </PageLayout>
   );
