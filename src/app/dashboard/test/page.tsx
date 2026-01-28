@@ -3,17 +3,17 @@
 import React, { useState } from "react";
 import { PageLayout } from "@/components/page-header";
 import { WordDetailsDialogFull } from "@/components/translation/word-details-dialog-full";
-import {InflectionSchema, ParadigmSchema, PartOfSpeechEnum} from "@/types/inflections";
+import { ParadigmSchema, PartOfSpeechEnum} from "@/types/inflections";
 import { z } from "zod";
 import {FeatureSchema} from "@/types/feature";
 
 const NewTypeSchema = z.object({
-  phrase: z.string(),
+  source_phrase: z.string(),
   tokens: z.array(
     z.object({
         text: z.string(),
         lemma: z.string(),
-        pos: PartOfSpeechEnum,
+        pos: z.string().pipe(PartOfSpeechEnum).catch('X'),
         features: z.array(FeatureSchema).default([]),
         paradigm: ParadigmSchema.optional()
     })
