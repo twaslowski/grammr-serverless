@@ -21,6 +21,7 @@ import {
   getFeatureDisplayValue,
 } from "@/types/feature";
 import { getPosLabel } from "@/lib/feature-labels";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface WordDetailsDialogProps {
   word: string;
@@ -57,6 +58,24 @@ export function WordDetailsDialogFull({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
+      <VisuallyHidden>
+        <DialogHeader>
+          {/* The right-padding avoids collision with the X card close button */}
+          <div className="flex items-center justify-between pr-8">
+            <DialogTitle>Word Details: {word}</DialogTitle>
+            <CreateFlashcardDialog
+              front={morphology?.lemma || word}
+              type="word"
+              translation={translation || ""}
+              paradigm={paradigm || undefined}
+              compact={true}
+            />
+          </div>
+          <DialogDescription>
+            View translation, morphology, and inflections for this word
+          </DialogDescription>
+        </DialogHeader>
+      </VisuallyHidden>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <div className="space-y-4">
           {/* Basic word info */}
@@ -68,14 +87,16 @@ export function WordDetailsDialogFull({
               <p className="font-medium text-lg">{word}</p>
             </div>
             <div>
-            {translation && (
-              <>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                Translation
-              </p>
-              <p className="font-medium text-lg text-primary">{translation}</p>
-              </>
-            )}
+              {translation && (
+                <>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                    Translation
+                  </p>
+                  <p className="font-medium text-lg text-primary">
+                    {translation}
+                  </p>
+                </>
+              )}
             </div>
             {morphology && (
               <div className="grid grid-cols-2 gap-4">
@@ -120,10 +141,13 @@ export function WordDetailsDialogFull({
 
           {/* Inflections section */}
           {paradigm && (
-          <div>
-            <h3 className="font-semibold mb-3">Inflections</h3>
-            <InflectionsTable paradigm={paradigm} displayAddFlashcard={false} />
-          </div>
+            <div>
+              <h3 className="font-semibold mb-3">Inflections</h3>
+              <InflectionsTable
+                paradigm={paradigm}
+                displayAddFlashcard={false}
+              />
+            </div>
           )}
         </div>
       </DialogContent>

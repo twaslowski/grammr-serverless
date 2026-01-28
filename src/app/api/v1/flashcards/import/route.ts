@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { FlashcardImportRequestSchema } from "../schema";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 // POST /api/v1/flashcards/import - Import flashcards to the default deck
 export async function POST(request: NextRequest) {
@@ -12,24 +13,28 @@ export async function POST(request: NextRequest) {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser();
+    console.log("Got here")
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    console.log("reading")
     const body = await request.json();
+    console.log("validating")
     const validationResult = FlashcardImportRequestSchema.safeParse(body);
 
     if (!validationResult.success) {
       return NextResponse.json(
         {
           error: "Invalid import data",
-          details: validationResult.error.flatten(),
+          details: z.flattenError(validationResult.error),
         },
         { status: 400 },
       );
     }
 
+    console.log("importing")
     const { flashcards } = validationResult.data;
 
     if (flashcards.length === 0) {
@@ -58,7 +63,6 @@ export async function POST(request: NextRequest) {
     const flashcardsToInsert = flashcards.map((card) => ({
       deck_id: defaultDeck.id,
       front: card.front,
-      type: card.type,
       back: card.back,
       notes: card.notes || null,
     }));
