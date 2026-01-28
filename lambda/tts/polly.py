@@ -43,11 +43,15 @@ def lambda_handler(event, _):
         try:
             parsed = Request(**data)
         except ValueError as e:
-            logger.info(json.dumps({
-                "success": False,
-                "reason": str(e),
-                "raw_event": event,
-            }))
+            logger.info(
+                json.dumps(
+                    {
+                        "success": False,
+                        "reason": str(e),
+                        "raw_event": event,
+                    }
+                )
+            )
             return {"statusCode": 400, "body": json.dumps({"error": str(e)})}
 
         text = parsed.text
@@ -68,13 +72,17 @@ def lambda_handler(event, _):
 
         audio_stream = base64.b64encode(response["AudioStream"].read()).decode("utf-8")
 
-        logger.info(json.dumps({
-            "success": True,
-            "language": language,
-            "voice": voice,
-            "engine": engine,
-            "text_length": len(text),
-        }))
+        logger.info(
+            json.dumps(
+                {
+                    "success": True,
+                    "language": language,
+                    "voice": voice,
+                    "engine": engine,
+                    "text_length": len(text),
+                }
+            )
+        )
         return {
             "statusCode": 200,
             "headers": {
@@ -85,9 +93,13 @@ def lambda_handler(event, _):
             "isBase64Encoded": True,
         }
     except Exception as e:
-        logger.info(json.dumps({
-            "success": False,
-            "reason": str(e),
-            "raw_event": event,
-        }))
+        logger.info(
+            json.dumps(
+                {
+                    "success": False,
+                    "reason": str(e),
+                    "raw_event": event,
+                }
+            )
+        )
         return {"statusCode": 500, "body": json.dumps({"error": str(e)})}

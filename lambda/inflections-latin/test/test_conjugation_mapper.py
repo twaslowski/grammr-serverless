@@ -297,4 +297,3 @@ class TestMapConjugationIntegration:
         result = map_conjugation(conjugation, "test_lemma")
 
         assert expected_gender in result.features
-
