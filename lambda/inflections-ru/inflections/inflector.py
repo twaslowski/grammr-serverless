@@ -5,12 +5,11 @@ This module provides functionality to inflect Russian words based on
 grammatical features using pymorphy3.
 """
 
-import json
 import logging
 
 import feature_retriever
 import pymorphy3
-from domain.inflection import Inflection
+from domain.inflection import Inflection, Inflections
 from domain.part_of_speech import PartOfSpeech
 from pymorphy3.analyzer import Parse
 
@@ -35,15 +34,16 @@ logger = logging.getLogger(__name__)
 class InflectionError(Exception):
     """Base exception for inflection-related errors."""
 
-    pass
-
-
-class LowConfidenceError(InflectionError):
-    """Raised when the best parse has a confidence score below the threshold."""
-
-    def __init__(self, word: str, threshold: float, parse: pymorphy3.analyzer.Parse):
+    def __init__(
+        self,
+        word: str,
+        expected_pos: PartOfSpeech,
+        threshold: float,
+        parse: pymorphy3.analyzer.Parse,
+    ):
         self.word = word
-        self.score = parse.score
+        self.expected_pos = expected_pos
+        self.parse = parse
         self.threshold = threshold
         super().__init__(
             f"Best parse for '{word}' has score {parse.score:.2f}, "
@@ -51,17 +51,26 @@ class LowConfidenceError(InflectionError):
         )
 
 
+class LowConfidenceError(InflectionError):
+    """Raised when the best parse has a confidence score below the threshold."""
+
+    def __init__(
+        self,
+        word: str,
+        expected_pos: PartOfSpeech,
+        threshold: float,
+        parse: pymorphy3.analyzer.Parse,
+    ):
+        super().__init__(word, expected_pos, threshold, parse)
+
+
 class POSMismatchError(InflectionError):
     """Raised when the parsed POS doesn't match the expected POS."""
 
-    def __init__(self, word: str, expected_pos: PartOfSpeech, actual_pos: str):
-        self.word = word
-        self.expected_pos = expected_pos
-        self.actual_pos = actual_pos
-        super().__init__(
-            f"POS mismatch for '{word}': expected {expected_pos.name}, "
-            f"got {actual_pos}"
-        )
+    def __init__(
+        self, word: str, expected_pos: PartOfSpeech, parse: pymorphy3.analyzer.Parse
+    ):
+        super().__init__(word, expected_pos, 0.0, parse)
 
 
 class Inflector:
@@ -93,7 +102,7 @@ class Inflector:
         word: str,
         features: list[set[str]],
         expected_pos: PartOfSpeech,
-    ) -> list[Inflection]:
+    ) -> Inflections:
         """
         Inflect a word according to the provided grammatical features.
 
@@ -110,16 +119,17 @@ class Inflector:
             LowConfidenceError: If the best parse has a score below the threshold.
             POSMismatchError: If the parsed POS doesn't match the expected POS.
         """
-        parsed = self._get_validated_parse(word, expected_pos)
-        logger.info(json.dumps({
-            "word": word,
-            "score": parsed.score,
-            "pos": parsed.tag.POS
-        }))
+        parse = self._get_validated_parse(word, expected_pos)
 
-        return [
-            self._create_inflection(parsed, feature_set) for feature_set in features
+        inflections = [
+            self._create_inflection(parse, feature_set) for feature_set in features
         ]
+        return Inflections(
+            part_of_speech=expected_pos,
+            lemma=parse.normal_form,
+            inflections=inflections,
+            _parse=parse
+        )
 
     def _get_validated_parse(
         self,
@@ -151,14 +161,16 @@ class Inflector:
 
         # Validate confidence score
         if best_parse.score < self.confidence_threshold:
-            raise LowConfidenceError(word, self.confidence_threshold, best_parse)
+            raise LowConfidenceError(
+                word, expected_pos, self.confidence_threshold, best_parse
+            )
 
         # Validate part of speech
         actual_pos = best_parse.tag.POS
         mapped_pos = _PYMORPHY_POS_MAP.get(actual_pos)
 
         if mapped_pos != expected_pos:
-            raise POSMismatchError(word, expected_pos, actual_pos)
+            raise POSMismatchError(word, expected_pos, best_parse)
 
         return best_parse
 
