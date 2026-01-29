@@ -10,7 +10,8 @@
     },
     "lambda/inflections-ru": {
       "release-type": "python",
-      "separate-pull-requests": true
+      "separate-pull-requests": true,
+      "release-as": "0.1.2"
     },
     "lambda/inflections-latin": {
       "release-type": "python",

@@ -28,7 +28,7 @@ class TestInflect:
             word="слово",  # "word" in Russian
             features=features,
             expected_pos=PartOfSpeech.NOUN,
-        )
+        ).inflections
 
         assert len(result) == 1
         assert result[0].lemma == "слово"
@@ -43,7 +43,7 @@ class TestInflect:
             word="слово",
             features=features,
             expected_pos=PartOfSpeech.NOUN,
-        )
+        ).inflections
 
         assert len(result) == 1
         assert result[0].lemma == "слово"
@@ -62,7 +62,7 @@ class TestInflect:
             word="дом",  # "house" in Russian
             features=features,
             expected_pos=PartOfSpeech.NOUN,
-        )
+        ).inflections
 
         assert len(result) == 3
         # All should have the same lemma
@@ -77,7 +77,7 @@ class TestInflect:
             word="большой",  # "big" in Russian
             features=features,
             expected_pos=PartOfSpeech.ADJ,
-        )
+        ).inflections
 
         assert len(result) == 1
         assert result[0].lemma == "большой"
@@ -91,7 +91,7 @@ class TestInflect:
             word="слово",
             features=features,
             expected_pos=PartOfSpeech.NOUN,
-        )
+        ).inflections
 
         assert len(result) == 1
 
@@ -113,7 +113,7 @@ class TestGetValidatedParse:
                 inflector._get_validated_parse("тест", PartOfSpeech.NOUN)
 
             assert exc_info.value.word == "тест"
-            assert exc_info.value.score == 0.3
+            assert exc_info.value.parse.score == 0.3
             assert exc_info.value.threshold == 0.65
 
     def test_raises_pos_mismatch_error_for_wrong_pos(self):
@@ -131,7 +131,7 @@ class TestGetValidatedParse:
 
             assert exc_info.value.word == "бежать"
             assert exc_info.value.expected_pos == PartOfSpeech.NOUN
-            assert exc_info.value.actual_pos == "VERB"
+            assert exc_info.value.parse.tag.POS == "VERB"
 
     def test_selects_highest_confidence_parse(self):
         """Test that the parse with highest confidence is selected."""
@@ -225,7 +225,7 @@ class TestPOSMapping:
             word="книга",  # "book" in Russian
             features=features,
             expected_pos=PartOfSpeech.NOUN,
-        )
+        ).inflections
         assert len(result) == 1
 
     def test_adjective_full_form_mapping(self):
@@ -235,7 +235,7 @@ class TestPOSMapping:
             word="красивый",  # "beautiful" in Russian
             features=features,
             expected_pos=PartOfSpeech.ADJ,
-        )
+        ).inflections
         assert len(result) == 1
 
 
@@ -256,7 +256,6 @@ class TestInflectorConfiguration:
         """Test that a lower threshold allows more parses through."""
         # This word may have a lower confidence score
         inflector_low = Inflector(confidence_threshold=0.1)
-        inflector_high = Inflector(confidence_threshold=0.9)
 
         features = [{"sing", "nomn"}]
 
@@ -265,5 +264,5 @@ class TestInflectorConfiguration:
             word="слово",
             features=features,
             expected_pos=PartOfSpeech.NOUN,
-        )
+        ).inflections
         assert len(result) == 1
