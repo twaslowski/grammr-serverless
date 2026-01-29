@@ -22,6 +22,8 @@ locals {
     version = var.morphology_lambda_version
   }
 
+  inflections_ru_version = "0.1.4"
+
   inflections_latin = {
     languages = toset(["es", "it", "pt"])
     version = "0.3.0"

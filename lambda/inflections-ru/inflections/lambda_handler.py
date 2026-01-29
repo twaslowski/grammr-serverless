@@ -64,16 +64,18 @@ def handler(event, _):
             expected_pos=request.part_of_speech,
         )
 
-        logger.info(json.dumps(
-            {
-                "success": True,
-                "word": request.lemma,
-                "part_of_speech": request.part_of_speech.name,
-                "detected_part_of_speech": inflections._parse.tag.POS.name,
-                "confidence": inflections._parse.score,
-                "inflections_count": len(inflections.inflected_forms),
-            }
-        ))
+        logger.info(
+            json.dumps(
+                {
+                    "success": True,
+                    "word": request.lemma,
+                    "part_of_speech": request.part_of_speech.name,
+                    "detected_part_of_speech": inflections._parse.tag.POS,
+                    "confidence": inflections._parse.score,
+                    "inflections_count": len(inflections.inflections),
+                }
+            )
+        )
         return lambda_util.ok(inflections.json())
 
     except InflectionError as e:

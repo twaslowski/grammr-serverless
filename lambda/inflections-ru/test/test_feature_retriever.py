@@ -9,8 +9,12 @@ import feature_retriever
 import pytest
 from domain.feature import Case, Gender, Number, Person, Tense
 from domain.part_of_speech import PartOfSpeech
-from feature_retriever import (_get_enum_member, _get_feature, derive_features,
-                               map_to_standardized_features)
+from feature_retriever import (
+    _get_enum_member,
+    _get_feature,
+    derive_features,
+    map_to_standardized_features,
+)
 
 
 class TestDeriveFeatures:

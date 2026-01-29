@@ -33,7 +33,7 @@ module "inflection_ru_lambda" {
   create_package = false
   package_type   = "Image"
   architectures  = ["arm64"]
-  image_uri      = "${data.aws_ecr_repository.inflections_ru_repository.repository_url}:${data.aws_ecr_repository.inflections_ru_repository.most_recent_image_tags[0]}"
+  image_uri      = "${data.aws_ecr_repository.inflections_ru_repository.repository_url}:${local.inflections_ru_version}"
 
   memory_size = 1024
   timeout     = 30
@@ -81,6 +81,8 @@ module "polly_lambda" {
   memory_size   = 256
   timeout       = 30
   source_path   = "${path.module}/../../lambda/tts"
+
+  trigger_on_package_timestamp = false
 
   cloudwatch_logs_retention_in_days = 14
 

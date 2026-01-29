@@ -9,10 +9,10 @@ Build it like this:
 export AWS_ACCOUNT_ID=<AWS_ACCOUNT_ID>
 export AWS_REGION=<AWS_REGION>
 
-docker build -t grammr/inflections-ru:0.1.1
+docker build -t grammr/inflections-ru:0.1.2 .
 
-docker tag grammr/inflections-ru:0.1.1 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-ru:0.1.1
-docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-ru:0.1.1
+docker tag grammr/inflections-ru:0.1.2 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-ru:0.1.2
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-ru:0.1.2
 ```
 
 ## Local Testing

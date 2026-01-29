@@ -124,12 +124,13 @@ class Inflector:
         inflections = [
             self._create_inflection(parse, feature_set) for feature_set in features
         ]
-        return Inflections(
+        result = Inflections(
             part_of_speech=expected_pos,
             lemma=parse.normal_form,
             inflections=inflections,
-            _parse=parse
         )
+        result._parse = parse
+        return result
 
     def _get_validated_parse(
         self,

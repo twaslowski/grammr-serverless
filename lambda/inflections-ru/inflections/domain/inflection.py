@@ -5,7 +5,7 @@ This module defines the data structures for representing inflected words
 and collections of inflections.
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 from pymorphy3.analyzer import Parse
 
 from .feature import Feature
@@ -48,8 +48,7 @@ class Inflections(BaseModel):
     part_of_speech: PartOfSpeech
     lemma: str
     inflections: list[Inflection]
-    _parse: Parse
-
+    _parse: Parse = PrivateAttr()
 
     def json(self, **kwargs) -> dict:
         """Serialize the inflections container to a JSON-compatible dictionary."""

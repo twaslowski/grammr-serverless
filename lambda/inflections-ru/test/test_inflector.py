@@ -10,8 +10,12 @@ from unittest.mock import MagicMock, patch
 import pytest
 from domain.feature import Case, Number
 from domain.part_of_speech import PartOfSpeech
-from inflector import (DEFAULT_CONFIDENCE_THRESHOLD, Inflector,
-                       LowConfidenceError, POSMismatchError)
+from inflector import (
+    DEFAULT_CONFIDENCE_THRESHOLD,
+    Inflector,
+    LowConfidenceError,
+    POSMismatchError,
+)
 
 
 class TestInflect:
@@ -28,13 +32,18 @@ class TestInflect:
             word="слово",  # "word" in Russian
             features=features,
             expected_pos=PartOfSpeech.NOUN,
-        ).inflections
+        )
 
-        assert len(result) == 1
-        assert result[0].lemma == "слово"
-        assert result[0].inflected == "слово"
-        assert Case.NOM in result[0].features
-        assert Number.SING in result[0].features
+        assert result._parse is not None
+        assert result._parse.score > DEFAULT_CONFIDENCE_THRESHOLD
+        assert result._parse.tag.POS == "NOUN"
+
+        assert len(result.inflections) == 1
+
+        assert result.inflections[0].lemma == "слово"
+        assert result.inflections[0].inflected == "слово"
+        assert Case.NOM in result.inflections[0].features
+        assert Number.SING in result.inflections[0].features
 
     def test_inflect_noun_plural_genitive(self):
         """Test inflecting a Russian noun in plural genitive case."""
@@ -62,11 +71,14 @@ class TestInflect:
             word="дом",  # "house" in Russian
             features=features,
             expected_pos=PartOfSpeech.NOUN,
-        ).inflections
+        )
 
-        assert len(result) == 3
+        assert result._parse is not None
+        assert result._parse.score > DEFAULT_CONFIDENCE_THRESHOLD
+
+        assert len(result.inflections) == 3
         # All should have the same lemma
-        assert all(r.lemma == "дом" for r in result)
+        assert all(r.lemma == "дом" for r in result.inflections)
 
     def test_inflect_adjective(self):
         """Test inflecting a Russian adjective."""
