@@ -7,10 +7,12 @@ import sys
 def main(source_file: str, target_file: str):
     with open(source_file, "r") as f, open(target_file, "w") as t:
         reader = csv.reader(f, delimiter=",")
+        writer = csv.writer(t, delimiter="|")
         for line in reader:
             phrase = line[10]
+            translation = line[11]
             if phrase.strip():
-                t.write(f"{phrase}\n")
+                writer.writerow([phrase, translation])
 
 
 if __name__ == "__main__":

@@ -3,64 +3,92 @@ import logging
 import os
 import sys
 import datetime
+import csv
 
-import deepl
 import requests
 
 api_gw_base_url = os.environ["API_GW_URL"]
-deepl_auth_key = os.environ['DEEPL_API_KEY']
-
-_deepl_client = deepl.DeepLClient(deepl_auth_key)
+deepl_auth_key = os.environ["DEEPL_API_KEY"]
 
 _logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
-logging.getLogger("deepl").setLevel(level=logging.WARN)
+logging.getLogger("urllib3.connectionpool").setLevel(level=logging.WARN)
 
 
 def main(language: str):
-    with open(f"{language}.txt", "r", encoding="utf-8") as f, open(
-        f"{language}.json", "w", encoding="utf-8"
+    with open(f"data/{language}.csv", "r", encoding="utf-8") as f, open(
+        f"data/{language}.json", "w"
     ) as t:
-        lines = f.readlines()
+        r = csv.reader(f, delimiter="|")
         import_file_data = {
             "version": "1.0",
             "exported_at": datetime.datetime.now().isoformat(),
-            "flashcards": []
+            "flashcards": [],
         }
-        for idx, line in enumerate(lines[:2]):
+        for idx, line in enumerate(r):
+            if idx == 100:
+                return
+
+            phrase = line[0].strip()
+            translation = line[1].strip()
+
+            if not phrase or not translation:
+                _logger.warning("Skipping empty line or translation at index %s", idx)
+                continue
+
             # General flashcard data
-            flashcard = {"front": line.strip(), "notes": "", "deck_name": "Default Deck"}
+            flashcard = {
+                "front": phrase,
+                "notes": "",
+                "deck_name": "Default Deck",
+            }
 
             # Back data and morphology
-            back = {"type": "analysis", "source_phrase": line.strip()}
-            back.update(retrieve_morphology(line, language))
+            back = {
+                "type": "analysis",
+                "source_phrase": phrase,
+                "translation": translation,
+            }
 
-            # add translation
             try:
-                translation = retrieve_translation(line)
-                back["translation"] = translation
+                back.update(retrieve_morphology(phrase, language))
             except Exception as e:
-                _logger.error("Got exception: %s", e)
+                _logger.error(
+                    "Skipping phrase at index %s due to morphology retrieval error: %s",
+                    idx,
+                    e,
+                )
                 continue
 
             # Fetch inflections for each token, where applicable
             for token in back["tokens"]:
                 if token["pos"] in ["NOUN", "ADJ", "VERB", "AUX"]:
-                    inflections = retrieve_inflections(
-                        token["text"], token["pos"], language
-                    )
+                    try:
+                        inflections = retrieve_inflections(
+                            token["text"], token["pos"], language
+                        )
+                    except Exception as e:
+                        _logger.error(
+                            "Inflection retrieval error for token '%s' at index %s: %s",
+                            token["text"],
+                            idx,
+                            e,
+                        )
+                        continue
                     # If call was successful, enrich Token
                     if inflections and not inflections.get("error"):
                         token["paradigm"] = inflections
                         _logger.debug("Got inflections: %s", inflections)
 
+            # Enrich existing data
             flashcard["back"] = back
             import_file_data["flashcards"].append(flashcard)
 
-            if idx % 10 == 0:
-                _logger.info("Progress: %s/%s", idx, len(lines))
+        if idx % 10 == 0:
+            _logger.info("Progress: %s/%s", idx, sum(1 for _ in r))
 
-        t.write(f"{json.dumps(import_file_data)}\n")
+        # Dump to output file
+    t.write(f"{json.dumps(import_file_data, ensure_ascii=False)}\n")
 
 
 def retrieve_morphology(phrase: str, language: str) -> dict:
@@ -74,6 +102,8 @@ def retrieve_morphology(phrase: str, language: str) -> dict:
         response.status_code,
         response.json(),
     )
+    if response.status_code != 200:
+        raise Exception("Morphology retrieval failed")
     return response.json()
 
 
@@ -88,10 +118,9 @@ def retrieve_inflections(word: str, pos: str, language: str) -> dict:
         response.status_code,
         response.json(),
     )
+    if response.status_code != 200:
+        raise Exception("Inflection retrieval failed")
     return response.json()
-
-def retrieve_translation(phrase: str, target_lang: str = "EN-US") -> str:
-    return _deepl_client.translate_text(phrase, target_lang=target_lang).text
 
 
 if __name__ == "__main__":
