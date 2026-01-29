@@ -6,6 +6,7 @@ and collections of inflections.
 """
 
 from pydantic import BaseModel
+from pymorphy3.analyzer import Parse
 
 from .feature import Feature
 from .part_of_speech import PartOfSpeech
@@ -47,6 +48,8 @@ class Inflections(BaseModel):
     part_of_speech: PartOfSpeech
     lemma: str
     inflections: list[Inflection]
+    _parse: Parse
+
 
     def json(self, **kwargs) -> dict:
         """Serialize the inflections container to a JSON-compatible dictionary."""

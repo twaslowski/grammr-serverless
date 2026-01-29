@@ -4,12 +4,14 @@ import { InflectionForm } from "@/components/inflection";
 import { useProfile } from "@/components/dashboard/profile-provider";
 import { usePreflightWarmup } from "@/components/dashboard/use-preflight-warmup";
 import { PageLayout } from "@/components/page-header";
+import { getLanguageByCode } from "@/lib/languages";
 
 export default function InflectionsPage() {
   const profile = useProfile();
+  const languageInfo = getLanguageByCode(profile.target_language);
 
   // Trigger Lambda warmup on page load
-  usePreflightWarmup();
+  usePreflightWarmup(profile.target_language);
 
   return (
     <PageLayout
@@ -22,11 +24,29 @@ export default function InflectionsPage() {
       }}
     >
       <div className="w-full flex justify-center">
-        <InflectionForm
-          learnedLanguage={profile.target_language}
-          sourceLanguage={profile.source_language}
-        />
+        {(languageInfo && languageInfo.inflectionConfig && (
+          <InflectionForm
+            languageCode={languageInfo.code}
+            languageName={languageInfo.name}
+            distinguishPos={languageInfo.inflectionConfig.distinguishPos}
+            availablePos={languageInfo.inflectionConfig.pos}
+          />
+        )) || <LanguageNotSupportedPage />}
       </div>
     </PageLayout>
+  );
+}
+
+// this should never be called
+function LanguageNotSupportedPage() {
+  return (
+    <div className="text-center py-8">
+      <p className="text-lg text-red-600">
+        Inflections are not supported for your language.
+      </p>
+      <a href="/dashboard" className="text-blue-600 underline mt-2 block">
+        Return to Dashboard
+      </a>
+    </div>
   );
 }

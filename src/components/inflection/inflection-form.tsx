@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,33 +9,30 @@ import { Loader2 } from "lucide-react";
 import { getInflections, InflectionError } from "@/lib/inflections";
 import { Paradigm, PartOfSpeech } from "@/types/inflections";
 import { InflectionsTable } from "./inflections-table";
-import { getLanguageByCode } from "@/lib/languages";
 import { LanguageCode } from "@/types/languages";
-
-const POS_OPTIONS: { value: PartOfSpeech; label: string }[] = [
-  { value: "NOUN", label: "Noun" },
-  { value: "ADJ", label: "Adjective" },
-  { value: "VERB", label: "Verb" },
-  { value: "AUX", label: "Auxiliary" },
-];
+import { getPosLabel } from "@/lib/feature-labels";
 
 interface InflectionFormProps {
-  learnedLanguage: LanguageCode;
-  sourceLanguage: LanguageCode;
+  languageName: string;
+  languageCode: LanguageCode;
+  distinguishPos: boolean;
+  availablePos: PartOfSpeech[];
 }
 
-export function InflectionForm({ learnedLanguage }: InflectionFormProps) {
+export function InflectionForm({
+  languageName,
+  languageCode,
+  distinguishPos,
+  availablePos,
+}: InflectionFormProps) {
   const [word, setWord] = useState("");
-  const [pos, setPos] = useState<PartOfSpeech>("NOUN");
+  const [pos, setPos] = useState<PartOfSpeech>(availablePos[0]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<{
     message: string;
     isUserError: boolean;
   } | null>(null);
   const [result, setResult] = useState<Paradigm | null>(null);
-
-  // Get the user's learned language (target_language)
-  const languageInfo = getLanguageByCode(learnedLanguage);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +46,7 @@ export function InflectionForm({ learnedLanguage }: InflectionFormProps) {
       const response = await getInflections({
         lemma: word.trim(),
         pos,
-        language: learnedLanguage,
+        language: languageCode,
       });
       setResult(response);
     } catch (err) {
@@ -86,7 +83,7 @@ export function InflectionForm({ learnedLanguage }: InflectionFormProps) {
               <Input
                 id="word"
                 type="text"
-                placeholder={`Enter a ${languageInfo?.name || "word"} word...`}
+                placeholder={`Enter a ${languageName || "word"} word...`}
                 value={word}
                 onChange={(e) => setWord(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -95,23 +92,25 @@ export function InflectionForm({ learnedLanguage }: InflectionFormProps) {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="pos">Part of Speech</Label>
-              <div className="flex flex-wrap gap-2">
-                {POS_OPTIONS.map((option) => (
-                  <Button
-                    key={option.value}
-                    type="button"
-                    variant={pos === option.value ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setPos(option.value)}
-                    disabled={isLoading}
-                  >
-                    {option.label}
-                  </Button>
-                ))}
+            {distinguishPos && (
+              <div className="space-y-2">
+                <Label htmlFor="pos">Part of Speech</Label>
+                <div className="flex flex-wrap gap-2">
+                  {availablePos.map((opt) => (
+                    <Button
+                      key={opt}
+                      type="button"
+                      variant={pos === opt ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setPos(opt)}
+                      disabled={isLoading}
+                    >
+                      {getPosLabel(opt)}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <Button
               type="submit"
@@ -139,9 +138,7 @@ export function InflectionForm({ learnedLanguage }: InflectionFormProps) {
             <div
               className={`text-sm ${error.isUserError ? "text-yellow-600 dark:text-yellow-400" : "text-red-600 dark:text-red-400"}`}
             >
-              <strong>
-                {error.isUserError ? "Input Error" : "System Error"}:
-              </strong>{" "}
+              <strong>{error.isUserError ? "Error" : "System Error"}:</strong>{" "}
               {error.message}
             </div>
           </CardContent>

@@ -1,73 +1,56 @@
-import Link from "next/link";
+"use client";
+
+import React from "react";
 import { GithubIcon, Mail } from "lucide-react";
+
+const footerColumns = [
+  {
+    header: "Get in touch",
+    entries: [
+      <a
+        key="mail"
+        href="mailto:contact@grammr.app"
+        className="p-2 rounded-full bg-primary-500/20 text-primary-400 hover:bg-primary-500/40 hover:text-primary-300 transition-colors"
+      >
+        <Mail className="w-5 h-5" />
+      </a>,
+      <a
+        key="github"
+        href="https://github.com/twaslowski/grammr-serverless"
+        className="p-2 rounded-full bg-primary-500/20 text-primary-400 hover:bg-primary-500/40 hover:text-primary-300 transition-colors"
+      >
+        <GithubIcon className="w-5 h-5" />
+      </a>,
+    ],
+  },
+  {
+    header: "Legal",
+    entries: [
+      <a key="privacy" href="/legal">
+        Privacy Policy
+      </a>,
+    ],
+  },
+];
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t border-primary-700/50 py-12 mt-16">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-          {/* Product */}
-          <div>
-            <h4 className="font-semibold mb-4">Product</h4>
-            <ul className="space-y-2 text-sm text-primary-300">
-              <li>
-                <Link href="/dashboard" className="hover:transition-colors">
-                  Get Started
-                </Link>
-              </li>
-              <li>
-                <Link href="/#features" className="hover:transition-colors">
-                  Features
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/twaslowski/grammr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:transition-colors"
-                >
-                  GitHub
-                </a>
-              </li>
-            </ul>
+    <footer className="w-full border-t border-primary-700/50">
+      <div className="flex flex-row justify-between mx-4 mt-4">
+        {footerColumns.map((column, index) => (
+          <div key={`${column.header}-${index}`}>
+            <h4 className="font-semibold mb-4">{column.header}</h4>
+            <div className="flex gap-4">{column.entries}</div>
           </div>
+        ))}
+      </div>
 
-          {/* Company */}
-          <div>
-            <h4 className="font-semibold mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-primary-300">
-              <li className="text-primary-400">Coming soon</li>
-            </ul>
-          </div>
-
-          {/* Social */}
-          <div>
-            <h4 className="font-semibold mb-4">Connect</h4>
-            <div className="flex gap-4">
-              <a
-                href="mailto:hello@grammr.io"
-                className="p-2 rounded-full bg-primary-500/20 text-primary-400 hover:bg-primary-500/40 hover:text-primary-300 transition-colors"
-              >
-                <Mail className="w-5 h-5" />
-              </a>
-              <a
-                href="https://github.com/twaslowski/grammr"
-                className="p-2 rounded-full bg-primary-500/20 text-primary-400 hover:bg-primary-500/40 hover:text-primary-300 transition-colors"
-              >
-                <GithubIcon className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom bar */}
-        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-primary-400">
-          <p>&copy; {currentYear} grammr. All rights reserved.</p>
-          <p>Made with care to help you learn languages systematically.</p>
-        </div>
+      {/* Bottom bar */}
+      <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-primary-400">
+        <p>&copy; {currentYear} grammr. All rights reserved.</p>
+        <p>Made with care to help you learn languages systematically.</p>
       </div>
     </footer>
   );

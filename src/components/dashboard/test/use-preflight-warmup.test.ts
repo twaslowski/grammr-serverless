@@ -21,21 +21,24 @@ describe("usePreflightWarmup", () => {
   });
 
   it("should trigger warmup on mount", () => {
-    renderHook(() => usePreflightWarmup());
+    renderHook(() => usePreflightWarmup("ru"));
 
     expect(mockTriggerPreflightWarmup).toHaveBeenCalledTimes(1);
-    expect(mockTriggerPreflightWarmup).toHaveBeenCalledWith(undefined);
+    expect(mockTriggerPreflightWarmup).toHaveBeenCalledWith("ru", undefined);
   });
 
   it("should pass custom cooldown to triggerPreflightWarmup", () => {
     const customCooldown = 5000;
-    renderHook(() => usePreflightWarmup(customCooldown));
+    renderHook(() => usePreflightWarmup("ru", customCooldown));
 
-    expect(mockTriggerPreflightWarmup).toHaveBeenCalledWith(customCooldown);
+    expect(mockTriggerPreflightWarmup).toHaveBeenCalledWith(
+      "ru",
+      customCooldown,
+    );
   });
 
   it("should not trigger warmup multiple times on re-render", () => {
-    const { rerender } = renderHook(() => usePreflightWarmup());
+    const { rerender } = renderHook(() => usePreflightWarmup("ru"));
 
     rerender();
     rerender();

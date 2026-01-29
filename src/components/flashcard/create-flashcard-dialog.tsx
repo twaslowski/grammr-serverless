@@ -13,7 +13,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Plus, AlertCircle, Sparkles, Layers } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  AlertCircle,
+  Sparkles,
+  Layers,
+  ArrowLeftRight,
+} from "lucide-react";
 import { createFlashcard } from "@/lib/flashcards";
 import { translatePhrase } from "@/lib/translation";
 import { FlashcardType, FlashcardBack, Flashcard } from "@/types/flashcards";
@@ -129,6 +136,12 @@ export function CreateFlashcardDialog({
     }
   };
 
+  const handleSwap = () => {
+    const temp = front;
+    setFront(translation);
+    setTranslation(temp);
+  };
+
   const defaultTrigger = compact ? (
     <Button variant="outline" size="sm" className="gap-1">
       <Layers className="h-4 w-4" />
@@ -156,7 +169,17 @@ export function CreateFlashcardDialog({
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="front">Front (Word/Phrase)</Label>
+              <div className="flex flex-row gap-x-2">
+                <Label htmlFor="front">Front (Word/Phrase)</Label>
+                <Button
+                  type="button"
+                  className="h-4 w-4 p-2"
+                  variant="ghost"
+                  onClick={handleSwap}
+                >
+                  <ArrowLeftRight />
+                </Button>
+              </div>
               <Input
                 id="front"
                 value={front}
@@ -166,7 +189,17 @@ export function CreateFlashcardDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="translation">Translation</Label>
+              <div className="flex flex-row gap-x-2">
+                <Label htmlFor="translation">Back (Translation)</Label>
+                <Button
+                  type="button"
+                  className="h-4 w-4 p-2"
+                  variant="ghost"
+                  onClick={handleSwap}
+                >
+                  <ArrowLeftRight />
+                </Button>
+              </div>
               <div className="flex gap-2">
                 <Input
                   id="translation"

@@ -10,7 +10,6 @@ import logging
 
 import feature_retriever
 import lambda_util
-from domain.inflection import Inflections
 from domain.inflection_request import InflectionRequest
 from inflector import InflectionError, Inflector
 from pydantic.v1 import ValidationError
@@ -41,10 +40,10 @@ def handler(event, _):
         if keep_warm_response := lambda_util.check_keep_warm(event):
             return keep_warm_response
 
-        body = json.loads(event.get("body", {}))
         try:
+            body = json.loads(event.get("body", {}))
             request = InflectionRequest(**body)
-        except ValidationError as e:
+        except ValidationError | json.JSONDecoder as e:
             logger.warning(
                 json.dumps(
                     {
@@ -65,16 +64,32 @@ def handler(event, _):
             expected_pos=request.part_of_speech,
         )
 
-        inflections_container = Inflections(
-            part_of_speech=request.part_of_speech,
-            lemma=request.lemma,
-            inflections=inflections,
-        )
-        return lambda_util.ok(inflections_container.json())
+        logger.info(json.dumps(
+            {
+                "success": True,
+                "word": request.lemma,
+                "part_of_speech": request.part_of_speech.name,
+                "detected_part_of_speech": inflections._parse.tag.POS.name,
+                "confidence": inflections._parse.score,
+                "inflections_count": len(inflections.inflected_forms),
+            }
+        ))
+        return lambda_util.ok(inflections.json())
 
     except InflectionError as e:
         # Handle expected inflection errors (low confidence, POS mismatch)
-        logger.warning(json.dumps({"success": False, "error": str(e)}))
+        logger.warning(
+            json.dumps(
+                {
+                    "success": False,
+                    "error": str(e),
+                    "expected_pos": e.expected_pos,
+                    "word": e.word,
+                    "confidence": e.parse.score,
+                    "detected_pos": e.parse.tag.POS,
+                }
+            )
+        )
         return lambda_util.fail(400, "Encountered an error when performing inflection.")
 
     except Exception as e:

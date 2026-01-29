@@ -78,10 +78,10 @@ describe("preflight warmup", () => {
 
   describe("triggerPreflightWarmup", () => {
     it("should trigger a warmup request when needed", async () => {
-      const result = await triggerPreflightWarmup();
+      const result = await triggerPreflightWarmup("ru");
 
       expect(result).toBe(true);
-      expect(mockFetch).toHaveBeenCalledWith("/api/v1/pre-flight", {
+      expect(mockFetch).toHaveBeenCalledWith("/api/v1/pre-flight?language=ru", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -89,7 +89,7 @@ describe("preflight warmup", () => {
 
     it("should update localStorage timestamp after triggering warmup", async () => {
       const before = Date.now();
-      await triggerPreflightWarmup();
+      await triggerPreflightWarmup("ru");
       const after = Date.now();
 
       const stored = getLastWarmupTimestamp();
@@ -100,7 +100,7 @@ describe("preflight warmup", () => {
     it("should not trigger warmup when cooldown has not elapsed", async () => {
       setLastWarmupTimestamp(Date.now());
 
-      const result = await triggerPreflightWarmup();
+      const result = await triggerPreflightWarmup("ru");
 
       expect(result).toBe(false);
       expect(mockFetch).not.toHaveBeenCalled();
@@ -110,7 +110,7 @@ describe("preflight warmup", () => {
       const oldTimestamp = Date.now() - DEFAULT_COOLDOWN_MS - 1000;
       setLastWarmupTimestamp(oldTimestamp);
 
-      const result = await triggerPreflightWarmup();
+      const result = await triggerPreflightWarmup("ru");
 
       expect(result).toBe(true);
       expect(mockFetch).toHaveBeenCalled();
@@ -120,7 +120,7 @@ describe("preflight warmup", () => {
       mockFetch.mockRejectedValue(new Error("Network error"));
 
       // Should not throw
-      const result = await triggerPreflightWarmup();
+      const result = await triggerPreflightWarmup("ru");
 
       // Should still update timestamp to prevent retries
       expect(result).toBe(true);

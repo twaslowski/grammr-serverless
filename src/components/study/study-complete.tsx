@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, ArrowRight } from "lucide-react";
+import { CheckCircle2, ArrowRight, LayersIcon } from "lucide-react";
 import Link from "next/link";
 
 interface StudyCompleteProps {
@@ -30,9 +30,12 @@ export function StudyComplete({ reviewed, onStudyMore }: StudyCompleteProps) {
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
             {onStudyMore && (
-              <Button onClick={onStudyMore} variant="outline">
-                Check for More Cards
-              </Button>
+              <Link href="/dashboard/flashcards">
+                <Button variant="outline">
+                  <LayersIcon />
+                  Edit Flashcards
+                </Button>
+              </Link>
             )}
             <Link href="/dashboard">
               <Button className="gap-2">
