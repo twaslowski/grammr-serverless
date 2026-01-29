@@ -32,7 +32,7 @@ class TestInflect:
             word="слово",  # "word" in Russian
             features=features,
             expected_pos=PartOfSpeech.NOUN,
-        )
+        ).inflections
 
         assert result._parse is not None
         assert result._parse.score > DEFAULT_CONFIDENCE_THRESHOLD
@@ -71,7 +71,7 @@ class TestInflect:
             word="дом",  # "house" in Russian
             features=features,
             expected_pos=PartOfSpeech.NOUN,
-        )
+        ).inflections
 
         assert result._parse is not None
         assert result._parse.score > DEFAULT_CONFIDENCE_THRESHOLD
