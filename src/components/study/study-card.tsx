@@ -11,7 +11,8 @@ import { WordDetailsDialogFull } from "@/components/translation/word-details-dia
 import {
   AnalysisFlashcardBack,
   FlashcardBack,
-  ParadigmFlashcardBack, PhraseFlashcardBack,
+  ParadigmFlashcardBack,
+  PhraseFlashcardBack,
 } from "@/types/flashcards";
 
 interface StudyCardProps {
@@ -43,26 +44,26 @@ interface FlashcardBackProps {
 function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
   switch (back.type) {
     case "analysis":
-      const analysisBack = back as AnalysisFlashcardBack
+      const analysisBack = back as AnalysisFlashcardBack;
       return (
         <div className="space-y-4">
-        <div className="flex flex-row gap-x-2 bg-primary/5">
-          {analysisBack.tokens.map((t, idx) => (
-            <WordDetailsDialogFull
-              key={idx}
-              word={t.text}
-              // we are not showing translation for individual tokens in analysis flashcards
-              translation={""}
-              morphology={t || {}}
-              paradigm={t.paradigm}
-              trigger={
-                <p className="text-xl font-bold text-primary cursor-pointer">
-                  {t.text}
-                </p>
-              }
-            />
-          ))}
-        </div>
+          <div className="flex flex-row gap-x-2 bg-primary/5">
+            {analysisBack.tokens.map((t, idx) => (
+              <WordDetailsDialogFull
+                key={idx}
+                word={t.text}
+                // we are not showing translation for individual tokens in analysis flashcards
+                translation={""}
+                morphology={t || {}}
+                paradigm={t.paradigm}
+                trigger={
+                  <p className="text-xl font-bold text-primary cursor-pointer">
+                    {t.text}
+                  </p>
+                }
+              />
+            ))}
+          </div>
           <p className="text-xl text-primary/80">{back.translation}</p>
           {notes && (
             <p className="text-sm text-muted-foreground italic">{notes}</p>
@@ -72,22 +73,24 @@ function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
     case "word":
       const paradigmBack = back as ParadigmFlashcardBack;
       return (
-          <InflectionsDialog
-              paradigm={paradigmBack.paradigm}
-              displayHeader={true}
-              displayAddToFlashcards={false}
-              trigger={
-                <p className="text-3xl font-bold bg-primary/10 text-primary cursor-pointer">
-                  {paradigmBack.translation}
-                </p>
-              }
-          />
+        <InflectionsDialog
+          paradigm={paradigmBack.paradigm}
+          displayHeader={true}
+          displayAddToFlashcards={false}
+          trigger={
+            <p className="text-3xl font-bold bg-primary/10 text-primary cursor-pointer">
+              {paradigmBack.translation}
+            </p>
+          }
+        />
       );
     case "phrase":
       const phraseBack = back as PhraseFlashcardBack;
       return (
         <div className="space-y-4">
-          <p className="text-3xl font-bold text-primary">{phraseBack.translation}</p>
+          <p className="text-3xl font-bold text-primary">
+            {phraseBack.translation}
+          </p>
           {notes && (
             <p className="text-sm text-muted-foreground italic">{notes}</p>
           )}

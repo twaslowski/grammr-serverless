@@ -1,0 +1,2612 @@
+{
+  "version": "1.0",
+  "exported_at": "2026-01-29T16:39:47.313947",
+  "flashcards": [
+    {
+      "front": "Он сел в трамвай и поехал домой.",
+      "notes": "",
+      "back": {
+        "type": "analysis",
+        "source_phrase": "Он сел в трамвай и поехал домой.",
+        "translation": "He got on the tram and went home.",
+        "tokens": [
+          {
+            "text": "Он",
+            "lemma": "он",
+            "pos": "PRON",
+            "features": [
+              {
+                "type": "case",
+                "value": "NOM"
+              },
+              {
+                "type": "gender",
+                "value": "MASC"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              },
+              {
+                "type": "person",
+                "value": "THIRD"
+              }
+            ]
+          },
+          {
+            "text": "сел",
+            "lemma": "сесть",
+            "pos": "VERB",
+            "features": [
+              {
+                "type": "aspect",
+                "value": "PERF"
+              },
+              {
+                "type": "gender",
+                "value": "MASC"
+              },
+              {
+                "type": "mood",
+                "value": "IND"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              },
+              {
+                "type": "tense",
+                "value": "PAST"
+              },
+              {
+                "type": "verbform",
+                "value": "FIN"
+              },
+              {
+                "type": "voice",
+                "value": "MID"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "VERB",
+              "lemma": "сесть",
+              "inflections": [
+                {
+                  "lemma": "сесть",
+                  "inflected": "сяду",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "сесть",
+                  "inflected": "сядем",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "сесть",
+                  "inflected": "сядешь",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "сесть",
+                  "inflected": "сядете",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "сесть",
+                  "inflected": "сядет",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "сесть",
+                  "inflected": "сядут",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": "в",
+            "lemma": "в",
+            "pos": "ADP",
+            "features": []
+          },
+          {
+            "text": "трамвай",
+            "lemma": "трамвай",
+            "pos": "NOUN",
+            "features": [
+              {
+                "type": "animacy",
+                "value": "INAN"
+              },
+              {
+                "type": "case",
+                "value": "ACC"
+              },
+              {
+                "type": "gender",
+                "value": "MASC"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "NOUN",
+              "lemma": "трамвай",
+              "inflections": [
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвай",
+                  "features": [
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвая",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваю",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвай",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваем",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвае",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваи",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваев",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваям",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваи",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваями",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваях",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": "и",
+            "lemma": "и",
+            "pos": "CCONJ",
+            "features": []
+          },
+          {
+            "text": "поехал",
+            "lemma": "поехать",
+            "pos": "VERB",
+            "features": [
+              {
+                "type": "aspect",
+                "value": "PERF"
+              },
+              {
+                "type": "gender",
+                "value": "MASC"
+              },
+              {
+                "type": "mood",
+                "value": "IND"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              },
+              {
+                "type": "tense",
+                "value": "PAST"
+              },
+              {
+                "type": "verbform",
+                "value": "FIN"
+              },
+              {
+                "type": "voice",
+                "value": "ACT"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "VERB",
+              "lemma": "поехать",
+              "inflections": [
+                {
+                  "lemma": "поехать",
+                  "inflected": "поеду",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "поехать",
+                  "inflected": "поедем",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "поехать",
+                  "inflected": "поедешь",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "поехать",
+                  "inflected": "поедете",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "поехать",
+                  "inflected": "поедет",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "поехать",
+                  "inflected": "поедут",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": "домой",
+            "lemma": "домой",
+            "pos": "ADV",
+            "features": [
+              {
+                "type": "degree",
+                "value": "POS"
+              }
+            ]
+          },
+          {
+            "text": ".",
+            "lemma": ".",
+            "pos": "PUNCT",
+            "features": []
+          }
+        ]
+      }
+    },
+    {
+      "front": "Я хочу стать водителем трамвая.",
+      "notes": "",
+      "back": {
+        "type": "analysis",
+        "source_phrase": "Я хочу стать водителем трамвая.",
+        "translation": "I want to become a tram driver.",
+        "tokens": [
+          {
+            "text": "Я",
+            "lemma": "я",
+            "pos": "PRON",
+            "features": [
+              {
+                "type": "case",
+                "value": "NOM"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              },
+              {
+                "type": "person",
+                "value": "FIRST"
+              }
+            ]
+          },
+          {
+            "text": "хочу",
+            "lemma": "хотеть",
+            "pos": "VERB",
+            "features": [
+              {
+                "type": "aspect",
+                "value": "IMP"
+              },
+              {
+                "type": "mood",
+                "value": "IND"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              },
+              {
+                "type": "person",
+                "value": "FIRST"
+              },
+              {
+                "type": "tense",
+                "value": "PRES"
+              },
+              {
+                "type": "verbform",
+                "value": "FIN"
+              },
+              {
+                "type": "voice",
+                "value": "ACT"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "VERB",
+              "lemma": "хотеть",
+              "inflections": [
+                {
+                  "lemma": "хотеть",
+                  "inflected": "хочу",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "хотеть",
+                  "inflected": "хотим",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "хотеть",
+                  "inflected": "хочешь",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "хотеть",
+                  "inflected": "хотите",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "хотеть",
+                  "inflected": "хочет",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "хотеть",
+                  "inflected": "хотят",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": "стать",
+            "lemma": "стать",
+            "pos": "VERB",
+            "features": [
+              {
+                "type": "aspect",
+                "value": "PERF"
+              },
+              {
+                "type": "verbform",
+                "value": "INF"
+              },
+              {
+                "type": "voice",
+                "value": "ACT"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "VERB",
+              "lemma": "стать",
+              "inflections": [
+                {
+                  "lemma": "стать",
+                  "inflected": "стану",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "стать",
+                  "inflected": "станем",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "стать",
+                  "inflected": "станешь",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "стать",
+                  "inflected": "станете",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "стать",
+                  "inflected": "станет",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "стать",
+                  "inflected": "станут",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": "водителем",
+            "lemma": "водитель",
+            "pos": "NOUN",
+            "features": [
+              {
+                "type": "animacy",
+                "value": "ANIM"
+              },
+              {
+                "type": "case",
+                "value": "INS"
+              },
+              {
+                "type": "gender",
+                "value": "MASC"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "NOUN",
+              "lemma": "водитель",
+              "inflections": [
+                {
+                  "lemma": "водитель",
+                  "inflected": "водитель",
+                  "features": [
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водителя",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водителю",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водителя",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водителем",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водителе",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водители",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водителей",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водителям",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водителей",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водителями",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "водитель",
+                  "inflected": "водителях",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": "трамвая",
+            "lemma": "трамвай",
+            "pos": "NOUN",
+            "features": [
+              {
+                "type": "animacy",
+                "value": "INAN"
+              },
+              {
+                "type": "case",
+                "value": "GEN"
+              },
+              {
+                "type": "gender",
+                "value": "MASC"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "NOUN",
+              "lemma": "трамвай",
+              "inflections": [
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвай",
+                  "features": [
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвая",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваю",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвай",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваем",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвае",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваи",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваев",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваям",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваи",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваями",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваях",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": ".",
+            "lemma": ".",
+            "pos": "PUNCT",
+            "features": []
+          }
+        ]
+      }
+    },
+    {
+      "front": "Слишком поздно. Трамваи не ходят.",
+      "notes": "",
+      "back": {
+        "type": "analysis",
+        "source_phrase": "Слишком поздно. Трамваи не ходят.",
+        "translation": "It's too late. The trams aren't running.",
+        "tokens": [
+          {
+            "text": "Слишком",
+            "lemma": "слишком",
+            "pos": "ADV",
+            "features": [
+              {
+                "type": "degree",
+                "value": "POS"
+              }
+            ]
+          },
+          {
+            "text": "поздно",
+            "lemma": "поздно",
+            "pos": "ADV",
+            "features": [
+              {
+                "type": "degree",
+                "value": "POS"
+              }
+            ]
+          },
+          {
+            "text": ".",
+            "lemma": ".",
+            "pos": "PUNCT",
+            "features": []
+          },
+          {
+            "text": "Трамваи",
+            "lemma": "трамваи",
+            "pos": "NOUN",
+            "features": [
+              {
+                "type": "animacy",
+                "value": "INAN"
+              },
+              {
+                "type": "case",
+                "value": "DAT"
+              },
+              {
+                "type": "gender",
+                "value": "FEM"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "NOUN",
+              "lemma": "трамвай",
+              "inflections": [
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвай",
+                  "features": [
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвая",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваю",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвай",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваем",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамвае",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваи",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваев",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваям",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваи",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваями",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "трамвай",
+                  "inflected": "трамваях",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": "не",
+            "lemma": "не",
+            "pos": "PART",
+            "features": [
+              {
+                "type": "polarity",
+                "value": "NEG"
+              }
+            ]
+          },
+          {
+            "text": "ходят",
+            "lemma": "ходить",
+            "pos": "VERB",
+            "features": [
+              {
+                "type": "aspect",
+                "value": "IMP"
+              },
+              {
+                "type": "mood",
+                "value": "IND"
+              },
+              {
+                "type": "number",
+                "value": "PLUR"
+              },
+              {
+                "type": "person",
+                "value": "THIRD"
+              },
+              {
+                "type": "tense",
+                "value": "PRES"
+              },
+              {
+                "type": "verbform",
+                "value": "FIN"
+              },
+              {
+                "type": "voice",
+                "value": "ACT"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "VERB",
+              "lemma": "ходить",
+              "inflections": [
+                {
+                  "lemma": "ходить",
+                  "inflected": "хожу",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "ходить",
+                  "inflected": "ходим",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "ходить",
+                  "inflected": "ходишь",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "ходить",
+                  "inflected": "ходите",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "ходить",
+                  "inflected": "ходит",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "ходить",
+                  "inflected": "ходят",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": ".",
+            "lemma": ".",
+            "pos": "PUNCT",
+            "features": []
+          }
+        ]
+      }
+    },
+    {
+      "front": "Я купила два килограмма яблок.",
+      "notes": "",
+      "back": {
+        "type": "analysis",
+        "source_phrase": "Я купила два килограмма яблок.",
+        "translation": "I bought two kilos of apples.",
+        "tokens": [
+          {
+            "text": "Я",
+            "lemma": "я",
+            "pos": "PRON",
+            "features": [
+              {
+                "type": "case",
+                "value": "NOM"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              },
+              {
+                "type": "person",
+                "value": "FIRST"
+              }
+            ]
+          },
+          {
+            "text": "купила",
+            "lemma": "купить",
+            "pos": "VERB",
+            "features": [
+              {
+                "type": "aspect",
+                "value": "PERF"
+              },
+              {
+                "type": "gender",
+                "value": "FEM"
+              },
+              {
+                "type": "mood",
+                "value": "IND"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              },
+              {
+                "type": "tense",
+                "value": "PAST"
+              },
+              {
+                "type": "verbform",
+                "value": "FIN"
+              },
+              {
+                "type": "voice",
+                "value": "ACT"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "VERB",
+              "lemma": "купить",
+              "inflections": [
+                {
+                  "lemma": "купить",
+                  "inflected": "куплю",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "купить",
+                  "inflected": "купим",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "FIRST"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "купить",
+                  "inflected": "купишь",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "купить",
+                  "inflected": "купите",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "SECOND"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "купить",
+                  "inflected": "купит",
+                  "features": [
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "купить",
+                  "inflected": "купят",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "PERSON",
+                      "value": "THIRD"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": "два",
+            "lemma": "два",
+            "pos": "NUM",
+            "features": [
+              {
+                "type": "animacy",
+                "value": "INAN"
+              },
+              {
+                "type": "case",
+                "value": "ACC"
+              },
+              {
+                "type": "gender",
+                "value": "MASC"
+              }
+            ]
+          },
+          {
+            "text": "килограмма",
+            "lemma": "килограмм",
+            "pos": "NOUN",
+            "features": [
+              {
+                "type": "animacy",
+                "value": "INAN"
+              },
+              {
+                "type": "case",
+                "value": "GEN"
+              },
+              {
+                "type": "gender",
+                "value": "MASC"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "NOUN",
+              "lemma": "килограмм",
+              "inflections": [
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмм",
+                  "features": [
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмма",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмму",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмм",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммом",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмме",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммы",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммов",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммам",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммы",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммами",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммах",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": "яблок",
+            "lemma": "яблоко",
+            "pos": "NOUN",
+            "features": [
+              {
+                "type": "animacy",
+                "value": "INAN"
+              },
+              {
+                "type": "case",
+                "value": "GEN"
+              },
+              {
+                "type": "gender",
+                "value": "NEUT"
+              },
+              {
+                "type": "number",
+                "value": "PLUR"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "NOUN",
+              "lemma": "яблоко",
+              "inflections": [
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблоко",
+                  "features": [
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблока",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблоку",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблоко",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблоком",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблоке",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблоки",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблок",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблокам",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблоки",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблоками",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "яблоко",
+                  "inflected": "яблоках",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": ".",
+            "lemma": ".",
+            "pos": "PUNCT",
+            "features": []
+          }
+        ]
+      }
+    },
+    {
+      "front": "Килограмм брокколи стоит сто рублей.",
+      "notes": "",
+      "back": {
+        "type": "analysis",
+        "source_phrase": "Килограмм брокколи стоит сто рублей.",
+        "translation": "A kilogram of broccoli costs one hundred rubles.",
+        "tokens": [
+          {
+            "text": "Килограмм",
+            "lemma": "килограмм",
+            "pos": "NOUN",
+            "features": [
+              {
+                "type": "animacy",
+                "value": "INAN"
+              },
+              {
+                "type": "case",
+                "value": "NOM"
+              },
+              {
+                "type": "gender",
+                "value": "MASC"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "NOUN",
+              "lemma": "килограмм",
+              "inflections": [
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмм",
+                  "features": [
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмма",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмму",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмм",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммом",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмме",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммы",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограмм",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммам",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммы",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммами",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "килограмм",
+                  "inflected": "килограммах",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": "брокколи",
+            "lemma": "брокколи",
+            "pos": "NOUN",
+            "features": [
+              {
+                "type": "animacy",
+                "value": "INAN"
+              },
+              {
+                "type": "case",
+                "value": "GEN"
+              },
+              {
+                "type": "gender",
+                "value": "FEM"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              }
+            ]
+          },
+          {
+            "text": "стоит",
+            "lemma": "стоить",
+            "pos": "VERB",
+            "features": [
+              {
+                "type": "aspect",
+                "value": "IMP"
+              },
+              {
+                "type": "mood",
+                "value": "IND"
+              },
+              {
+                "type": "number",
+                "value": "SING"
+              },
+              {
+                "type": "person",
+                "value": "THIRD"
+              },
+              {
+                "type": "tense",
+                "value": "PRES"
+              },
+              {
+                "type": "verbform",
+                "value": "FIN"
+              },
+              {
+                "type": "voice",
+                "value": "ACT"
+              }
+            ]
+          },
+          {
+            "text": "сто",
+            "lemma": "сто",
+            "pos": "NUM",
+            "features": [
+              {
+                "type": "case",
+                "value": "ACC"
+              }
+            ]
+          },
+          {
+            "text": "рублей",
+            "lemma": "рубль",
+            "pos": "NOUN",
+            "features": [
+              {
+                "type": "animacy",
+                "value": "INAN"
+              },
+              {
+                "type": "case",
+                "value": "GEN"
+              },
+              {
+                "type": "gender",
+                "value": "MASC"
+              },
+              {
+                "type": "number",
+                "value": "PLUR"
+              }
+            ],
+            "paradigm": {
+              "partOfSpeech": "NOUN",
+              "lemma": "рубль",
+              "inflections": [
+                {
+                  "lemma": "рубль",
+                  "inflected": "рубль",
+                  "features": [
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    },
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рубля",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рублю",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рубль",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рублём",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рубле",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "SING"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рубли",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "NOM"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рублей",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "GEN"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рублям",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "DAT"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рубли",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ACC"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рублями",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "ABL"
+                    }
+                  ]
+                },
+                {
+                  "lemma": "рубль",
+                  "inflected": "рублях",
+                  "features": [
+                    {
+                      "type": "NUMBER",
+                      "value": "PLUR"
+                    },
+                    {
+                      "type": "CASE",
+                      "value": "LOC"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "text": ".",
+            "lemma": ".",
+            "pos": "PUNCT",
+            "features": []
+          }
+        ]
+      }
+    }
+  ]
+}

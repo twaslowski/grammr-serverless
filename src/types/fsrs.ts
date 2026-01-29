@@ -23,7 +23,7 @@ export type Rating = z.infer<typeof RatingEnum>;
 export const CardSchema = z.object({
   id: z.number(),
   flashcard_id: z.number(),
-  user_id: z.string().uuid(),
+  user_id: z.uuid(),
   due: z
     .string()
     .or(z.date())

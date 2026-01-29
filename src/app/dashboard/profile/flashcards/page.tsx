@@ -12,11 +12,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { exportFlashcards, importFlashcards } from "@/lib/flashcards";
+import { DeckSelectDialog } from "@/components/ui/deck-select-dialog";
+import { getDecks, createDeck } from "@/lib/flashcards";
 import toast from "react-hot-toast";
+import type { Deck } from "@/types/flashcards";
 
 export default function AccountSettingsPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [deckDialogOpen, setDeckDialogOpen] = useState(false);
+  const [decks, setDecks] = useState<Deck[]>([]);
+  const [selectedImportData, setSelectedImportData] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = async () => {
@@ -41,16 +47,11 @@ export default function AccountSettingsPage() {
     }
   };
 
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
-
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
     setIsImporting(true);
     try {
       const text = await file.text();
@@ -60,23 +61,34 @@ export default function AccountSettingsPage() {
       } catch {
         toast.error("Invalid JSON file");
         setIsImporting(false);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
-
-      // Basic validation of the import format
       if (!data.version || !Array.isArray(data.flashcards)) {
         toast.error("Invalid import file format");
         setIsImporting(false);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
+      setSelectedImportData(data);
+      const fetchedDecks = await getDecks();
+      setDecks(fetchedDecks);
+      setDeckDialogOpen(true);
+    } catch (error) {
+      toast.error("Failed to read file");
+      setIsImporting(false);
+    }
+  };
 
-      const result = await importFlashcards(data);
+  const handleDeckSelect = async (deck: Deck) => {
+    if (!selectedImportData) return;
+    setIsImporting(true);
+    setDeckDialogOpen(false);
+    try {
+      const result = await importFlashcards({
+        ...selectedImportData,
+        deck_id: deck.id,
+      });
       toast.success(
         `Successfully imported ${result.imported_count} flashcards!`,
       );
@@ -86,11 +98,15 @@ export default function AccountSettingsPage() {
       toast.error(message);
     } finally {
       setIsImporting(false);
-      // Reset the file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      setSelectedImportData(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const handleDeckCreate = async (name: string) => {
+    const newDeck = await createDeck({ name });
+    setDecks((prev) => [...prev, newDeck]);
+    return newDeck;
   };
 
   return (
@@ -109,6 +125,19 @@ export default function AccountSettingsPage() {
         <h1 className="font-bold text-3xl">Account Settings</h1>
         <p className="text-muted-foreground">Manage your account and data.</p>
       </div>
+
+      <DeckSelectDialog
+        open={deckDialogOpen}
+        decks={decks}
+        onSelect={handleDeckSelect}
+        onCreate={handleDeckCreate}
+        onClose={() => {
+          setDeckDialogOpen(false);
+          setIsImporting(false);
+          setSelectedImportData(null);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        }}
+      />
 
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Data Management</h2>
@@ -141,7 +170,7 @@ export default function AccountSettingsPage() {
             </Button>
 
             <Button
-              onClick={handleImportClick}
+              onClick={() => fileInputRef.current?.click()}
               disabled={isImporting}
               variant="outline"
               className="flex items-center gap-2"
@@ -165,7 +194,7 @@ export default function AccountSettingsPage() {
         </Card>
 
         <p className="text-sm text-muted-foreground">
-          Imported flashcards will be added to your default deck.
+          Imported flashcards will be added to the selected deck.
         </p>
       </section>
     </div>

@@ -4,8 +4,15 @@ import os
 import sys
 import datetime
 import csv
+from typing import Any
 
 import requests
+
+"""
+Accepts a language as an argument, e.g. python main.py ru.
+Expects data/<language>.csv to be present with pipe-separated phrase|translation lines.
+Creates data/<language>.json with enriched flashcard data, which can be imported via the grammr UI.
+"""
 
 api_gw_base_url = os.environ["API_GW_URL"]
 deepl_auth_key = os.environ["DEEPL_API_KEY"]
@@ -15,19 +22,17 @@ logging.basicConfig(level=logging.INFO)
 logging.getLogger("urllib3.connectionpool").setLevel(level=logging.WARN)
 
 
-def main(language: str):
-    with open(f"data/{language}.csv", "r", encoding="utf-8") as f, open(
-        f"data/{language}.json", "w"
-    ) as t:
+def main(language: str, max_lines: int):
+    import_file_data = {
+        "version": "1.0",
+        "exported_at": datetime.datetime.now().isoformat(),
+        "flashcards": [],
+    }
+    with open(f"data/{language}.csv", "r", encoding="utf-8") as f:
         r = csv.reader(f, delimiter="|")
-        import_file_data = {
-            "version": "1.0",
-            "exported_at": datetime.datetime.now().isoformat(),
-            "flashcards": [],
-        }
         for idx, line in enumerate(r):
-            if idx == 100:
-                return
+            if max_lines is not None and idx >= max_lines:
+                break
 
             phrase = line[0].strip()
             translation = line[1].strip()
@@ -37,21 +42,10 @@ def main(language: str):
                 continue
 
             # General flashcard data
-            flashcard = {
-                "front": phrase,
-                "notes": "",
-                "deck_name": "Default Deck",
-            }
-
-            # Back data and morphology
-            back = {
-                "type": "analysis",
-                "source_phrase": phrase,
-                "translation": translation,
-            }
+            flashcard = _init_flashcard(phrase, translation)
 
             try:
-                back.update(retrieve_morphology(phrase, language))
+                flashcard["back"].update(retrieve_morphology(phrase, language))
             except Exception as e:
                 _logger.error(
                     "Skipping phrase at index %s due to morphology retrieval error: %s",
@@ -61,7 +55,7 @@ def main(language: str):
                 continue
 
             # Fetch inflections for each token, where applicable
-            for token in back["tokens"]:
+            for token in flashcard["back"]["tokens"]:
                 if token["pos"] in ["NOUN", "ADJ", "VERB", "AUX"]:
                     try:
                         inflections = retrieve_inflections(
@@ -81,14 +75,26 @@ def main(language: str):
                         _logger.debug("Got inflections: %s", inflections)
 
             # Enrich existing data
-            flashcard["back"] = back
             import_file_data["flashcards"].append(flashcard)
 
-        if idx % 10 == 0:
-            _logger.info("Progress: %s/%s", idx, sum(1 for _ in r))
+            if idx % 10 == 0:
+                _logger.info("Progress: %s/?", idx)
 
-        # Dump to output file
-    t.write(f"{json.dumps(import_file_data, ensure_ascii=False)}\n")
+    with open(f'data/{language}.json', 'w', encoding='utf-8') as out:
+        out.write(json.dumps(import_file_data, ensure_ascii=False))
+
+
+def _init_flashcard(phrase: str, translation: str) -> dict[str, Any]:
+    flashcard = {
+        "front": phrase,
+        "notes": "",
+        "back": {
+            "type": "analysis",
+            "source_phrase": phrase,
+            "translation": translation,
+        },
+    }
+    return flashcard
 
 
 def retrieve_morphology(phrase: str, language: str) -> dict:
@@ -124,9 +130,10 @@ def retrieve_inflections(word: str, pos: str, language: str) -> dict:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 3:
         raise ValueError(
             "Usage: main.py <language>; expects <language>.txt to be present"
         )
     lang = sys.argv[1]
-    main(lang)
+    max_lines = int(sys.argv[2]) if sys.argv[2] != "None" else None
+    main(lang, max_lines)
