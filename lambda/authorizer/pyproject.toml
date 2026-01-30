@@ -1,0 +1,13 @@
+[project]
+name = "authorizer"
+version = "0.1.0"
+description = "Custom authorizer for the grammr API Gateway"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-env>=1.2.0",
+]
