@@ -77,12 +77,20 @@ module "api_gateway" {
         integration = {
           uri    = module.inflection_ru_lambda.lambda_function_invoke_arn
           type   = "AWS_PROXY"
+          description = "Inflections for Russian language"
           method = "POST"
         }
       }
       "POST /tts" = {
         integration = {
           uri    = module.polly_lambda.lambda_function_invoke_arn
+          type   = "AWS_PROXY"
+          method = "POST"
+        }
+      }
+      "POST /translate" = {
+        integration = {
+          uri    = module.translate_lambda.lambda_function_invoke_arn
           type   = "AWS_PROXY"
           method = "POST"
         }

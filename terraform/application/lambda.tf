@@ -104,3 +104,40 @@ module "polly_lambda" {
     ]
   })
 }
+
+module "translate_lambda" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = "grammr-translate-${var.environment}"
+  description   = "Lambda function for performing translations with the AWS Translate service"
+  handler       = "translate.lambda_handler"
+  runtime       = "python3.14"
+  memory_size   = 256
+  timeout       = 30
+  source_path   = "${path.module}/../../lambda/translate"
+
+  cloudwatch_logs_retention_in_days = 14
+
+  environment_variables = {
+    DEEPL_API_KEY = var.deepl_api_key
+  }
+
+  # https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/36#issuecomment-650217274
+  create_current_version_allowed_triggers = false
+  allowed_triggers                        = local.lambda_allowed_triggers
+
+  attach_policy_json = true
+  policy_json = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "translate:TranslateText",
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+

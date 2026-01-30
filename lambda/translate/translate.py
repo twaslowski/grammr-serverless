@@ -1,12 +1,21 @@
 import json
 import logging
+import os
+from enum import Enum
+
 import boto3
+import deepl
 
 logger = logging.getLogger("root")
 logger.setLevel(logging.INFO)
 
 
 valid_languages = ["de", "en", "es", "fr", "it", "pt", "ru"]
+
+
+class TranslationEngine(Enum):
+    AWS = "aws"
+    DEEPL = "deepl"
 
 
 class Request:
@@ -27,6 +36,59 @@ class Request:
         self.text = text
         self.source_language = source_language
         self.target_language = target_language
+
+
+def translate(
+    text: str,
+    source_language: str,
+    target_language: str,
+    engine: TranslationEngine = TranslationEngine.DEEPL,
+) -> str:
+    """
+    General translation function that selects the engine.
+    Aiming to make use of the DeepL 500k character free tier first before switching over to AWS Translate.
+    AWS Translate is comparatively expensive ($15/million characters) so we want to minimize its usage.
+
+    :param engine:
+    :param text:
+    :param source_language:
+    :param target_language:
+    :return:
+    """
+    if engine == TranslationEngine.AWS:
+        return aws_translate(text, source_language, target_language)
+    elif engine == TranslationEngine.DEEPL:
+        return deepl_translate(text, source_language, target_language)
+    else:
+        raise ValueError(f"Unsupported translation engine: {engine}")
+
+
+def aws_translate(text: str, source_language: str, target_language: str) -> str:
+    translate_client = boto3.client("translate")
+    response = translate_client.translate_text(
+        Text=text,
+        SourceLanguageCode=source_language,
+        TargetLanguageCode=target_language,
+    )
+    return response["TranslatedText"]
+
+
+def deepl_translate(text: str, _: str, target_language: str) -> str:
+    deepl_auth_key = os.environ["DEEPL_API_KEY"]
+    _deepl_client = deepl.DeepLClient(deepl_auth_key)
+    return _deepl_client.translate_text(text, target_lang=target_language).text
+
+
+def _parse_translation_engine(event: dict) -> TranslationEngine:
+    translation_engine_header = (
+        event.get("headers", {}).get("X-Translation-Engine", "deepl").lower()
+    )
+
+    try:
+        translation_engine = TranslationEngine(translation_engine_header)
+    except ValueError:
+        translation_engine = TranslationEngine.DEEPL
+    return translation_engine
 
 
 def lambda_handler(event, _) -> dict:
@@ -50,12 +112,15 @@ def lambda_handler(event, _) -> dict:
             )
             return {"statusCode": 400, "body": json.dumps({"error": str(err)})}
 
-        translate_client = boto3.client("translate")
-        response = translate_client.translate_text(
-            Text=parsed.text,
-            SourceLanguageCode=parsed.source_language,
-            TargetLanguageCode=parsed.target_language,
+        translation_engine = _parse_translation_engine(event)
+
+        translation = translate(
+            parsed.text,
+            parsed.source_language,
+            parsed.target_language,
+            translation_engine,
         )
+
         logger.info(
             json.dumps(
                 {
@@ -63,6 +128,7 @@ def lambda_handler(event, _) -> dict:
                     "source_language": parsed.source_language,
                     "target_language": parsed.target_language,
                     "text_length": len(parsed.text),
+                    "translation_engine": translation_engine.value,
                 }
             )
         )
@@ -71,8 +137,8 @@ def lambda_handler(event, _) -> dict:
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps(
                 {
-                    "translation": response["TranslatedText"],
-                }
+                    "translation": translation,
+                }, ensure_ascii=False
             ),
         }
     except Exception as err:
@@ -82,6 +148,8 @@ def lambda_handler(event, _) -> dict:
                     "success": False,
                     "reason": str(err),
                     "raw_event": event,
+                    "source_language": event.get("source_language"),
+                    "target_language": event.get("target_language"),
                 }
             )
         )
