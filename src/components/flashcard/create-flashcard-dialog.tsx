@@ -22,7 +22,7 @@ import {
   ArrowLeftRight,
 } from "lucide-react";
 import { createFlashcard } from "@/lib/flashcards";
-import { translatePhrase } from "@/lib/translation";
+import { translate } from "@/lib/translation";
 import { FlashcardType, FlashcardBack, Flashcard } from "@/types/flashcards";
 import { Paradigm } from "@/types/inflections";
 import toast from "react-hot-toast";
@@ -89,7 +89,7 @@ export function CreateFlashcardDialog({
     try {
       // The sourceLanguage of the word will always be the user's targetLanguage, as they can only inflect in the language they learn
       // I realize this can be a bit confusing.
-      const result = await translatePhrase({
+      const result = await translate({
         text: front,
         source_language: targetLanguage,
         target_language: sourceLanguage,

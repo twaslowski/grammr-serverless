@@ -22,9 +22,9 @@ module "authorizer_lambda" {
 
 # random api key
 resource "random_password" "api_key" {
-  length = 32
+  length = 64
 
-  special = true
+  special = false
   upper   = true
   lower   = true
 }

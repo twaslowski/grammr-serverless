@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TranslationResult } from "./translation-result";
-import { translatePhrase } from "@/lib/translation";
+import { translate } from "@/lib/translation";
 import { Profile } from "@/types/profile";
 import { getLanguageByCode } from "@/lib/languages";
 import { ArrowRightLeft, Loader2 } from "lucide-react";
@@ -45,7 +45,7 @@ export function TranslationForm({ profile }: TranslationFormProps) {
     setTranslatedText(null);
 
     try {
-      const result = await translatePhrase({
+      const result = await translate({
         text: text.trim(),
         source_language: sourceLanguage,
         target_language: targetLanguage,

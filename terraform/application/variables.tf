@@ -35,12 +35,6 @@ variable "supabase_publishable_key" {
   type        = string
 }
 
-variable "openai_api_key" {
-  description = "The API key for OpenAI."
-  type        = string
-  sensitive   = true
-}
-
 variable "deepl_api_key" {
   description = "The API key for DeepL."
   type        = string
