@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import { InflectionsRequestSchema } from "@/types/inflections";
-
-const API_GW_URL = process.env.API_GW_URL;
+import { getApiGatewayConfig } from "@/lib/api-gateway";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +18,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!API_GW_URL) {
+    const apiGwConfig = getApiGatewayConfig();
+    if (!apiGwConfig) {
       console.error("API_GW_URL not configured");
       return NextResponse.json(
         { error: "Service not configured" },
@@ -32,7 +33,10 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid request", details: validationResult.error.flatten() },
+        {
+          error: "Invalid request",
+          details: z.flattenError(validationResult.error),
+        },
         { status: 400 },
       );
     }
@@ -40,13 +44,17 @@ export async function POST(request: NextRequest) {
     const { lemma, pos, language } = validationResult.data;
 
     // Forward to Lambda via API Gateway with language-specific endpoint
-    const response = await fetch(`${API_GW_URL}/inflections/${language}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${apiGwConfig.endpoint}/inflections/${language}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiGwConfig.apiKey,
+        },
+        body: JSON.stringify({ lemma, pos }),
       },
-      body: JSON.stringify({ lemma, pos }),
-    });
+    );
 
     // Parse response body
     const responseText = await response.text();

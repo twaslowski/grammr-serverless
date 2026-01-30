@@ -4,6 +4,7 @@ import {
   CreateFlashcardRequestSchema,
   FlashcardListQuerySchema,
 } from "./schema";
+import { z } from "zod";
 
 // GET /api/v1/flashcards - List flashcards with optional filtering
 export async function GET(request: NextRequest) {
@@ -116,7 +117,10 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid request", details: validationResult.error.flatten() },
+        {
+          error: "Invalid request",
+          details: z.flattenError(validationResult.error),
+        },
         { status: 400 },
       );
     }

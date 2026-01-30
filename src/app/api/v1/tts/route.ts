@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { TTSRequestSchema } from "./schema";
-
-const API_GW_URL = process.env.API_GW_URL;
+import { getApiGatewayConfig } from "@/lib/api-gateway";
+import { z } from "zod";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,8 +16,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!API_GW_URL) {
-      console.error("API_GW_URL not configured");
+    const apiGwConfig = getApiGatewayConfig();
+
+    if (!apiGwConfig) {
+      console.error("API_GW_URL or API_GW_API_KEY not configured");
       return NextResponse.json(
         { error: "Service not configured" },
         { status: 503 },
@@ -30,16 +32,20 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid request", details: validationResult.error.flatten() },
+        {
+          error: "Invalid request",
+          details: z.flattenError(validationResult.error),
+        },
         { status: 400 },
       );
     }
 
     // Forward to Lambda via API Gateway
-    const response = await fetch(`${API_GW_URL}/tts`, {
+    const response = await fetch(`${apiGwConfig.endpoint}/tts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-api-key": apiGwConfig.apiKey,
       },
       body: JSON.stringify(validationResult.data),
     });

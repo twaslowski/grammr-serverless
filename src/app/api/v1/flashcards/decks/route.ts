@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { CreateDeckRequestSchema } from "@/app/api/v1/flashcards/schema";
+import { z } from "zod";
 
 // GET /api/v1/flashcards/decks - List all decks for the user
 export async function GET() {
@@ -59,7 +60,10 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid request", details: validationResult.error.flatten() },
+        {
+          error: "Invalid request",
+          details: z.flattenError(validationResult.error),
+        },
         { status: 400 },
       );
     }

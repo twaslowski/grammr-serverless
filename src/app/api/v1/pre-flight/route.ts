@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-
-const API_GW_URL = process.env.API_GW_URL;
+import { getApiGatewayConfig } from "@/lib/api-gateway";
 
 /**
  * Pre-flight endpoint to warm up image-based Lambda functions.
@@ -30,7 +29,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!API_GW_URL) {
+    const apiGwConfig = getApiGatewayConfig();
+    if (!apiGwConfig) {
       console.error("API_GW_URL not configured");
       return NextResponse.json(
         { error: "Service not configured" },
@@ -41,15 +41,21 @@ export async function POST(request: NextRequest) {
     // Fire warm-up requests in parallel and ignore any errors
     const warmupPromises = [
       // Warm up Russian inflections Lambda
-      fetch(`${API_GW_URL}/inflections/${language}`, {
+      fetch(`${apiGwConfig.endpoint}/inflections/${language}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiGwConfig.apiKey,
+        },
         body: JSON.stringify({ "keep-warm": "true" }),
       }).catch(() => null),
       // Warm up morphology Lambda
-      fetch(`${API_GW_URL}/morphology/${language}`, {
+      fetch(`${apiGwConfig.endpoint}/morphology/${language}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiGwConfig.apiKey,
+        },
         body: JSON.stringify({ "keep-warm": "true" }),
       }).catch(() => null),
     ];

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { UpdateFlashcardRequestSchema } from "../schema";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -94,7 +95,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid request", details: validationResult.error.flatten() },
+        {
+          error: "Invalid request",
+          details: z.flattenError(validationResult.error),
+        },
         { status: 400 },
       );
     }

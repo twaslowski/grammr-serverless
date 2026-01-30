@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { MorphologyRequestSchema } from "@/types/morphology";
-
-const API_GW_URL = process.env.API_GW_URL;
+import { z } from "zod";
+import { getApiGatewayConfig } from "@/lib/api-gateway";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +17,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!API_GW_URL) {
+    const apiGwConfig = getApiGatewayConfig();
+    if (!apiGwConfig) {
       console.error("API_GW_URL not configured");
       return NextResponse.json(
         { error: "Service not configured" },
@@ -31,7 +32,10 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid request", details: validationResult.error.flatten() },
+        {
+          error: "Invalid request",
+          details: z.flattenError(validationResult.error),
+        },
         { status: 400 },
       );
     }
@@ -39,13 +43,17 @@ export async function POST(request: NextRequest) {
     const { phrase, language } = validationResult.data;
 
     // Forward to Lambda via API Gateway
-    const response = await fetch(`${API_GW_URL}/morphology/${language}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${apiGwConfig.endpoint}/morphology/${language}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiGwConfig.apiKey,
+        },
+        body: JSON.stringify({ phrase: phrase }),
       },
-      body: JSON.stringify({ phrase: phrase }),
-    });
+    );
 
     if (!response.ok) {
       const errorText = await response.text();

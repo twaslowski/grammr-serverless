@@ -12,6 +12,17 @@ module "api_gateway" {
   create_stage = true
   deploy_stage = true
 
+  authorizers = {
+    token = {
+      name                              = "token"
+      authorizer_type                   = "REQUEST"
+      identity_sources                  = ["$request.header.x-api-key"]
+      authorizer_uri                    = module.authorizer_lambda.lambda_function_invoke_arn
+      enable_simple_responses           = true
+      authorizer_payload_format_version = "2.0"
+    }
+  }
+
   cors_configuration = {
     allow_headers = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent"]
     allow_methods = ["GET"]
@@ -64,24 +75,27 @@ module "api_gateway" {
     {
       for lang in local.inflections_latin.languages :
       "POST /inflections/${lang}" => {
-      integration = {
-        uri    = module.inflection_latin_lambda[lang].lambda_function_invoke_arn
-        type   = "AWS_PROXY"
-        method = "POST"
+        integration = {
+          uri    = module.inflection_latin_lambda[lang].lambda_function_invoke_arn
+          type   = "AWS_PROXY"
+          method = "POST"
+        }
       }
-    }
     },
     # Static routes
     {
       "POST /inflections/ru" = {
         integration = {
-          uri    = module.inflection_ru_lambda.lambda_function_invoke_arn
-          type   = "AWS_PROXY"
+          uri         = module.inflection_ru_lambda.lambda_function_invoke_arn
+          type        = "AWS_PROXY"
           description = "Inflections for Russian language"
-          method = "POST"
+          method      = "POST"
         }
       }
       "POST /tts" = {
+        authorization_type = "CUSTOM"
+        authorizer_key     = "token"
+
         integration = {
           uri    = module.polly_lambda.lambda_function_invoke_arn
           type   = "AWS_PROXY"
@@ -89,6 +103,9 @@ module "api_gateway" {
         }
       }
       "POST /translate" = {
+        authorization_type = "CUSTOM"
+        authorizer_key     = "token"
+
         integration = {
           uri    = module.translate_lambda.lambda_function_invoke_arn
           type   = "AWS_PROXY"

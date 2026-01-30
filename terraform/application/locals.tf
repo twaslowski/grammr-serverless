@@ -8,6 +8,7 @@ locals {
     NEXT_PUBLIC_SUPABASE_URL             = var.supabase_project_url
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = var.supabase_publishable_key
     API_GW_URL                           = module.api_gateway.stage_invoke_url
+    API_GW_API_KEY                       = random_password.api_key.result
     OPENAI_API_KEY                       = jsondecode(data.aws_secretsmanager_secret_version.bootstrap_secret.secret_string)["OPENAI_API_KEY"]
   }
 
@@ -26,7 +27,7 @@ locals {
 
   inflections_latin = {
     languages = toset(["es", "it", "pt"])
-    version = "0.3.0"
+    version   = "0.3.0"
   }
 
   lambda_allowed_triggers = {

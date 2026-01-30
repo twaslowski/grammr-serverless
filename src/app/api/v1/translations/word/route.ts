@@ -4,6 +4,7 @@ import {
   LiteralTranslationRequestSchema,
   LiteralTranslationResponse,
 } from "@/types/translation";
+import { z } from "zod";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
@@ -34,7 +35,10 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid request", details: validationResult.error.flatten() },
+        {
+          error: "Invalid request",
+          details: z.flattenError(validationResult.error),
+        },
         { status: 400 },
       );
     }

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { FlashcardImportRequestSchema } from "../schema";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 // POST /api/v1/flashcards/import - Import flashcards to the default deck
 export async function POST(request: NextRequest) {
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Invalid import data",
-          details: validationResult.error.flatten(),
+          details: z.flattenError(validationResult.error),
         },
         { status: 400 },
       );
