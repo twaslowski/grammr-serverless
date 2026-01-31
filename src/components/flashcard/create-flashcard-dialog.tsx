@@ -111,15 +111,13 @@ export function CreateFlashcardDialog({
     setError(null);
 
     try {
-      const back: FlashcardBack = {
-        translation,
-        paradigm: paradigm,
-      };
+      const flashcardBack: FlashcardBack = paradigm
+        ? { type: "word", translation, paradigm }
+        : { type: "phrase", translation };
 
       const flashcard = await createFlashcard({
         front,
-        type: initialType,
-        back,
+        back: flashcardBack,
         notes: notes || undefined,
       });
 

@@ -1,6 +1,6 @@
 import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
 import { screen, render } from "@testing-library/react";
-import { flashcardFixture } from "./flashcard.fixture";
+import { simpleFlashcardFixture } from "./flashcard.fixture";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 
@@ -15,22 +15,22 @@ jest.mock("next/navigation", () => ({
 
 describe("update flashcard dialog", () => {
   it("should display initial values properly", async () => {
-    render(<UpdateFlashcardDialog flashcard={flashcardFixture} />);
+    render(<UpdateFlashcardDialog flashcard={simpleFlashcardFixture} />);
 
     await userEvent.click(
       screen.getByRole("button", {
-        name: `edit-flashcard-${flashcardFixture.id}`,
+        name: `edit-flashcard-${simpleFlashcardFixture.id}`,
       }),
     );
 
     expect(screen.getByLabelText("Front (Word/Phrase)")).toHaveValue(
-      flashcardFixture.front,
+      simpleFlashcardFixture.front,
     );
     expect(screen.getByLabelText("Translation")).toHaveValue(
-      flashcardFixture.back.translation,
+      simpleFlashcardFixture.back.translation,
     );
     expect(screen.getByLabelText("Notes (optional)")).toHaveValue(
-      flashcardFixture.notes,
+      simpleFlashcardFixture.notes,
     );
   });
 });

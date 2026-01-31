@@ -37,7 +37,7 @@ export default function TestPage() {
       } else {
         setError(p.error.message);
       }
-    } catch (err) {
+    } catch {
       setError("Invalid JSON");
     }
   };

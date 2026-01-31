@@ -8,13 +8,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { TokenMorphology } from "@/types/morphology";
-import { Paradigm, PartOfSpeech } from "@/types/inflections";
-import { getInflections } from "@/lib/inflections";
+import { Paradigm } from "@/types/inflections";
 import { InflectionsTable } from "@/components/inflection/inflections-table";
 import { CreateFlashcardDialog } from "@/components/flashcard";
-import { useProfile } from "@/components/dashboard/profile-provider";
 import {
   FALLBACK_FEATURE_TYPE,
   getFeatureDisplayType,

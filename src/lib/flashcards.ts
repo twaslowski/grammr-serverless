@@ -6,6 +6,7 @@ import {
   UpdateDeckRequest,
   UpdateFlashcardRequest,
 } from "@/app/api/v1/flashcards/schema";
+import { Paradigm } from "@/types/inflections";
 
 const BASE_URL = "/api/v1/flashcards";
 
@@ -221,3 +222,15 @@ export async function importFlashcards(data: {
 
   return response.json();
 }
+
+// --- Additional operations can be added here as needed ---
+export const getParadigm = (flashcard: Flashcard): Paradigm | undefined => {
+  if (flashcard.back.type === "word") {
+    return flashcard.back.paradigm;
+  }
+  return undefined;
+};
+
+export const hasParadigm = (flashcard: Flashcard): boolean => {
+  return flashcard.back.type === "word";
+};

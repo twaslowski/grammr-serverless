@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, ArrowLeftRight, Edit2, Loader2 } from "lucide-react";
 import React, { useState } from "react";
-import { updateFlashcard } from "@/lib/flashcards";
+import { getParadigm, updateFlashcard } from "@/lib/flashcards";
 import toast from "react-hot-toast";
 
 interface UpdateFlashcardDialogProps {
@@ -33,7 +33,7 @@ export function UpdateFlashcardDialog({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const paradigm = flashcard.back.paradigm;
+  const paradigm = getParadigm(flashcard);
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -67,7 +67,9 @@ export function UpdateFlashcardDialog({
         onUpdate({
           ...flashcard,
           front,
-          back: { translation, paradigm, type: flashcard.back.type },
+          back: paradigm
+            ? { type: "word", translation, paradigm }
+            : { type: "phrase", translation },
           notes,
         });
       }

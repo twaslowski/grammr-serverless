@@ -1,4 +1,4 @@
-import { FlashcardBackSchema, FlashcardTypeEnum } from "@/types/flashcards";
+import { FlashcardBackSchema } from "@/types/flashcards";
 import { z } from "zod";
 
 export const CreateDeckRequestSchema = z.object({

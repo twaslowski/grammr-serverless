@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search } from "lucide-react";
-import { Deck, FlashcardWithDeck } from "@/types/flashcards";
+import { FlashcardWithDeck } from "@/types/flashcards";
 import { getFlashcards, deleteFlashcard } from "@/lib/flashcards";
 import { Flashcard } from "./flashcard";
 import toast from "react-hot-toast";
@@ -13,14 +13,9 @@ import { FlashcardListQuery } from "@/app/api/v1/flashcards/schema";
 
 interface FlashcardListProps {
   initialFlashcards?: FlashcardWithDeck[];
-  fetchFlashcards?: () => Promise<FlashcardWithDeck[]>;
-  decks: Deck[];
 }
 
-export function FlashcardList({
-  initialFlashcards = [],
-  decks,
-}: FlashcardListProps) {
+export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
   const sortOrder = "desc";
   const sortBy = "created_at";
 
@@ -31,9 +26,6 @@ export function FlashcardList({
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDeckId, setSelectedDeckId] = useState<number | undefined>(
-    decks.length === 1 ? decks[0].id : undefined,
-  );
 
   const fetchFlashcards = useCallback(async () => {
     setIsLoading(true);
@@ -44,7 +36,6 @@ export function FlashcardList({
         search: searchQuery || undefined,
         sort_by: sortBy,
         sort_order: sortOrder,
-        deck_id: selectedDeckId,
       };
 
       const data = await getFlashcards(query);
@@ -56,7 +47,7 @@ export function FlashcardList({
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery, sortBy, sortOrder, selectedDeckId]);
+  }, [searchQuery, sortBy, sortOrder]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this flashcard?")) {
@@ -80,14 +71,6 @@ export function FlashcardList({
     void fetchFlashcards();
   };
 
-  // Fetch when deck changes
-  useEffect(() => {
-    if (selectedDeckId !== undefined || decks.length === 0) {
-      void fetchFlashcards();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDeckId]);
-
   // Initial fetch on mount
   useEffect(() => {
     if (initialFlashcards.length === 0) {
@@ -102,33 +85,6 @@ export function FlashcardList({
         <CardContent className="pt-6">
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
-              {decks.length > 1 && (
-                <div>
-                  <label
-                    htmlFor="deck-select"
-                    className="block text-sm font-medium text-muted-foreground mb-1"
-                  >
-                    Deck
-                  </label>
-                  <select
-                    id="deck-select"
-                    value={selectedDeckId ?? ""}
-                    onChange={(e) =>
-                      setSelectedDeckId(
-                        e.target.value ? Number(e.target.value) : undefined,
-                      )
-                    }
-                    className="block w-full border rounded px-2 py-1 text-sm"
-                  >
-                    <option value="">All Decks</option>
-                    {decks.map((deck) => (
-                      <option key={deck.id} value={deck.id}>
-                        {deck.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
               <div className="flex-1">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

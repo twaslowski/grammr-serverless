@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2, Info } from "lucide-react";
 import { TokenMorphology } from "@/types/morphology";
-import { Paradigm, PartOfSpeech } from "@/types/inflections";
+import { Paradigm } from "@/types/inflections";
 import { getInflections } from "@/lib/inflections";
 import { InflectionsTable } from "@/components/inflection/inflections-table";
 import { CreateFlashcardDialog } from "@/components/flashcard";

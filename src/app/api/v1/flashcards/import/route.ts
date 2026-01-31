@@ -13,15 +13,12 @@ export async function POST(request: NextRequest) {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser();
-    console.log("Got here");
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    console.log("reading");
     const body = await request.json();
-    console.log("validating");
     const validationResult = FlashcardImportRequestSchema.safeParse(body);
 
     if (!validationResult.success) {
@@ -34,7 +31,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("importing");
     const { flashcards } = validationResult.data;
 
     if (flashcards.length === 0) {
