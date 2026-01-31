@@ -39,23 +39,22 @@ export function Flashcard({ flashcard, onDelete, onUpdate }: FlashcardProps) {
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        {flashcard.back.paradigm &&
-          flashcard.back.paradigm.inflections.length > 0 && (
-            <div className="mt-2">
-              <InflectionsDialog
-                paradigm={flashcard.back.paradigm}
-                displayHeader={true}
-                displayAddToFlashcards={false}
-                trigger={
-                  <Button variant="ghost" size="sm" className="gap-1 -ml-2">
-                    <Table2 className="h-4 w-4" />
-                    View Inflections (
-                    {flashcard.back.paradigm.inflections.length})
-                  </Button>
-                }
-              />
-            </div>
-          )}
+        {flashcard.back.type === "word" && (
+          <div className="mt-2">
+            <InflectionsDialog
+              paradigm={flashcard.back.paradigm}
+              displayHeader={true}
+              displayAddToFlashcards={false}
+              trigger={
+                <Button variant="ghost" size="sm" className="gap-1 -ml-2">
+                  <Table2 className="h-4 w-4" />
+                  View Inflections ({flashcard.back.paradigm.inflections.length}
+                  )
+                </Button>
+              }
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

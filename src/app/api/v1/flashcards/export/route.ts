@@ -56,7 +56,7 @@ export async function GET() {
     });
 
     const exportData: FlashcardExport = {
-      version: 1,
+      version: "1.0",
       exported_at: new Date().toISOString(),
       flashcards: exportedFlashcards,
     };

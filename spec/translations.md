@@ -17,8 +17,6 @@ It does so by utilizing the OpenAI API. This can be changed to DeepL or another 
 however, the word translation will most likely always be LLM-based (OpenAI initially),
 therefore it makes sense to keep both routes using the same service for simplicity initially.
 
-Both routes require authentication via Supabase and the `OPENAI_API_KEY` environment variable to be set.
-
 Request body example:
 
 ```

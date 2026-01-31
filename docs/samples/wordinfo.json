@@ -1,0 +1,201 @@
+{
+  "word": "слов",
+  "translation": "words",
+  "morphology": {
+    "text": "слов",
+    "lemma": "слово",
+    "pos": "NOUN",
+    "features": [
+      {
+        "type": "animacy",
+        "value": "INAN"
+      },
+      {
+        "type": "case",
+        "value": "GEN"
+      },
+      {
+        "type": "gender",
+        "value": "NEUT"
+      },
+      {
+        "type": "number",
+        "value": "PLUR"
+      }
+    ]
+  },
+  "paradigm": {
+    "lemma": "слово",
+    "partOfSpeech": "NOUN",
+    "inflections": [
+      {
+        "lemma": "слово",
+        "inflected": "слово",
+        "features": [
+          {
+            "type": "CASE",
+            "value": "NOM"
+          },
+          {
+            "type": "NUMBER",
+            "value": "SING"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "слова",
+        "features": [
+          {
+            "type": "NUMBER",
+            "value": "SING"
+          },
+          {
+            "type": "CASE",
+            "value": "GEN"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "слову",
+        "features": [
+          {
+            "type": "CASE",
+            "value": "DAT"
+          },
+          {
+            "type": "NUMBER",
+            "value": "SING"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "слово",
+        "features": [
+          {
+            "type": "CASE",
+            "value": "ACC"
+          },
+          {
+            "type": "NUMBER",
+            "value": "SING"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "словом",
+        "features": [
+          {
+            "type": "CASE",
+            "value": "ABL"
+          },
+          {
+            "type": "NUMBER",
+            "value": "SING"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "слове",
+        "features": [
+          {
+            "type": "CASE",
+            "value": "LOC"
+          },
+          {
+            "type": "NUMBER",
+            "value": "SING"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "слова",
+        "features": [
+          {
+            "type": "CASE",
+            "value": "NOM"
+          },
+          {
+            "type": "NUMBER",
+            "value": "PLUR"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "слов",
+        "features": [
+          {
+            "type": "NUMBER",
+            "value": "PLUR"
+          },
+          {
+            "type": "CASE",
+            "value": "GEN"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "словам",
+        "features": [
+          {
+            "type": "CASE",
+            "value": "DAT"
+          },
+          {
+            "type": "NUMBER",
+            "value": "PLUR"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "слова",
+        "features": [
+          {
+            "type": "CASE",
+            "value": "ACC"
+          },
+          {
+            "type": "NUMBER",
+            "value": "PLUR"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "словами",
+        "features": [
+          {
+            "type": "CASE",
+            "value": "ABL"
+          },
+          {
+            "type": "NUMBER",
+            "value": "PLUR"
+          }
+        ]
+      },
+      {
+        "lemma": "слово",
+        "inflected": "словах",
+        "features": [
+          {
+            "type": "CASE",
+            "value": "LOC"
+          },
+          {
+            "type": "NUMBER",
+            "value": "PLUR"
+          }
+        ]
+      }
+    ]
+  }
+}

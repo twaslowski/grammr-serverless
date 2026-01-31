@@ -7,7 +7,6 @@ from morphology.domain.morphological_analysis import (
     MorphologicalAnalysis,
 )
 
-
 model = spacy.load(os.getenv("SPACY_MODEL"))
 
 

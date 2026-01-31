@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { translateWord } from "@/lib/translation";
+import { translate } from "@/lib/translation";
 import { analyzeMorphology } from "@/lib/morphology";
 import { TokenMorphology } from "@/types/morphology";
 import { Loader2 } from "lucide-react";
@@ -58,9 +58,8 @@ export function TranslatedWord({
       try {
         // Fetch translation and morphology in parallel
         const [translationResult, morphologyResult] = await Promise.all([
-          translateWord({
-            phrase,
-            word: cleanWord,
+          translate({
+            text: cleanWord,
             source_language: sourceLanguage,
             target_language: targetLanguage,
           }),

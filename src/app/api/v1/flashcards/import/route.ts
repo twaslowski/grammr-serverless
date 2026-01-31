@@ -59,7 +59,6 @@ export async function POST(request: NextRequest) {
     const flashcardsToInsert = flashcards.map((card) => ({
       deck_id: defaultDeck.id,
       front: card.front,
-      type: card.type,
       back: card.back,
       notes: card.notes || null,
     }));

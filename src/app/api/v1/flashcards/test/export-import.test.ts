@@ -14,6 +14,7 @@ import {
   FlashcardImportRequestSchema,
   ImportFlashcardSchema,
 } from "../schema";
+import { ParadigmFlashcardBack } from "@/types/flashcards";
 
 describe("Export/Import Schema Validation", () => {
   describe("ExportedFlashcardSchema", () => {
@@ -22,6 +23,7 @@ describe("Export/Import Schema Validation", () => {
         front: "привет",
         type: "word",
         back: {
+          type: "phrase",
           translation: "hello",
         },
         notes: "Common greeting",
@@ -38,6 +40,7 @@ describe("Export/Import Schema Validation", () => {
         type: "word",
         back: {
           translation: "cat",
+          type: "word",
           paradigm: {
             partOfSpeech: "NOUN",
             lemma: "кот",
@@ -79,13 +82,13 @@ describe("Export/Import Schema Validation", () => {
   describe("FlashcardExportSchema", () => {
     it("should validate a complete export structure", () => {
       const validExport = {
-        version: 1,
+        version: "1.0",
         exported_at: "2026-01-22T10:00:00.000Z",
         flashcards: [
           {
             front: "слово",
             type: "word",
-            back: { translation: "word" },
+            back: { translation: "word", type: "phrase" },
             notes: null,
             deck_name: "Default Deck",
           },
@@ -98,7 +101,7 @@ describe("Export/Import Schema Validation", () => {
 
     it("should validate an empty flashcards array", () => {
       const emptyExport = {
-        version: 1,
+        version: "1.0",
         exported_at: "2026-01-22T10:00:00.000Z",
         flashcards: [],
       };
@@ -109,7 +112,7 @@ describe("Export/Import Schema Validation", () => {
 
     it("should only accept version 1", () => {
       const wrongVersion = {
-        version: 2,
+        version: "2.0",
         exported_at: "2026-01-22T10:00:00.000Z",
         flashcards: [],
       };
@@ -125,6 +128,7 @@ describe("Export/Import Schema Validation", () => {
         front: "привет",
         type: "word",
         back: {
+          type: "phrase",
           translation: "hello",
         },
         notes: "Common greeting",
@@ -143,7 +147,7 @@ describe("Export/Import Schema Validation", () => {
       const flashcardWithNullNotes = {
         front: "тест",
         type: "word",
-        back: { translation: "test" },
+        back: { translation: "test", type: "phrase" },
         notes: null,
       };
 
@@ -155,7 +159,7 @@ describe("Export/Import Schema Validation", () => {
       const flashcardWithoutNotes = {
         front: "тест",
         type: "word",
-        back: { translation: "test" },
+        back: { translation: "test", type: "phrase" },
       };
 
       const result = ImportFlashcardSchema.safeParse(flashcardWithoutNotes);
@@ -166,7 +170,7 @@ describe("Export/Import Schema Validation", () => {
       const emptyFront = {
         front: "",
         type: "word",
-        back: { translation: "test" },
+        back: { translation: "test", type: "phrase" },
       };
 
       const result = ImportFlashcardSchema.safeParse(emptyFront);
@@ -177,12 +181,12 @@ describe("Export/Import Schema Validation", () => {
   describe("FlashcardImportRequestSchema", () => {
     it("should validate a complete import request", () => {
       const validRequest = {
-        version: 1,
+        version: "1.0",
         flashcards: [
           {
             front: "слово",
             type: "word",
-            back: { translation: "word" },
+            back: { translation: "word", type: "phrase" },
           },
         ],
       };
@@ -194,7 +198,7 @@ describe("Export/Import Schema Validation", () => {
     it("should accept any version number (not just 1)", () => {
       // Import accepts any version to allow forward compatibility
       const request = {
-        version: 2,
+        version: "2.0",
         flashcards: [],
       };
 
@@ -212,8 +216,7 @@ describe("Deck ID Independence", () => {
         id: 101,
         deck_id: 2, // User A's deck ID
         front: "кошка",
-        type: "word" as const,
-        back: { translation: "cat" },
+        back: { translation: "cat", type: "phrase" },
         notes: "Animal",
         deck: { name: "Animals", user_id: "user-a-id" },
       };
@@ -221,7 +224,6 @@ describe("Deck ID Independence", () => {
       // Transform to export format (same logic as export route)
       const exported = {
         front: userAFlashcard.front,
-        type: userAFlashcard.type,
         back: userAFlashcard.back,
         notes: userAFlashcard.notes,
         deck_name: userAFlashcard.deck.name,
@@ -242,20 +244,20 @@ describe("Deck ID Independence", () => {
     it("should transform exported data to import format", () => {
       // Exported data from User A (deck_id: 2)
       const exportedData = {
-        version: 1,
+        version: "1.0",
         exported_at: "2026-01-22T10:00:00.000Z",
         flashcards: [
           {
             front: "кошка",
             type: "word",
-            back: { translation: "cat" },
+            back: { translation: "cat", type: "phrase" },
             notes: "Animal",
             deck_name: "Animals", // Original deck name from User A
           },
           {
             front: "собака",
             type: "word",
-            back: { translation: "dog" },
+            back: { translation: "dog", type: "phrase" },
             notes: null,
             deck_name: "Animals",
           },
@@ -292,9 +294,9 @@ describe("Deck ID Independence", () => {
           deck_id: userADeckId,
           front: "яблоко",
           type: "word" as const,
-          back: { translation: "apple" },
+          back: { translation: "apple", type: "phrase" },
           notes: "Fruit",
-          version: 1,
+          version: "1.0",
           created_at: "2026-01-20T10:00:00.000Z",
           updated_at: "2026-01-20T10:00:00.000Z",
         },
@@ -303,9 +305,9 @@ describe("Deck ID Independence", () => {
           deck_id: userADeckId,
           front: "груша",
           type: "word" as const,
-          back: { translation: "pear" },
+          back: { translation: "pear", type: "phrase" },
           notes: null,
-          version: 1,
+          version: "1.0",
           created_at: "2026-01-20T11:00:00.000Z",
           updated_at: "2026-01-20T11:00:00.000Z",
         },
@@ -321,7 +323,7 @@ describe("Deck ID Independence", () => {
       }));
 
       const exportPayload = {
-        version: 1 as const,
+        version: "1.0" as const,
         exported_at: new Date().toISOString(),
         flashcards: exportedFlashcards,
       };
@@ -359,7 +361,6 @@ describe("Deck ID Independence", () => {
         (card) => ({
           deck_id: userBDefaultDeckId, // User B's deck ID, NOT User A's
           front: card.front,
-          type: card.type,
           back: card.back,
           notes: card.notes || null,
         }),
@@ -416,6 +417,7 @@ describe("Deck ID Independence", () => {
         front: "кот",
         type: "word",
         back: {
+          type: "word",
           translation: "cat",
           paradigm: paradigm,
         },
@@ -441,9 +443,10 @@ describe("Deck ID Independence", () => {
 
       // Verify paradigm is preserved
       if (importResult.success) {
-        expect(importResult.data.back.paradigm).toBeDefined();
-        expect(importResult.data.back.paradigm?.lemma).toBe("кот");
-        expect(importResult.data.back.paradigm?.inflections).toHaveLength(3);
+        const back = importResult.data.back as ParadigmFlashcardBack;
+        expect(back.paradigm).toBeDefined();
+        expect(back.paradigm?.lemma).toBe("кот");
+        expect(back.paradigm?.inflections).toHaveLength(3);
       }
     });
   });

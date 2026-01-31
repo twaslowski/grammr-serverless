@@ -1,14 +1,13 @@
 import {
-  PhraseTranslationRequest,
-  PhraseTranslationResponse,
-  LiteralTranslationRequest,
-  LiteralTranslationResponse,
+  TranslationRequest,
+  TranslationResponse,
+  TranslationResponseSchema,
 } from "@/types/translation";
 
-export async function translatePhrase(
-  request: PhraseTranslationRequest,
-): Promise<PhraseTranslationResponse> {
-  const response = await fetch("/api/v1/translations/phrase", {
+export async function translate(
+  request: TranslationRequest,
+): Promise<TranslationResponse> {
+  const response = await fetch("/api/v2/translate", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -17,28 +16,15 @@ export async function translatePhrase(
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to translate phrase");
+    throw new Error("Failed to translate word");
   }
 
-  return response.json();
-}
+  const payload = await response.json();
+  const parsed = TranslationResponseSchema.safeParse(payload);
 
-export async function translateWord(
-  request: LiteralTranslationRequest,
-): Promise<LiteralTranslationResponse> {
-  const response = await fetch("/api/v1/translations/word", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to translate word");
+  if (!parsed.success) {
+    throw Error("Invalid response format from translation API");
   }
 
-  return response.json();
+  return parsed.data;
 }

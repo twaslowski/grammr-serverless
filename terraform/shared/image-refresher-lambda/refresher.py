@@ -38,10 +38,9 @@ def get_container_based_lambdas(lambda_client) -> list[dict]:
                     config = lambda_client.get_function(FunctionName=function_name)
                     image_uri = config["Code"].get("ImageUri")
                     if image_uri:
-                        container_lambdas.append({
-                            "function_name": function_name,
-                            "image_uri": image_uri
-                        })
+                        container_lambdas.append(
+                            {"function_name": function_name, "image_uri": image_uri}
+                        )
                 except ClientError as e:
                     logger.error(f"Error getting function {function_name}: {e}")
 
@@ -56,8 +55,7 @@ def refresh_lambda_image(lambda_client, function_name: str, image_uri: str) -> b
     """
     try:
         lambda_client.update_function_code(
-            FunctionName=function_name,
-            ImageUri=image_uri
+            FunctionName=function_name, ImageUri=image_uri
         )
         return True
     except ClientError as e:
@@ -76,10 +74,7 @@ def lambda_handler(_, __):
         container_lambdas = get_container_based_lambdas(lambda_client)
 
         # Refresh each Lambda's image
-        results = {
-            "successful": [],
-            "failed": []
-        }
+        results = {"successful": [], "failed": []}
 
         for lambda_info in container_lambdas:
             function_name = lambda_info["function_name"]
@@ -95,18 +90,11 @@ def lambda_handler(_, __):
             "successful_refreshes": len(results["successful"]),
             "failed_refreshes": len(results["failed"]),
             "successful_functions": results["successful"],
-            "failed_functions": results["failed"]
+            "failed_functions": results["failed"],
         }
 
         logger.info(json.dumps(summary))
 
-        return {
-            "statusCode": 200,
-            "body": json.dumps(summary)
-        }
+        return {"statusCode": 200, "body": json.dumps(summary)}
     except Exception as e:
-        logger.info(json.dumps({
-            "success": False,
-            "reason": str(e)
-        }))
-
+        logger.info(json.dumps({"success": False, "reason": str(e)}))

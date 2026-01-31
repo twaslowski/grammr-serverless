@@ -1,0 +1,301 @@
+{
+  "phrase": "Изучение языков не должно быть сложным",
+  "tokens": [
+    {
+      "text": "Изучение",
+      "lemma": "изучение",
+      "pos": "NOUN",
+      "features": [
+        {
+          "type": "animacy",
+          "value": "INAN"
+        },
+        {
+          "type": "case",
+          "value": "NOM"
+        },
+        {
+          "type": "gender",
+          "value": "NEUT"
+        },
+        {
+          "type": "number",
+          "value": "SING"
+        }
+      ]
+    },
+    {
+      "text": "языков",
+      "lemma": "язык",
+      "pos": "NOUN",
+      "features": [
+        {
+          "type": "animacy",
+          "value": "INAN"
+        },
+        {
+          "type": "case",
+          "value": "GEN"
+        },
+        {
+          "type": "gender",
+          "value": "MASC"
+        },
+        {
+          "type": "number",
+          "value": "PLUR"
+        }
+      ],
+      "paradigm": {
+        "partOfSpeech": "NOUN",
+        "lemma": "язык",
+        "inflections": [
+          {
+            "lemma": "язык",
+            "inflected": "язык",
+            "features": [
+              {
+                "type": "CASE",
+                "value": "NOM"
+              },
+              {
+                "type": "NUMBER",
+                "value": "SING"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "языка",
+            "features": [
+              {
+                "type": "NUMBER",
+                "value": "SING"
+              },
+              {
+                "type": "CASE",
+                "value": "GEN"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "языку",
+            "features": [
+              {
+                "type": "CASE",
+                "value": "DAT"
+              },
+              {
+                "type": "NUMBER",
+                "value": "SING"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "язык",
+            "features": [
+              {
+                "type": "CASE",
+                "value": "ACC"
+              },
+              {
+                "type": "NUMBER",
+                "value": "SING"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "языком",
+            "features": [
+              {
+                "type": "NUMBER",
+                "value": "SING"
+              },
+              {
+                "type": "CASE",
+                "value": "ABL"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "языке",
+            "features": [
+              {
+                "type": "NUMBER",
+                "value": "SING"
+              },
+              {
+                "type": "CASE",
+                "value": "LOC"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "языки",
+            "features": [
+              {
+                "type": "NUMBER",
+                "value": "PLUR"
+              },
+              {
+                "type": "CASE",
+                "value": "NOM"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "языков",
+            "features": [
+              {
+                "type": "NUMBER",
+                "value": "PLUR"
+              },
+              {
+                "type": "CASE",
+                "value": "GEN"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "языкам",
+            "features": [
+              {
+                "type": "NUMBER",
+                "value": "PLUR"
+              },
+              {
+                "type": "CASE",
+                "value": "DAT"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "языки",
+            "features": [
+              {
+                "type": "NUMBER",
+                "value": "PLUR"
+              },
+              {
+                "type": "CASE",
+                "value": "ACC"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "языками",
+            "features": [
+              {
+                "type": "NUMBER",
+                "value": "PLUR"
+              },
+              {
+                "type": "CASE",
+                "value": "ABL"
+              }
+            ]
+          },
+          {
+            "lemma": "язык",
+            "inflected": "языках",
+            "features": [
+              {
+                "type": "NUMBER",
+                "value": "PLUR"
+              },
+              {
+                "type": "CASE",
+                "value": "LOC"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "text": "не",
+      "lemma": "не",
+      "pos": "PART",
+      "features": [
+        {
+          "type": "polarity",
+          "value": "NEG"
+        }
+      ]
+    },
+    {
+      "text": "должно",
+      "lemma": "должный",
+      "pos": "ADJ",
+      "features": [
+        {
+          "type": "degree",
+          "value": "POS"
+        },
+        {
+          "type": "gender",
+          "value": "NEUT"
+        },
+        {
+          "type": "number",
+          "value": "SING"
+        },
+        {
+          "type": "stylevariant",
+          "value": "SHORT"
+        }
+      ]
+    },
+    {
+      "text": "быть",
+      "lemma": "быть",
+      "pos": "AUX",
+      "features": [
+        {
+          "type": "aspect",
+          "value": "IMP"
+        },
+        {
+          "type": "verbform",
+          "value": "INF"
+        },
+        {
+          "type": "voice",
+          "value": "ACT"
+        }
+      ]
+    },
+    {
+      "text": "сложным",
+      "lemma": "сложный",
+      "pos": "ADJ",
+      "features": [
+        {
+          "type": "case",
+          "value": "INS"
+        },
+        {
+          "type": "degree",
+          "value": "POS"
+        },
+        {
+          "type": "gender",
+          "value": "MASC"
+        },
+        {
+          "type": "number",
+          "value": "SING"
+        }
+      ]
+    }
+  ]
+}

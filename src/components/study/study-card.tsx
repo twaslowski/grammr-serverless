@@ -7,6 +7,13 @@ import { CardWithFlashcard, SchedulingInfo, Rating } from "@/types/fsrs";
 import { cn } from "@/lib/utils";
 import { RotateCcw } from "lucide-react";
 import { InflectionsDialog } from "@/components/inflection";
+import { WordDetailsDialogFull } from "@/components/translation/word-details-dialog-full";
+import {
+  AnalysisFlashcardBack,
+  FlashcardBack,
+  ParadigmFlashcardBack,
+  PhraseFlashcardBack,
+} from "@/types/flashcards";
 
 interface StudyCardProps {
   card: CardWithFlashcard;
@@ -28,6 +35,71 @@ const RATING_LABELS: Record<Rating, string> = {
   Good: "Good",
   Easy: "Easy",
 };
+
+interface FlashcardBackProps {
+  back: FlashcardBack;
+  notes?: string | null;
+}
+
+function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
+  switch (back.type) {
+    case "analysis":
+      const analysisBack = back as AnalysisFlashcardBack;
+      return (
+        <div className="space-y-4">
+          <div className="flex flex-row gap-x-2 bg-primary/5">
+            {analysisBack.tokens.map((t, idx) => (
+              <WordDetailsDialogFull
+                key={idx}
+                word={t.text}
+                // we are not showing translation for individual tokens in analysis flashcards
+                translation={""}
+                morphology={t || {}}
+                paradigm={t.paradigm}
+                trigger={
+                  <p className="text-xl font-bold text-primary cursor-pointer">
+                    {t.text}
+                  </p>
+                }
+              />
+            ))}
+          </div>
+          <p className="text-xl text-primary/80">{back.translation}</p>
+          {notes && (
+            <p className="text-sm text-muted-foreground italic">{notes}</p>
+          )}
+        </div>
+      );
+    case "word":
+      const paradigmBack = back as ParadigmFlashcardBack;
+      return (
+        <InflectionsDialog
+          paradigm={paradigmBack.paradigm}
+          displayHeader={true}
+          displayAddToFlashcards={false}
+          trigger={
+            <p className="text-3xl font-bold bg-primary/10 text-primary cursor-pointer">
+              {paradigmBack.translation}
+            </p>
+          }
+        />
+      );
+    case "phrase":
+      const phraseBack = back as PhraseFlashcardBack;
+      return (
+        <div className="space-y-4">
+          <p className="text-3xl font-bold text-primary">
+            {phraseBack.translation}
+          </p>
+          {notes && (
+            <p className="text-sm text-muted-foreground italic">{notes}</p>
+          )}
+        </div>
+      );
+    default:
+      return null;
+  }
+}
 
 export function StudyCard({
   card,
@@ -60,34 +132,11 @@ export function StudyCard({
               </Button>
             </div>
           ) : (
-            // Back of card - show the translation
-            <div className="space-y-4">
-              <h2 className="text-2xl text-muted-foreground">
-                {card.flashcard.front}
-              </h2>
-              {card.flashcard.back.paradigm && (
-                <InflectionsDialog
-                  paradigm={card.flashcard.back.paradigm}
-                  displayHeader={true}
-                  displayAddToFlashcards={false}
-                  trigger={
-                    <p className="text-3xl font-bold bg-primary/10 text-primary cursor-pointer">
-                      {card.flashcard.back.translation}
-                    </p>
-                  }
-                />
-              )}
-              {!card.flashcard.back.paradigm && (
-                <p className="text-3xl font-bold text-primary">
-                  {card.flashcard.back.translation}
-                </p>
-              )}
-              {card.flashcard.notes && (
-                <p className="text-sm text-muted-foreground italic">
-                  {card.flashcard.notes}
-                </p>
-              )}
-            </div>
+            // Back of card - show the translation/analysis/word/phrase
+            <FlashcardBackComponent
+              back={card.flashcard.back}
+              notes={card.flashcard.notes}
+            />
           )}
         </CardHeader>
 

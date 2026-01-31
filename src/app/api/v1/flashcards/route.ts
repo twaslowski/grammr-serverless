@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { deck_id, front, type, back, notes } = validationResult.data;
+    const { deck_id, front, back, notes } = validationResult.data;
 
     // If no deck_id provided, get the user's default deck
     let targetDeckId = deck_id;
@@ -166,7 +166,6 @@ export async function POST(request: NextRequest) {
       .insert({
         deck_id: targetDeckId,
         front,
-        type,
         back,
         notes: notes || null,
       })

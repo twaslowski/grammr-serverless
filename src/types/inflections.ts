@@ -2,8 +2,34 @@ import { z } from "zod";
 import { LanguageCodeSchema } from "@/types/languages";
 import { FeatureSchema } from "@/types/feature";
 
-// Part of Speech enum
-export const PartOfSpeechEnum = z.enum(["NOUN", "ADJ", "VERB", "AUX"]);
+// Part of Speech enum, defaults to X for unknown values
+export const PartOfSpeechEnum = z
+  .string()
+  .pipe(
+    z.enum([
+      // Open class words
+      "ADJ",
+      "ADV",
+      "INTJ",
+      "NOUN",
+      "PROPN",
+      "VERB",
+      // Closed class words
+      "ADP",
+      "AUX",
+      "CCONJ",
+      "DET",
+      "NUM",
+      "PART",
+      "PRON",
+      "SCONJ",
+      // Other
+      "PUNCT",
+      "SYM",
+      "X",
+    ]),
+  )
+  .catch("X");
 export type PartOfSpeech = z.infer<typeof PartOfSpeechEnum>;
 
 // Data structure for inflections request

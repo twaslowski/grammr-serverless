@@ -5,7 +5,6 @@ from morphology.domain.analysis_request import AnalysisRequest
 from morphology.service import analysis_service
 from morphology.lambda_util import ok, fail, check_keep_warm
 
-
 # configure logging
 logger = logging.getLogger("root")
 logger.setLevel(logging.INFO)
@@ -19,24 +18,24 @@ def handler(event, _) -> dict:
             body = json.loads(event.get("body", {}))
             body = AnalysisRequest(**body)
             analysis = analysis_service.perform_analysis(body)
-            logger.info(json.dumps({
-                "success": True,
-                "phrase": body.phrase,
-                "num_tokens": len(analysis.tokens),
-                "raw_event": event
-            }))
+            logger.info(
+                json.dumps(
+                    {
+                        "success": True,
+                        "phrase": body.phrase,
+                        "num_tokens": len(analysis.tokens),
+                        "raw_event": event,
+                    }
+                )
+            )
             return ok(analysis.model_dump())
         except Exception as e:
-            logger.error(json.dumps({
-                "success": False,
-                "error": str(e),
-                "raw_event": event
-            }))
+            logger.error(
+                json.dumps({"success": False, "error": str(e), "raw_event": event})
+            )
             return fail(500)
     except Exception as e:
-        logger.critical(json.dumps({
-            "success": False,
-            "error": str(e),
-            "raw_event": event
-        }))
+        logger.critical(
+            json.dumps({"success": False, "error": str(e), "raw_event": event})
+        )
         return fail(500)
