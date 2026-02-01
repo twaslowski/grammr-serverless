@@ -2,6 +2,7 @@ import {
   MorphologyRequest,
   MorphologicalAnalysis,
   MorphologicalAnalysisSchema,
+  TokenMorphology,
 } from "@/types/morphology";
 
 export async function analyzeMorphology(
@@ -26,3 +27,12 @@ export async function analyzeMorphology(
   }
   return parsed.data;
 }
+
+export const find = (
+  token: string,
+  morphologicalAnalysis: MorphologicalAnalysis,
+): TokenMorphology | undefined => {
+  return morphologicalAnalysis.tokens.find(
+    (t) => t.text.toLowerCase() === token.toLowerCase(),
+  );
+};

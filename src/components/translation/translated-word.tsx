@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { translate } from "@/lib/translation";
-import { analyzeMorphology } from "@/lib/morphology";
+import { analyzeMorphology, find } from "@/lib/morphology";
 import { TokenMorphology } from "@/types/morphology";
 import { Loader2 } from "lucide-react";
 import { Morphology } from "@/components/translation/morphology";
@@ -18,6 +18,7 @@ import { useProfile } from "@/components/dashboard/profile-provider";
 interface TranslatedWordProps {
   word: string;
   phrase: string;
+  morphology?: TokenMorphology;
   sourceLanguage: LanguageCode;
   targetLanguage: LanguageCode;
 }
@@ -33,12 +34,15 @@ function stripPunctuation(word: string): string {
 export function TranslatedWord({
   word,
   phrase,
+  morphology: initialMorphology,
   sourceLanguage,
   targetLanguage,
 }: TranslatedWordProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [translation, setTranslation] = useState<string | null>(null);
-  const [morphology, setMorphology] = useState<TokenMorphology | null>(null);
+  const [morphology, setMorphology] = useState<TokenMorphology | null>(
+    initialMorphology ?? null,
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,25 +60,35 @@ export function TranslatedWord({
       setError(null);
 
       try {
-        // Fetch translation and morphology in parallel
-        const [translationResult, morphologyResult] = await Promise.all([
-          translate({
+        // Fetch translation and morphology in parallel if morphology is not provided
+        if (initialMorphology === undefined) {
+          const [translationResult, morphologyResult] = await Promise.all([
+            translate({
+              text: cleanWord,
+              source_language: sourceLanguage,
+              target_language: targetLanguage,
+              context: phrase,
+            }),
+            analyzeMorphology({ phrase, language: userLearnedLanguage }),
+          ]);
+
+          setTranslation(translationResult.translation);
+
+          // Find the token that matches the current word
+          const matchingToken = find(cleanWord, morphologyResult);
+          if (matchingToken) {
+            setMorphology(matchingToken);
+          }
+        } else {
+          // Only fetch translation if morphology is already provided
+          const translationResult = await translate({
             text: cleanWord,
             source_language: sourceLanguage,
             target_language: targetLanguage,
-            context: phrase
-          }),
-          analyzeMorphology({ phrase, language: userLearnedLanguage }),
-        ]);
+            context: phrase,
+          });
 
-        setTranslation(translationResult.translation);
-
-        // Find the token that matches the current word
-        const matchingToken = morphologyResult.tokens.find(
-          (token) => token.text.toLowerCase() === cleanWord.toLowerCase(),
-        );
-        if (matchingToken) {
-          setMorphology(matchingToken);
+          setTranslation(translationResult.translation);
         }
       } catch (err) {
         setError(

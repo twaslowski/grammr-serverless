@@ -9,6 +9,8 @@ import { translate } from "@/lib/translation";
 import { Profile } from "@/types/profile";
 import { getLanguageByCode } from "@/lib/languages";
 import { ArrowRightLeft, Loader2 } from "lucide-react";
+import { MorphologicalAnalysis } from "@/types/morphology";
+import { analyzeMorphology } from "@/lib/morphology";
 
 interface TranslationFormProps {
   profile: Profile;
@@ -17,13 +19,15 @@ interface TranslationFormProps {
 export function TranslationForm({ profile }: TranslationFormProps) {
   const [text, setText] = useState("");
   const [translatedText, setTranslatedText] = useState<string | null>(null);
-  const [isReversed, setIsReversed] = useState(false);
+  const [morphologicalAnalysis, setMorphologicalAnalysis] =
+    useState<MorphologicalAnalysis | null>(null);
+
+  // isReversed = false: Analysis Mode (learned language → spoken language)
+  // isReversed = true: Translation Mode (spoken language → learned language)
+  const [isReversed, setIsReversed] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Determine mode based on direction
-  // isReversed = false: Analysis Mode (learned language → spoken language)
-  // isReversed = true: Translation Mode (spoken language → learned language)
   const isAnalysisMode = !isReversed;
 
   // Determine source and target languages based on direction
@@ -50,6 +54,14 @@ export function TranslationForm({ profile }: TranslationFormProps) {
         source_language: sourceLanguage,
         target_language: targetLanguage,
       });
+
+      const morphologyResult = await analyzeMorphology(
+        isAnalysisMode
+          ? { phrase: text.trim(), language: sourceLanguage }
+          : { phrase: result.translation, language: targetLanguage },
+      );
+
+      setMorphologicalAnalysis(morphologyResult);
       setTranslatedText(result.translation);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Translation failed");
@@ -159,15 +171,16 @@ export function TranslationForm({ profile }: TranslationFormProps) {
         </Card>
       )}
 
-      {translatedText && !isLoading && (
+      {translatedText && morphologicalAnalysis && !isLoading && (
         <Card>
           <CardContent className="pt-6">
             <TranslationResult
+              originalText={text.trim()}
               translatedText={translatedText}
               sourceLanguage={sourceLanguage}
+              morphologicalAnalysis={morphologicalAnalysis}
               targetLanguage={targetLanguage}
               isAnalysisMode={isAnalysisMode}
-              originalText={text.trim()}
             />
           </CardContent>
         </Card>

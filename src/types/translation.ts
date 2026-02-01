@@ -5,7 +5,7 @@ export const TranslationRequestSchema = z.object({
   text: z.string().min(1),
   source_language: LanguageCodeSchema,
   target_language: LanguageCodeSchema,
-  context: z.string().optional()
+  context: z.string().optional(),
 });
 
 export const TranslationResponseSchema = z.object({

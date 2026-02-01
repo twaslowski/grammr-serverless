@@ -35,9 +35,9 @@ export const PhraseFlashcardBackSchema = z.object({
 export type PhraseFlashcardBack = z.infer<typeof PhraseFlashcardBackSchema>;
 
 export const AnalysisFlashcardBackSchema = z.object({
+  source_phrase: z.string(),
   translation: z.string(),
   type: z.literal("analysis"),
-  source_phrase: z.string(),
   tokens: z.array(
     z.object({
       text: z.string(),

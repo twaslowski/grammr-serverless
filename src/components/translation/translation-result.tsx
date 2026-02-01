@@ -4,27 +4,31 @@ import { TranslatedWord } from "./translated-word";
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { TTSButton } from "@/components/tts/tts-button";
 import { LanguageCode } from "@/types/languages";
+import { MorphologicalAnalysis } from "@/types/morphology";
+import { find } from "@/lib/morphology";
 
 interface TranslationResultProps {
+  originalText: string;
   translatedText: string;
+  morphologicalAnalysis: MorphologicalAnalysis;
   sourceLanguage: LanguageCode;
   targetLanguage: LanguageCode;
   isAnalysisMode?: boolean;
-  originalText?: string;
 }
 
 export function TranslationResult({
+  originalText,
   translatedText,
+  morphologicalAnalysis,
   sourceLanguage,
   targetLanguage,
   isAnalysisMode = false,
-  originalText,
 }: TranslationResultProps) {
   // Split the translated text into words while preserving spaces and punctuation
   const translatedWords = translatedText.split(/(\s+)/);
 
   // In analysis mode, we show clickable words from original text (learned language)
-  const originalWords = originalText ? originalText.split(/(\s+)/) : [];
+  const originalWords = originalText.split(/(\s+)/);
 
   if (isAnalysisMode && originalText) {
     // Analysis Mode: Show original text (learned language) as clickable,
@@ -56,11 +60,13 @@ export function TranslationResult({
 
               // If it's a word (possibly with punctuation), make it interactive
               if (segment.trim()) {
+                const matchingToken = find(segment, morphologicalAnalysis);
                 return (
                   <TranslatedWord
                     key={index}
                     word={segment}
                     phrase={originalText}
+                    morphology={matchingToken}
                     sourceLanguage={sourceLanguage}
                     targetLanguage={targetLanguage}
                   />
@@ -117,10 +123,12 @@ export function TranslationResult({
 
             // If it's a word (possibly with punctuation), make it interactive
             if (segment.trim()) {
+              const tokenMorphology = find(segment, morphologicalAnalysis);
               return (
                 <TranslatedWord
                   key={index}
                   word={segment}
+                  morphology={tokenMorphology}
                   phrase={translatedText}
                   sourceLanguage={targetLanguage}
                   targetLanguage={sourceLanguage}
