@@ -1,5 +1,5 @@
 {
-  "body": "{\"text\": \"hello\", \"source_language\": \"en\", \"target_language\": \"de\", \"context\": \"hello world\"}",
+  "body": "{\"text\": \"среду\", \"source_language\": \"ru\", \"target_language\": \"de\", \"context\": \"Она сказала, что позвонит мне в среду.\"}",
   "headers": {
     "Content-Type": "application/json"
   }

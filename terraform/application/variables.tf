@@ -41,6 +41,12 @@ variable "deepl_api_key" {
   sensitive   = true
 }
 
+variable "openai_api_key" {
+  description = "The API key for OpenAI."
+  type        = string
+  sensitive   = true
+}
+
 variable "morphology_lambda_version" {
   description = "Version of the morphology lambda"
   type        = string

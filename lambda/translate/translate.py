@@ -1,6 +1,5 @@
 import json
 import logging
-from typing import Optional
 
 import lambda_util
 from data import Request, TranslationEngine
@@ -11,45 +10,30 @@ logger = logging.getLogger("root")
 logger.setLevel(logging.INFO)
 
 
-def translate(
-    text: str,
-    source_language: str,
-    target_language: str,
-    context: Optional[str] = None,
-    engine: TranslationEngine = TranslationEngine.DEEPL,
-) -> str:
-    """
-    General translation function that selects the engine.
-    Aiming to make use of the DeepL 500k character free tier first before switching over to AWS Translate.
-    AWS Translate is comparatively expensive ($15/million characters) so we want to minimize its usage.
-
-    :param text: Text to translate
-    :param source_language: Source language code
-    :param target_language: Target language code
-    :param context: Optional context for disambiguation
-    :param engine: TranslationEngine (default: DEEPL)
-    :return: Translated text
-    """
-    translator = derive_appropriate_translator(engine, use_context=context is not None)
-    return translator.translate(text, source_language, target_language, context)
-
-
 def derive_appropriate_translator(
-    translation_engine: TranslationEngine, use_context: bool = False
+    request: Request
 ) -> Translator:
-    if use_context:
+    if request.context:
         # Supersedes requested engine, because only OpenAITranslator can handle disambiguation via context
         return OpenAITranslator()
     else:
-        if translation_engine == TranslationEngine.AWS:
+        if request.translation_engine == TranslationEngine.AWS:
             return AWSTranslator()
-        elif translation_engine == TranslationEngine.DEEPL:
+        elif request.translation_engine == TranslationEngine.DEEPL:
             return DeepLTranslator()
         else:
-            raise ValueError(f"Unsupported translation engine: {translation_engine}")
+            raise ValueError(f"Unsupported translation engine: {request.translation_engine}")
 
 
 def _parse_translation_engine(event: dict) -> TranslationEngine:
+    """
+    Parse translation engine from event headers.
+    NOTE: Requesting a translation engine does NOT guarantee that it will be used.
+    In particular, when context is provided, OpenAITranslator will be used regardless of the requested engine.
+
+    :param event: Lambda event containing payload and headers
+    :return: Translation Engine. Defaults to TranslationEngine.DEEPL if not specified or invalid.
+    """
     translation_engine_header = (
         event.get("headers", {}).get("X-Translation-Engine", "deepl").lower()
     )
@@ -69,6 +53,7 @@ def lambda_handler(event, _) -> dict:
                 data.get("text"),
                 data.get("source_language"),
                 data.get("target_language"),
+                _parse_translation_engine(event),
                 data.get("context"),
             )
         except (ValueError, TypeError) as err:
@@ -76,14 +61,13 @@ def lambda_handler(event, _) -> dict:
                 400, str(err), {"raw_event": event, "reason": str(err)}
             )
 
-        translation_engine = _parse_translation_engine(event)
+        translator = derive_appropriate_translator(parsed)
 
-        translation = translate(
+        translation = translator.translate(
             parsed.text,
             parsed.source_language,
             parsed.target_language,
             parsed.context,
-            translation_engine,
         )
 
         return lambda_util.ok(
@@ -91,7 +75,7 @@ def lambda_handler(event, _) -> dict:
             {
                 "source_language": parsed.source_language,
                 "target_language": parsed.target_language,
-                "translation_engine": translation_engine.value,
+                "translator": translator.__class__.__name__,
                 "text_length": len(parsed.text),
             },
         )

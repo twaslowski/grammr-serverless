@@ -62,6 +62,7 @@ export function TranslatedWord({
             text: cleanWord,
             source_language: sourceLanguage,
             target_language: targetLanguage,
+            context: phrase
           }),
           analyzeMorphology({ phrase, language: userLearnedLanguage }),
         ]);

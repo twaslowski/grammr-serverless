@@ -1,4 +1,5 @@
 import json
+import unittest.mock
 
 import pytest
 
@@ -40,9 +41,27 @@ def test_invalid_json():
 
 def test_should_use_openai_engine_if_context_present():
     translator = derive_appropriate_translator(
-        translate.TranslationEngine.AWS, use_context=True
+        translate.Request(
+            text="word",
+            source_language="en",
+            target_language="de",
+            translation_engine=translate.TranslationEngine.DEEPL,
+            context="some context",
+        )
     )
     assert isinstance(translator, translate.OpenAITranslator)
+
+def test_should_raise_exception_for_context_misuse():
+    event = {"body": json.dumps({"text": "two words", "source_language": "en", "context": "hello world", "target_language": "de"})}
+    response = translate.lambda_handler(event, None)
+    assert response["statusCode"] == 400
+
+def test_should_use_openai_engine_for_context():
+    event = {"body": json.dumps({"text": "word", "source_language": "en", "context": "hello world", "target_language": "de"})}
+    with unittest.mock.patch("translate.OpenAITranslator.translate", return_value="a translation"):
+        response = translate.lambda_handler(event, None)
+        assert response["statusCode"] == 200
+        assert response["body"] == json.dumps({"translation": "a translation"})
 
 
 testdata = [

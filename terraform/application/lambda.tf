@@ -107,6 +107,7 @@ module "polly_lambda" {
 
 module "translate_lambda" {
   source = "terraform-aws-modules/lambda/aws"
+  version = "8.4.0"
 
   function_name = "grammr-translate-${var.environment}"
   description   = "Lambda function for performing translations with the AWS Translate service"
@@ -119,7 +120,8 @@ module "translate_lambda" {
   cloudwatch_logs_retention_in_days = 14
 
   environment_variables = {
-    DEEPL_API_KEY = var.deepl_api_key
+    DEEPL_API_KEY  = var.deepl_api_key
+    OPENAI_API_KEY = var.openai_api_key
   }
 
   # https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/36#issuecomment-650217274

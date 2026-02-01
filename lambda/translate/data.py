@@ -14,6 +14,7 @@ class Request:
     text: str
     source_language: str
     target_language: str
+    translation_engine: TranslationEngine
     context: Optional[str] = None
 
     def __init__(
@@ -21,6 +22,7 @@ class Request:
         text: str,
         source_language: str,
         target_language: str,
+        translation_engine: TranslationEngine,
         context: Optional[str] = None,
     ):
         if not text:
@@ -44,3 +46,4 @@ class Request:
         self.source_language = source_language
         self.target_language = target_language
         self.context = context
+        self.translation_engine = translation_engine

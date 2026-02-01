@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 import boto3
 import deepl
-from openai import OpenAI
+import requests
 
 
 class Translator(ABC):
@@ -94,7 +94,8 @@ class OpenAITranslator(Translator):
         if not api_key:
             raise ValueError("OpenAI API key not found in environment variables")
 
-        self.openai = OpenAI(api_key=api_key)
+        self.api_key = api_key
+        self.api_url = "https://api.openai.com/v1/chat/completions"
 
         # I have considered using the Structured Output feature of OpenAI to enforce JSON output,
         # but that requires Pydantic to be installed, which can sometimes be messy in the Lambda runtime.
@@ -111,7 +112,7 @@ class OpenAITranslator(Translator):
             Phrase: "{}"
             Word to translate: "{}"`
         """
-        self.model = "gpt-4.1-nano"
+        self.model = "gpt-4o-mini"
 
     def translate(
         self, word: str, _source_language: str, target_language: str, context: str
@@ -124,10 +125,39 @@ class OpenAITranslator(Translator):
         :param context: The context in which the word is used
         :return:
         """
-        response = self.openai.responses.create(
-            model=self.model,
-            instructions=self.system_prompt.format(target_language=target_language),
-            input=self.user_prompt.format(context, word),
-            store=False,
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": self.system_prompt.format(
+                        target_language=target_language
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": self.user_prompt.format(context, word),
+                },
+            ],
+            "temperature": 0.3,
+        }
+
+        response = requests.post(
+            self.api_url,
+            headers=headers,
+            json=payload,
         )
-        return json.loads(response.output_text)
+
+        if response.status_code != 200:
+            raise Exception(
+                f"OpenAI API request failed with status {response.status_code}: {response.text}"
+            )
+
+        response_data = response.json()
+        content = response_data["choices"][0]["message"]["content"]
+        return json.loads(content)["translation"]
