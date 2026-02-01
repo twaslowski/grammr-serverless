@@ -58,3 +58,14 @@ the code.
 
 "A lemma is the citation word form of a lexeme. The Nominative Singular slóvo 'word' is a lemma, as is the Infinitive
 contar 'tell'." (Janda and Tyers, 2018)
+
+## Flashcards
+
+Flashcards are used throughout the codebase to refer to the learning units that users interact with.
+A flashcard consists of a front and a back. The front contains a prompt, such as a word or phrase in the target
+language, and the back contains the answer, such as the translation or additional information.
+
+## Decks
+
+Decks are collections of flashcards grouped together based on a common theme or topic.
+Users can create, manage, and study decks to enhance their learning experience.

@@ -3,6 +3,7 @@ import json
 import pytest
 
 import translate
+from translate import derive_appropriate_translator
 
 
 def test_empty_text():
@@ -37,6 +38,13 @@ def test_invalid_json():
     assert "error" in response["body"]
 
 
+def test_should_use_openai_engine_if_context_present():
+    translator = derive_appropriate_translator(
+        translate.TranslationEngine.AWS, use_context=True
+    )
+    assert isinstance(translator, translate.OpenAITranslator)
+
+
 testdata = [
     ("aws", translate.TranslationEngine.AWS),
     ("AWS", translate.TranslationEngine.AWS),
@@ -47,11 +55,11 @@ testdata = [
 
 @pytest.mark.parametrize("engine,expected", testdata)
 def test_extract_translation_engine(engine: str, expected: translate.TranslationEngine):
-    aws_engine = {
+    event = {
         "body": json.dumps(
             {"text": "Hello", "source_language": "en", "target_language": "de"}
         ),
-        "headers": {"X-Translation-Engine": "aws"},
+        "headers": {"X-Translation-Engine": engine},
     }
-    translation_engine = translate._parse_translation_engine(aws_engine)
-    assert translation_engine == translate.TranslationEngine.AWS
+    translation_engine = translate._parse_translation_engine(event)
+    assert translation_engine == expected

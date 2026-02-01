@@ -25,7 +25,7 @@ tasks:
       ENVIRONMENT: "{{index .MATCH 0}}"
     cmds:
       - terraform init -backend-config=config/{{.ENVIRONMENT}}.hcl -reconfigure
-      - terraform apply -var-file=config/{{.ENVIRONMENT}}.tfvars -var-file=config/{{.ENVIRONMENT}}.secret.tfvars
+      - terraform apply -var-file=config/{{.ENVIRONMENT}}.tfvars -var-file=config/secrets.tfvars
 
   build:
     desc: Run formatter, linter, and tests
