@@ -7,13 +7,14 @@ import { CardWithFlashcard, SchedulingInfo, Rating } from "@/types/fsrs";
 import { cn } from "@/lib/utils";
 import { RotateCcw } from "lucide-react";
 import { InflectionsDialog } from "@/components/inflection";
-import { WordDetailsDialogFull } from "@/components/translation/word-details-dialog-full";
+import { WordDetailsDialog } from "@/components/translation/word-details-dialog";
 import {
   AnalysisFlashcardBack,
   FlashcardBack,
   ParadigmFlashcardBack,
   PhraseFlashcardBack,
 } from "@/types/flashcards";
+import {useProfile} from "@/components/dashboard/profile-provider";
 
 interface StudyCardProps {
   card: CardWithFlashcard;
@@ -42,6 +43,9 @@ interface FlashcardBackProps {
 }
 
 function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
+  // required as hack. probably decks should have to store language info and make it accessible to flashcards that way.
+  const profile = useProfile();
+
   switch (back.type) {
     case "analysis":
       const analysisBack = back as AnalysisFlashcardBack;
@@ -49,13 +53,13 @@ function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
         <div className="space-y-4">
           <div className="flex flex-row gap-x-2 bg-primary/5">
             {analysisBack.tokens.map((t, idx) => (
-              <WordDetailsDialogFull
+              <WordDetailsDialog
                 key={idx}
                 word={t.text}
-                // we are not showing translation for individual tokens in analysis flashcards
-                translation={""}
                 morphology={t || {}}
                 paradigm={t.paradigm}
+                sourceLanguage={profile.target_language}
+                targetLanguage={profile.source_language}
                 trigger={
                   <p className="text-xl font-bold text-primary cursor-pointer">
                     {t.text}

@@ -1,16 +1,18 @@
 "use client";
 
-import { TranslatedWord } from "./translated-word";
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { TTSButton } from "@/components/tts/tts-button";
 import { LanguageCode } from "@/types/languages";
 import { MorphologicalAnalysis } from "@/types/morphology";
-import { find } from "@/lib/morphology";
+import { find, stripPunctuation } from "@/lib/morphology";
+import { Paradigm } from "@/types/inflections";
+import { WordDetailsDialog } from "@/components/translation/word-details-dialog";
 
 interface TranslationResultProps {
   originalText: string;
   translatedText: string;
   morphologicalAnalysis: MorphologicalAnalysis;
+  paradigms: Paradigm[];
   sourceLanguage: LanguageCode;
   targetLanguage: LanguageCode;
   isAnalysisMode?: boolean;
@@ -20,6 +22,7 @@ export function TranslationResult({
   originalText,
   translatedText,
   morphologicalAnalysis,
+  paradigms,
   sourceLanguage,
   targetLanguage,
   isAnalysisMode = false,
@@ -58,17 +61,21 @@ export function TranslationResult({
                 return <span key={index}>{segment}</span>;
               }
 
+              const matchingToken = find(segment, morphologicalAnalysis);
+              const paradigm =
+                paradigms &&
+                paradigms.find((p) => p.lemma === matchingToken?.lemma);
+
               // If it's a word (possibly with punctuation), make it interactive
-              if (segment.trim()) {
-                const matchingToken = find(segment, morphologicalAnalysis);
+              if (segment.trim() && matchingToken) {
                 return (
-                  <TranslatedWord
+                  <WordDetailsDialog
                     key={index}
                     word={segment}
-                    phrase={originalText}
                     morphology={matchingToken}
                     sourceLanguage={sourceLanguage}
                     targetLanguage={targetLanguage}
+                    paradigm={paradigm}
                   />
                 );
               }
@@ -114,31 +121,39 @@ export function TranslationResult({
           </div>
         </div>
 
-        <p className="text-lg leading-relaxed">
+        <div className="flex flex-row gap-x-1 text-lg leading-relaxed">
           {translatedWords.map((segment, index) => {
             // If the segment is whitespace, just render it
             if (/^\s+$/.test(segment)) {
               return <span key={index}>{segment}</span>;
             }
 
+            const matchingToken = find(
+              stripPunctuation(segment),
+              morphologicalAnalysis,
+            );
+            const paradigm =
+              paradigms &&
+              paradigms.find((p) => p.lemma === matchingToken?.lemma);
+            console.log(index, segment, matchingToken);
+
             // If it's a word (possibly with punctuation), make it interactive
-            if (segment.trim()) {
-              const tokenMorphology = find(segment, morphologicalAnalysis);
+            if (segment.trim() && matchingToken) {
               return (
-                <TranslatedWord
+                <WordDetailsDialog
                   key={index}
                   word={segment}
-                  morphology={tokenMorphology}
-                  phrase={translatedText}
-                  sourceLanguage={targetLanguage}
-                  targetLanguage={sourceLanguage}
+                  morphology={matchingToken}
+                  sourceLanguage={sourceLanguage}
+                  targetLanguage={targetLanguage}
+                  paradigm={paradigm}
                 />
               );
+            } else {
+              return <span key={index}>{segment}</span>;
             }
-
-            return null;
           })}
-        </p>
+        </div>
       </div>
     </div>
   );

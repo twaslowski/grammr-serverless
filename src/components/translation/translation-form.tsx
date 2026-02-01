@@ -11,6 +11,8 @@ import { getLanguageByCode } from "@/lib/languages";
 import { ArrowRightLeft, Loader2 } from "lucide-react";
 import { MorphologicalAnalysis } from "@/types/morphology";
 import { analyzeMorphology } from "@/lib/morphology";
+import { InflectablePosSet, Paradigm } from "@/types/inflections";
+import { getInflections } from "@/lib/inflections";
 
 interface TranslationFormProps {
   profile: Profile;
@@ -21,6 +23,7 @@ export function TranslationForm({ profile }: TranslationFormProps) {
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [morphologicalAnalysis, setMorphologicalAnalysis] =
     useState<MorphologicalAnalysis | null>(null);
+  const [paradigms, setParadigms] = useState<Paradigm[]>([]);
 
   // isReversed = false: Analysis Mode (learned language → spoken language)
   // isReversed = true: Translation Mode (spoken language → learned language)
@@ -61,6 +64,9 @@ export function TranslationForm({ profile }: TranslationFormProps) {
           : { phrase: result.translation, language: targetLanguage },
       );
 
+      const paradigms = await fetchParadigms(morphologyResult);
+
+      setParadigms(paradigms);
       setMorphologicalAnalysis(morphologyResult);
       setTranslatedText(result.translation);
     } catch (err) {
@@ -68,6 +74,22 @@ export function TranslationForm({ profile }: TranslationFormProps) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchParadigms = async (
+    morphologicalAnalysis: MorphologicalAnalysis,
+  ): Promise<Paradigm[]> => {
+    return await Promise.all(
+      morphologicalAnalysis.tokens
+        .filter((token) => InflectablePosSet.has(token.pos))
+        .map((token) =>
+          getInflections({
+            lemma: token.lemma,
+            pos: token.pos,
+            language: isAnalysisMode ? sourceLanguage : targetLanguage,
+          }),
+        ),
+    );
   };
 
   const handleSwapLanguages = () => {
@@ -178,6 +200,7 @@ export function TranslationForm({ profile }: TranslationFormProps) {
               originalText={text.trim()}
               translatedText={translatedText}
               sourceLanguage={sourceLanguage}
+              paradigms={paradigms}
               morphologicalAnalysis={morphologicalAnalysis}
               targetLanguage={targetLanguage}
               isAnalysisMode={isAnalysisMode}

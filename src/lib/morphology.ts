@@ -36,3 +36,10 @@ export const find = (
     (t) => t.text.toLowerCase() === token.toLowerCase(),
   );
 };
+
+export const stripPunctuation = (word: string): string => {
+  return word.replace(
+    /^[.,\/#!$%^&*;:{}=\-_`~()]+|[.,\/#!$%^&*;:{}=\-_`~()]+$/g,
+    "",
+  );
+};

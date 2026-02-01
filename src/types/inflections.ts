@@ -32,6 +32,13 @@ export const PartOfSpeechEnum = z
   .catch("X");
 export type PartOfSpeech = z.infer<typeof PartOfSpeechEnum>;
 
+export const InflectablePosSet: Set<PartOfSpeech> = new Set([
+  "ADJ",
+  "NOUN",
+  "AUX",
+  "VERB",
+]);
+
 // Data structure for inflections request
 export const InflectionsRequestSchema = z.object({
   lemma: z.string().min(1),
