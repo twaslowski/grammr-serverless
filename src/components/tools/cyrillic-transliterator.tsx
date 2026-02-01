@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight } from "lucide-react";
 import CyrillicToTranslit from "cyrillic-to-translit-js";
+import { CopyButton } from "@/components/ui/copy-button";
 
 type TransliterationDirection = "toCyrillic" | "toLatin";
 
@@ -19,7 +20,6 @@ export function CyrillicTransliterator() {
   const [input, setInput] = useState("");
   const [direction, setDirection] =
     useState<TransliterationDirection>("toCyrillic");
-  const [copied, setCopied] = useState(false);
 
   const cyrillicToTranslit = CyrillicToTranslit({ preset: "ru" });
 
@@ -34,18 +34,6 @@ export function CyrillicTransliterator() {
   }, [input, direction, cyrillicToTranslit]);
 
   const output = getOutput();
-
-  const handleCopy = async () => {
-    if (!output) return;
-
-    try {
-      await navigator.clipboard.writeText(output);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
-  };
 
   const toggleDirection = () => {
     setDirection((prev) => (prev === "toCyrillic" ? "toLatin" : "toCyrillic"));
@@ -121,19 +109,10 @@ export function CyrillicTransliterator() {
               className="min-h-24 bg-muted/50"
             />
             {output && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleCopy}
+              <CopyButton
+                text={output}
                 className="absolute top-2 right-2 h-8 w-8"
-                title="Copy to clipboard"
-              >
-                {copied ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
+              />
             )}
           </div>
         </div>

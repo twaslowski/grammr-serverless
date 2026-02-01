@@ -7,6 +7,10 @@ import { MorphologicalAnalysis } from "@/types/morphology";
 import { find, stripPunctuation } from "@/lib/morphology";
 import { Paradigm } from "@/types/inflections";
 import { WordDetailsDialog } from "@/components/translation/word-details-dialog";
+import { CopyButton } from "@/components/ui/copy-button";
+import { Layers, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import React from "react";
 
 interface TranslationResultProps {
   originalText: string;
@@ -52,6 +56,7 @@ export function TranslationResult({
                 type="phrase"
               />
               <TTSButton text={originalText} />
+              <CopyButton text={originalText} />
             </div>
           </div>
           <p className="text-lg leading-relaxed">
@@ -111,13 +116,20 @@ export function TranslationResult({
       <div className="p-4 rounded-lg border bg-muted/50">
         <div className="flex flex-row justify-between">
           <p className="text-sm text-muted-foreground mb-2">Translation:</p>
-          <div className="flex gap-x-2">
+          <div className="flex gap-x-1">
             <CreateFlashcardDialog
               compact={true}
               front={translatedText}
               translation={originalText}
+              trigger={
+                <Button variant="outline" size="sm" className="h-9 w-16">
+                  <Layers className="h-4 w-4" />
+                  <Plus className="h-4 w-4" />
+                </Button>
+              }
             />
-            <TTSButton text={translatedText} />
+            <TTSButton variant="outline" text={translatedText} />
+            <CopyButton variant="outline" text={translatedText} />
           </div>
         </div>
 

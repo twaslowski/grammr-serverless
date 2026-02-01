@@ -14,7 +14,7 @@ import {
   ParadigmFlashcardBack,
   PhraseFlashcardBack,
 } from "@/types/flashcards";
-import {useProfile} from "@/components/dashboard/profile-provider";
+import { useProfile } from "@/components/dashboard/profile-provider";
 
 interface StudyCardProps {
   card: CardWithFlashcard;
