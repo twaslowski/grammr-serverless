@@ -14,7 +14,6 @@ import {
   ParadigmFlashcardBack,
   PhraseFlashcardBack,
 } from "@/types/flashcards";
-import { useProfile } from "@/components/dashboard/profile-provider";
 
 interface StudyCardProps {
   card: CardWithFlashcard;
@@ -43,9 +42,6 @@ interface FlashcardBackProps {
 }
 
 function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
-  // required as hack. probably decks should have to store language info and make it accessible to flashcards that way.
-  const profile = useProfile();
-
   switch (back.type) {
     case "analysis":
       const analysisBack = back as AnalysisFlashcardBack;
@@ -58,8 +54,6 @@ function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
                 word={t.text}
                 morphology={t || {}}
                 paradigm={t.paradigm}
-                sourceLanguage={profile.target_language}
-                targetLanguage={profile.source_language}
                 trigger={
                   <p className="text-xl font-bold text-primary cursor-pointer">
                     {t.text}

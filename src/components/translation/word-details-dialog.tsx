@@ -18,29 +18,32 @@ import {
 } from "@/types/feature";
 import { getPosLabel } from "@/lib/feature-labels";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { LanguageCode } from "@/types/languages";
+import { TranslationInput } from "@/components/ui/translation-input";
 
 interface WordDetailsDialogProps {
   word: string;
   translation?: string;
   morphology: TokenMorphology;
-  sourceLanguage: LanguageCode;
-  targetLanguage: LanguageCode;
   paradigm?: Paradigm;
   trigger?: React.ReactNode;
 }
 
 export function WordDetailsDialog({
   word,
-  translation,
+  translation: initialTranslation,
   morphology,
   trigger,
   paradigm,
 }: WordDetailsDialogProps) {
   const [open, setOpen] = useState(false);
+  const [translation, setTranslation] = useState(initialTranslation || "");
 
   const handleOpenChange = async (newOpen: boolean) => {
     setOpen(newOpen);
+    if (newOpen) {
+      // Reset translation to initial value when dialog opens
+      setTranslation(initialTranslation || "");
+    }
   };
 
   const defaultTrigger = <p className="cursor-pointer">{word}</p>;
@@ -77,16 +80,16 @@ export function WordDetailsDialog({
               <p className="font-medium text-lg">{word}</p>
             </div>
             <div>
-              {translation && (
-                <>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                    Translation
-                  </p>
-                  <p className="font-medium text-lg text-primary">
-                    {translation}
-                  </p>
-                </>
-              )}
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                Translation
+              </p>
+              <TranslationInput
+                value={translation}
+                textToTranslate={word}
+                onChange={setTranslation}
+                readOnly={true}
+                placeholder="Fetch translation"
+              />
             </div>
             {morphology && (
               <div className="grid grid-cols-2 gap-4">

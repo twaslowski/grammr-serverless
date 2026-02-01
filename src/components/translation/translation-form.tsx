@@ -11,8 +11,8 @@ import { getLanguageByCode } from "@/lib/languages";
 import { ArrowRightLeft, Loader2 } from "lucide-react";
 import { MorphologicalAnalysis } from "@/types/morphology";
 import { analyzeMorphology } from "@/lib/morphology";
-import { InflectablePosSet, Paradigm } from "@/types/inflections";
-import { getInflections } from "@/lib/inflections";
+import { Paradigm } from "@/types/inflections";
+import { fetchParadigms } from "@/lib/inflections";
 
 interface TranslationFormProps {
   profile: Profile;
@@ -64,7 +64,10 @@ export function TranslationForm({ profile }: TranslationFormProps) {
           : { phrase: result.translation, language: targetLanguage },
       );
 
-      const paradigms = await fetchParadigms(morphologyResult);
+      const paradigms = await fetchParadigms(
+        morphologyResult,
+        isAnalysisMode ? sourceLanguage : targetLanguage,
+      );
 
       setParadigms(paradigms);
       setMorphologicalAnalysis(morphologyResult);
@@ -74,22 +77,6 @@ export function TranslationForm({ profile }: TranslationFormProps) {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const fetchParadigms = async (
-    morphologicalAnalysis: MorphologicalAnalysis,
-  ): Promise<Paradigm[]> => {
-    return await Promise.all(
-      morphologicalAnalysis.tokens
-        .filter((token) => InflectablePosSet.has(token.pos))
-        .map((token) =>
-          getInflections({
-            lemma: token.lemma,
-            pos: token.pos,
-            language: isAnalysisMode ? sourceLanguage : targetLanguage,
-          }),
-        ),
-    );
   };
 
   const handleSwapLanguages = () => {

@@ -32,14 +32,21 @@ export const find = (
   token: string,
   morphologicalAnalysis: MorphologicalAnalysis,
 ): TokenMorphology | undefined => {
-  return morphologicalAnalysis.tokens.find(
+  const result = morphologicalAnalysis.tokens.find(
     (t) => t.text.toLowerCase() === token.toLowerCase(),
   );
+
+  if (!result) {
+    console.warn(
+      "could not find token for segment:",
+      stripPunctuation(token),
+      morphologicalAnalysis,
+    );
+  }
+
+  return result;
 };
 
 export const stripPunctuation = (word: string): string => {
-  return word.replace(
-    /^[.,\/#!$%^&*;:{}=\-_`~()]+|[.,\/#!$%^&*;:{}=\-_`~()]+$/g,
-    "",
-  );
+  return word.replace(/[^\p{L}\p{N}\p{Z}]/gu, "");
 };

@@ -27,8 +27,6 @@ export function TranslationResult({
   translatedText,
   morphologicalAnalysis,
   paradigms,
-  sourceLanguage,
-  targetLanguage,
   isAnalysisMode = false,
 }: TranslationResultProps) {
   // Split the translated text into words while preserving spaces and punctuation
@@ -78,8 +76,6 @@ export function TranslationResult({
                     key={index}
                     word={segment}
                     morphology={matchingToken}
-                    sourceLanguage={sourceLanguage}
-                    targetLanguage={targetLanguage}
                     paradigm={paradigm}
                   />
                 );
@@ -144,10 +140,10 @@ export function TranslationResult({
               stripPunctuation(segment),
               morphologicalAnalysis,
             );
+
             const paradigm =
               paradigms &&
               paradigms.find((p) => p.lemma === matchingToken?.lemma);
-            console.log(index, segment, matchingToken);
 
             // If it's a word (possibly with punctuation), make it interactive
             if (segment.trim() && matchingToken) {
@@ -156,8 +152,6 @@ export function TranslationResult({
                   key={index}
                   word={segment}
                   morphology={matchingToken}
-                  sourceLanguage={sourceLanguage}
-                  targetLanguage={targetLanguage}
                   paradigm={paradigm}
                 />
               );
