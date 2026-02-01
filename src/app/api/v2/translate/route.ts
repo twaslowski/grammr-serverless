@@ -44,8 +44,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { text, source_language, target_language } = validationResult.data;
-
     // Forward to Lambda via API Gateway
     const response = await fetch(`${apiGwConfig.endpoint}/translate`, {
       method: "POST",
@@ -53,7 +51,7 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json",
         "x-api-key": apiGwConfig.apiKey,
       },
-      body: JSON.stringify({ text, source_language, target_language }),
+      body: JSON.stringify(validationResult.data),
     });
 
     if (!response.ok) {

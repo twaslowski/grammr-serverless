@@ -76,6 +76,8 @@ def lambda_handler(event, _) -> dict:
                 "source_language": parsed.source_language,
                 "target_language": parsed.target_language,
                 "translator": translator.__class__.__name__,
+                "text": parsed.text,
+                "context": parsed.context,
                 "text_length": len(parsed.text),
             },
         )
