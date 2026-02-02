@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { FeatureSchema } from "@/types/feature";
 import { LanguageCodeSchema } from "@/types/languages";
-import { PartOfSpeechEnum } from "@/types/inflections";
+import { ParadigmSchema, PartOfSpeechEnum } from "@/types/inflections";
 
 // Request schema
 export const MorphologyRequestSchema = z.object({
@@ -24,3 +24,17 @@ export const MorphologicalAnalysisSchema = z.object({
   tokens: z.array(TokenMorphologySchema),
 });
 export type MorphologicalAnalysis = z.infer<typeof MorphologicalAnalysisSchema>;
+
+export const EnrichedTokenSchema = TokenMorphologySchema.extend({
+  paradigm: ParadigmSchema.optional(),
+  translation: z.string().optional(),
+});
+export type EnrichedToken = z.infer<typeof EnrichedTokenSchema>;
+
+export const EnrichedMorphologicalAnalysisSchema = z.object({
+  source_phrase: z.string(),
+  tokens: z.array(EnrichedTokenSchema),
+});
+export type EnrichedMorphologicalAnalysis = z.infer<
+  typeof EnrichedMorphologicalAnalysisSchema
+>;

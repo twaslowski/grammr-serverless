@@ -2,7 +2,8 @@ import {
   MorphologyRequest,
   MorphologicalAnalysis,
   MorphologicalAnalysisSchema,
-  TokenMorphology,
+  EnrichedMorphologicalAnalysis,
+  EnrichedToken,
 } from "@/types/morphology";
 
 export async function analyzeMorphology(
@@ -30,8 +31,8 @@ export async function analyzeMorphology(
 
 export const find = (
   token: string,
-  morphologicalAnalysis: MorphologicalAnalysis,
-): TokenMorphology | undefined => {
+  morphologicalAnalysis: EnrichedMorphologicalAnalysis,
+): EnrichedToken | undefined => {
   const result = morphologicalAnalysis.tokens.find(
     (t) => t.text.toLowerCase() === token.toLowerCase(),
   );

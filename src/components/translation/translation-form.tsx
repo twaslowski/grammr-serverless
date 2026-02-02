@@ -9,10 +9,9 @@ import { translate } from "@/lib/translation";
 import { Profile } from "@/types/profile";
 import { getLanguageByCode } from "@/lib/languages";
 import { ArrowRightLeft, Loader2 } from "lucide-react";
-import { MorphologicalAnalysis } from "@/types/morphology";
+import { EnrichedMorphologicalAnalysis } from "@/types/morphology";
 import { analyzeMorphology } from "@/lib/morphology";
-import { Paradigm } from "@/types/inflections";
-import { fetchParadigms } from "@/lib/inflections";
+import { enrichWithParadigms } from "@/lib/inflections";
 
 interface TranslationFormProps {
   profile: Profile;
@@ -22,8 +21,7 @@ export function TranslationForm({ profile }: TranslationFormProps) {
   const [text, setText] = useState("");
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [morphologicalAnalysis, setMorphologicalAnalysis] =
-    useState<MorphologicalAnalysis | null>(null);
-  const [paradigms, setParadigms] = useState<Paradigm[]>([]);
+    useState<EnrichedMorphologicalAnalysis | null>(null);
 
   // isReversed = false: Analysis Mode (learned language → spoken language)
   // isReversed = true: Translation Mode (spoken language → learned language)
@@ -64,13 +62,12 @@ export function TranslationForm({ profile }: TranslationFormProps) {
           : { phrase: result.translation, language: targetLanguage },
       );
 
-      const paradigms = await fetchParadigms(
+      const enrichedMorphologicalAnalysis = await enrichWithParadigms(
         morphologyResult,
         isAnalysisMode ? sourceLanguage : targetLanguage,
       );
 
-      setParadigms(paradigms);
-      setMorphologicalAnalysis(morphologyResult);
+      setMorphologicalAnalysis(enrichedMorphologicalAnalysis);
       setTranslatedText(result.translation);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Translation failed");
@@ -187,7 +184,6 @@ export function TranslationForm({ profile }: TranslationFormProps) {
               originalText={text.trim()}
               translatedText={translatedText}
               sourceLanguage={sourceLanguage}
-              paradigms={paradigms}
               morphologicalAnalysis={morphologicalAnalysis}
               targetLanguage={targetLanguage}
               isAnalysisMode={isAnalysisMode}

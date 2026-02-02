@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { getInflections, InflectionError } from "@/lib/inflections";
+import { getParadigm, InflectionError } from "@/lib/inflections";
 import { Paradigm, PartOfSpeech } from "@/types/inflections";
 import { InflectionsTable } from "./inflections-table";
 import { LanguageCode } from "@/types/languages";
@@ -43,7 +43,7 @@ export function InflectionForm({
     setResult(null);
 
     try {
-      const response = await getInflections({
+      const response = await getParadigm({
         lemma: word.trim(),
         pos,
         language: languageCode,

@@ -3,9 +3,8 @@
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { TTSButton } from "@/components/tts/tts-button";
 import { LanguageCode } from "@/types/languages";
-import { MorphologicalAnalysis } from "@/types/morphology";
+import { EnrichedMorphologicalAnalysis } from "@/types/morphology";
 import { find, stripPunctuation } from "@/lib/morphology";
-import { Paradigm } from "@/types/inflections";
 import { WordDetailsDialog } from "@/components/translation/word-details-dialog";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Layers, Plus } from "lucide-react";
@@ -15,8 +14,7 @@ import React from "react";
 interface TranslationResultProps {
   originalText: string;
   translatedText: string;
-  morphologicalAnalysis: MorphologicalAnalysis;
-  paradigms: Paradigm[];
+  morphologicalAnalysis: EnrichedMorphologicalAnalysis;
   sourceLanguage: LanguageCode;
   targetLanguage: LanguageCode;
   isAnalysisMode?: boolean;
@@ -26,7 +24,6 @@ export function TranslationResult({
   originalText,
   translatedText,
   morphologicalAnalysis,
-  paradigms,
   isAnalysisMode = false,
 }: TranslationResultProps) {
   // Split the translated text into words while preserving spaces and punctuation
@@ -46,15 +43,20 @@ export function TranslationResult({
             <p className="text-sm text-muted-foreground mb-2">
               Original (click words to analyze):
             </p>
-            <div className="flex gap-x-2">
+            <div className="flex gap-x-1">
               <CreateFlashcardDialog
                 compact={true}
-                front={originalText}
-                translation={translatedText}
-                type="phrase"
+                front={translatedText}
+                translation={originalText}
+                trigger={
+                  <Button variant="outline" size="sm" className="h-9 w-16">
+                    <Layers className="h-4 w-4" />
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                }
               />
-              <TTSButton text={originalText} />
-              <CopyButton text={originalText} />
+              <TTSButton variant="outline" text={translatedText} />
+              <CopyButton variant="outline" text={translatedText} />
             </div>
           </div>
           <p className="text-lg leading-relaxed">
@@ -65,9 +67,6 @@ export function TranslationResult({
               }
 
               const matchingToken = find(segment, morphologicalAnalysis);
-              const paradigm =
-                paradigms &&
-                paradigms.find((p) => p.lemma === matchingToken?.lemma);
 
               // If it's a word (possibly with punctuation), make it interactive
               if (segment.trim() && matchingToken) {
@@ -76,7 +75,7 @@ export function TranslationResult({
                     key={index}
                     word={segment}
                     morphology={matchingToken}
-                    paradigm={paradigm}
+                    paradigm={matchingToken.paradigm}
                   />
                 );
               }
@@ -92,15 +91,6 @@ export function TranslationResult({
           <p className="text-sm text-muted-foreground leading-relaxed">
             {translatedText}
           </p>
-        </div>
-
-        {/* Add phrase to flashcards */}
-        <div className="flex justify-end">
-          <CreateFlashcardDialog
-            front={originalText}
-            type="phrase"
-            translation={translatedText}
-          />
         </div>
       </div>
     );
@@ -141,10 +131,6 @@ export function TranslationResult({
               morphologicalAnalysis,
             );
 
-            const paradigm =
-              paradigms &&
-              paradigms.find((p) => p.lemma === matchingToken?.lemma);
-
             // If it's a word (possibly with punctuation), make it interactive
             if (segment.trim() && matchingToken) {
               return (
@@ -152,7 +138,7 @@ export function TranslationResult({
                   key={index}
                   word={segment}
                   morphology={matchingToken}
-                  paradigm={paradigm}
+                  paradigm={matchingToken.paradigm}
                 />
               );
             } else {

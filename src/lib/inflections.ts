@@ -4,7 +4,10 @@ import {
   Paradigm,
   ParadigmSchema,
 } from "@/types/inflections";
-import { MorphologicalAnalysis } from "@/types/morphology";
+import {
+  EnrichedMorphologicalAnalysis,
+  MorphologicalAnalysis,
+} from "@/types/morphology";
 import { LanguageCode } from "@/types/languages";
 
 export class InflectionError extends Error {
@@ -17,7 +20,7 @@ export class InflectionError extends Error {
   }
 }
 
-export async function getInflections(
+export async function getParadigm(
   request: InflectionsRequest,
 ): Promise<Paradigm> {
   const response = await fetch("/api/v1/inflections", {
@@ -56,32 +59,52 @@ export async function getInflections(
   return parseResult.data;
 }
 
-export const fetchParadigms = async (
+export const enrichWithParadigms = async (
   morphologicalAnalysis: MorphologicalAnalysis,
   language: LanguageCode,
-): Promise<Paradigm[]> => {
+): Promise<EnrichedMorphologicalAnalysis> => {
+  // Create a map to store paradigms by lemma+pos key
+  const paradigmMap = new Map<string, Paradigm>();
+
+  // Get all inflectable tokens
   const inflectableTokens = morphologicalAnalysis.tokens.filter((token) =>
     InflectablePosSet.has(token.pos),
   );
 
   // Create promises for all inflection requests
   const paradigmPromises = inflectableTokens.map(async (token) => {
+    const key = `${token.lemma}:${token.pos}`;
     try {
-      return await getInflections({
+      const paradigm = await getParadigm({
         lemma: token.lemma,
         pos: token.pos,
         language: language,
       });
+      paradigmMap.set(key, paradigm);
     } catch (e) {
       console.warn(
         `Failed to fetch paradigm for "${token.lemma}" (${token.pos}):`,
         e instanceof Error ? e.message : e,
       );
-      return null; // Return null for failed requests
     }
   });
 
-  // Wait for all promises to settle and filter out null results
-  const results = await Promise.all(paradigmPromises);
-  return results.filter((paradigm): paradigm is Paradigm => paradigm !== null);
+  // Wait for all paradigm requests to complete
+  await Promise.all(paradigmPromises);
+
+  // Enrich all tokens with paradigm data where available
+  const enrichedTokens = morphologicalAnalysis.tokens.map((token) => {
+    const key = `${token.lemma}:${token.pos}`;
+    const paradigm = paradigmMap.get(key);
+
+    return {
+      ...token,
+      ...(paradigm && { paradigm }),
+    };
+  });
+
+  return {
+    ...morphologicalAnalysis,
+    tokens: enrichedTokens,
+  };
 };
