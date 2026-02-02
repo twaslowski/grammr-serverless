@@ -30,7 +30,6 @@ interface CreateFlashcardDialogProps {
   back: FlashcardBack;
   onCreated?: (flashcard: Flashcard) => void;
   trigger?: React.ReactNode;
-  compact?: boolean;
 }
 
 export function CreateFlashcardDialog({
@@ -38,7 +37,6 @@ export function CreateFlashcardDialog({
   back: flashcardBack,
   onCreated,
   trigger,
-  compact = false,
 }: CreateFlashcardDialogProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +66,7 @@ export function CreateFlashcardDialog({
     try {
       const flashcard = await createFlashcard({
         front,
-        back: flashcardBack,
+        back: { ...flashcardBack, translation: translation },
         notes: notes || undefined,
       });
 
@@ -91,15 +89,10 @@ export function CreateFlashcardDialog({
     setTranslation(temp);
   };
 
-  const defaultTrigger = compact ? (
+  const defaultTrigger = (
     <Button variant="outline" size="sm" className="gap-1">
       <Layers className="h-4 w-4" />
       <Plus className="h-4 w-4" />
-    </Button>
-  ) : (
-    <Button variant="outline" className="gap-2">
-      <Plus className="h-4 w-4" />
-      Add to Flashcards
     </Button>
   );
 

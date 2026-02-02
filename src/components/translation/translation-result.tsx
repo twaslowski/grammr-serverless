@@ -38,7 +38,6 @@ export function TranslationResult({
             </p>
             <div className="flex gap-x-1">
               <CreateFlashcardDialog
-                compact={true}
                 front={translatedText}
                 back={{
                   ...morphologicalAnalysis,
@@ -78,7 +77,6 @@ export function TranslationResult({
           <p className="text-sm text-muted-foreground mb-2">Translation:</p>
           <div className="flex gap-x-1">
             <CreateFlashcardDialog
-              compact={true}
               front={translatedText}
               back={{
                 ...morphologicalAnalysis,

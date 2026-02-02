@@ -47,7 +47,7 @@ function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
       const analysisBack = back as AnalysisFlashcardBack;
       return (
         <div className="space-y-4">
-          <Analysis analysis={analysisBack} />
+          <Analysis analysis={analysisBack} textStyle="text-2xl font-bold" />
           <p className="text-xl text-primary/80">{back.translation}</p>
           {notes && (
             <p className="text-sm text-muted-foreground italic">{notes}</p>

@@ -20,6 +20,12 @@ import { getPosLabel } from "@/lib/feature-labels";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { TranslationInput } from "@/components/ui/translation-input";
 import { createFlashcardBack } from "@/lib/flashcards";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface WordDetailsDialogProps {
   word: string;
@@ -60,7 +66,6 @@ export function WordDetailsDialog({
             <CreateFlashcardDialog
               front={morphology?.lemma || word}
               back={createFlashcardBack(translation, paradigm)}
-              compact={true}
             />
           </div>
           <DialogDescription>
@@ -87,7 +92,8 @@ export function WordDetailsDialog({
                 textToTranslate={word}
                 onChange={setTranslation}
                 readOnly={true}
-                placeholder="Fetch translation"
+                className="max-w-32"
+                placeholder="?"
               />
             </div>
             {morphology && (
@@ -136,13 +142,17 @@ export function WordDetailsDialog({
 
           {/* Inflections section */}
           {paradigm && (
-            <div>
-              <h3 className="font-semibold mb-3">Inflections</h3>
-              <InflectionsTable
-                paradigm={paradigm}
-                displayAddFlashcard={false}
-              />
-            </div>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="inflections">
+                <AccordionTrigger>Inflections</AccordionTrigger>
+                <AccordionContent>
+                  <InflectionsTable
+                    paradigm={paradigm}
+                    displayAddFlashcard={false}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           )}
         </div>
       </DialogContent>
