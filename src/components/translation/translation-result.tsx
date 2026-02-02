@@ -4,12 +4,11 @@ import { CreateFlashcardDialog } from "@/components/flashcard";
 import { TTSButton } from "@/components/tts/tts-button";
 import { LanguageCode } from "@/types/languages";
 import { EnrichedMorphologicalAnalysis } from "@/types/morphology";
-import { find, stripPunctuation } from "@/lib/morphology";
-import { WordDetailsDialog } from "@/components/translation/word-details-dialog";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Layers, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import React from "react";
+import { Analysis } from "@/components/flashcard/analysis";
 
 interface TranslationResultProps {
   originalText: string;
@@ -26,12 +25,6 @@ export function TranslationResult({
   morphologicalAnalysis,
   isAnalysisMode = false,
 }: TranslationResultProps) {
-  // Split the translated text into words while preserving spaces and punctuation
-  const translatedWords = translatedText.split(/(\s+)/);
-
-  // In analysis mode, we show clickable words from original text (learned language)
-  const originalWords = originalText.split(/(\s+)/);
-
   if (isAnalysisMode && originalText) {
     // Analysis Mode: Show original text (learned language) as clickable,
     // and the translation (spoken language) as secondary
@@ -47,7 +40,11 @@ export function TranslationResult({
               <CreateFlashcardDialog
                 compact={true}
                 front={translatedText}
-                translation={originalText}
+                back={{
+                  ...morphologicalAnalysis,
+                  type: "analysis",
+                  translation: translatedText,
+                }}
                 trigger={
                   <Button variant="outline" size="sm" className="h-9 w-16">
                     <Layers className="h-4 w-4" />
@@ -59,30 +56,7 @@ export function TranslationResult({
               <CopyButton variant="outline" text={translatedText} />
             </div>
           </div>
-          <p className="text-lg leading-relaxed">
-            {originalWords.map((segment, index) => {
-              // If the segment is whitespace, just render it
-              if (/^\s+$/.test(segment)) {
-                return <span key={index}>{segment}</span>;
-              }
-
-              const matchingToken = find(segment, morphologicalAnalysis);
-
-              // If it's a word (possibly with punctuation), make it interactive
-              if (segment.trim() && matchingToken) {
-                return (
-                  <WordDetailsDialog
-                    key={index}
-                    word={segment}
-                    morphology={matchingToken}
-                    paradigm={matchingToken.paradigm}
-                  />
-                );
-              }
-
-              return null;
-            })}
-          </p>
+          <Analysis analysis={morphologicalAnalysis} />
         </div>
 
         {/* Translation in spoken language - smaller, secondary */}
@@ -106,7 +80,11 @@ export function TranslationResult({
             <CreateFlashcardDialog
               compact={true}
               front={translatedText}
-              translation={originalText}
+              back={{
+                ...morphologicalAnalysis,
+                type: "analysis",
+                translation: originalText,
+              }}
               trigger={
                 <Button variant="outline" size="sm" className="h-9 w-16">
                   <Layers className="h-4 w-4" />
@@ -120,31 +98,7 @@ export function TranslationResult({
         </div>
 
         <div className="flex flex-row gap-x-1 text-lg leading-relaxed">
-          {translatedWords.map((segment, index) => {
-            // If the segment is whitespace, just render it
-            if (/^\s+$/.test(segment)) {
-              return <span key={index}>{segment}</span>;
-            }
-
-            const matchingToken = find(
-              stripPunctuation(segment),
-              morphologicalAnalysis,
-            );
-
-            // If it's a word (possibly with punctuation), make it interactive
-            if (segment.trim() && matchingToken) {
-              return (
-                <WordDetailsDialog
-                  key={index}
-                  word={segment}
-                  morphology={matchingToken}
-                  paradigm={matchingToken.paradigm}
-                />
-              );
-            } else {
-              return <span key={index}>{segment}</span>;
-            }
-          })}
+          <Analysis analysis={morphologicalAnalysis} textStyle="text-2xl" />
         </div>
       </div>
     </div>

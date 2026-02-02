@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 const BATCH_SIZE = 10;
-const REFETCH_THRESHOLD = 3; // Refetch when queue has this many cards left
+const REFETCH_THRESHOLD = 3;
 
 export function StudySession() {
   const [cardQueue, setCardQueue] = useState<StudyCardItem[]>([]);
@@ -25,14 +25,15 @@ export function StudySession() {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fetchingRef = useRef(false);
+  const hasMoreCardsRef = useRef(true); // Track if server has more cards
 
   const fetchCards = useCallback(async (isInitialLoad: boolean = false) => {
-    // Prevent concurrent fetches
     if (fetchingRef.current) return;
     fetchingRef.current = true;
 
     if (isInitialLoad) {
       setIsLoading(true);
+      hasMoreCardsRef.current = true; // Reset on initial load
     } else {
       setIsFetchingMore(true);
     }
@@ -48,13 +49,17 @@ export function StudySession() {
           remaining: session.sessionProgress.remaining,
           total: session.sessionProgress.total,
         });
+        hasMoreCardsRef.current = session.cards.length > 0;
       } else {
-        // Append new cards to the queue, avoiding duplicates
         setCardQueue((prev) => {
           const existingIds = new Set(prev.map((item) => item.card.id));
           const newCards = session.cards.filter(
             (item) => !existingIds.has(item.card.id),
           );
+          // If no new cards were added, stop trying to fetch more
+          if (newCards.length === 0) {
+            hasMoreCardsRef.current = false;
+          }
           return [...prev, ...newCards];
         });
       }
@@ -63,7 +68,6 @@ export function StudySession() {
       if (isInitialLoad) {
         setError("Failed to load Flashcards");
       }
-      // For background fetches, we silently fail and will retry later
     } finally {
       if (isInitialLoad) {
         setIsLoading(false);
@@ -84,7 +88,8 @@ export function StudySession() {
       cardQueue.length <= REFETCH_THRESHOLD &&
       cardQueue.length > 0 &&
       !isFetchingMore &&
-      !fetchingRef.current
+      !fetchingRef.current &&
+      hasMoreCardsRef.current // Only fetch if server has more cards
     ) {
       void fetchCards(false);
     }

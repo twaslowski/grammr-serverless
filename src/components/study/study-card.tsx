@@ -7,13 +7,13 @@ import { CardWithFlashcard, SchedulingInfo, Rating } from "@/types/fsrs";
 import { cn } from "@/lib/utils";
 import { RotateCcw } from "lucide-react";
 import { InflectionsDialog } from "@/components/inflection";
-import { WordDetailsDialog } from "@/components/translation/word-details-dialog";
 import {
   AnalysisFlashcardBack,
   FlashcardBack,
   ParadigmFlashcardBack,
   PhraseFlashcardBack,
 } from "@/types/flashcards";
+import { Analysis } from "@/components/flashcard/analysis";
 
 interface StudyCardProps {
   card: CardWithFlashcard;
@@ -47,21 +47,7 @@ function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
       const analysisBack = back as AnalysisFlashcardBack;
       return (
         <div className="space-y-4">
-          <div className="flex flex-row gap-x-2 bg-primary/5">
-            {analysisBack.tokens.map((t, idx) => (
-              <WordDetailsDialog
-                key={idx}
-                word={t.text}
-                morphology={t || {}}
-                paradigm={t.paradigm}
-                trigger={
-                  <p className="text-xl font-bold text-primary cursor-pointer">
-                    {t.text}
-                  </p>
-                }
-              />
-            ))}
-          </div>
+          <Analysis analysis={analysisBack} />
           <p className="text-xl text-primary/80">{back.translation}</p>
           {notes && (
             <p className="text-sm text-muted-foreground italic">{notes}</p>

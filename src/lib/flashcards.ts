@@ -1,4 +1,9 @@
-import { Deck, Flashcard, FlashcardWithDeck } from "@/types/flashcards";
+import {
+  Deck,
+  Flashcard,
+  FlashcardBack,
+  FlashcardWithDeck,
+} from "@/types/flashcards";
 import {
   CreateDeckRequest,
   CreateFlashcardRequest,
@@ -231,6 +236,11 @@ export const getParadigm = (flashcard: Flashcard): Paradigm | undefined => {
   return undefined;
 };
 
-export const hasParadigm = (flashcard: Flashcard): boolean => {
-  return flashcard.back.type === "word";
+export const createFlashcardBack = (
+  translation: string,
+  paradigm?: Paradigm,
+): FlashcardBack => {
+  return paradigm
+    ? { type: "word", translation, paradigm }
+    : { type: "phrase", translation };
 };

@@ -73,7 +73,7 @@ export function TranslationInput({
   };
 
   return (
-    <div className={`flex gap-2 max-w-48 rounded-md border ${className}`}>
+    <div className={`flex gap-2 rounded-md border ${className}`}>
       <Input
         id={id}
         value={value}

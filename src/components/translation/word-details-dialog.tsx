@@ -19,6 +19,7 @@ import {
 import { getPosLabel } from "@/lib/feature-labels";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { TranslationInput } from "@/components/ui/translation-input";
+import { createFlashcardBack } from "@/lib/flashcards";
 
 interface WordDetailsDialogProps {
   word: string;
@@ -58,9 +59,7 @@ export function WordDetailsDialog({
             <DialogTitle>Word Details: {word}</DialogTitle>
             <CreateFlashcardDialog
               front={morphology?.lemma || word}
-              type="word"
-              translation={translation || ""}
-              paradigm={paradigm || undefined}
+              back={createFlashcardBack(translation, paradigm)}
               compact={true}
             />
           </div>

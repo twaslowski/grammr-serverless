@@ -97,9 +97,11 @@ function InflectionsTableHeader({
         {displayAddFlashcard && (
           <CreateFlashcardDialog
             front={lemma}
-            type="word"
-            translation=""
-            paradigm={paradigm}
+            back={{
+              type: "word",
+              paradigm: paradigm,
+              translation: "",
+            }}
           />
         )}
       </div>

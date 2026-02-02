@@ -22,32 +22,20 @@ import {
 } from "lucide-react";
 import { createFlashcard } from "@/lib/flashcards";
 import { TranslationInput } from "@/components/ui/translation-input";
-import { FlashcardType, FlashcardBack, Flashcard } from "@/types/flashcards";
-import { Paradigm } from "@/types/inflections";
+import { FlashcardBack, Flashcard } from "@/types/flashcards";
 import toast from "react-hot-toast";
 
 interface CreateFlashcardDialogProps {
-  /** The front text (word or phrase in learned language) */
-  front?: string;
-  /** The type of flashcard */
-  type?: FlashcardType;
-  /** Pre-populated translation */
-  translation?: string;
-  /** Pre-populated inflections */
-  paradigm?: Paradigm;
-  /** Optional callback when flashcard is created */
+  front: string;
+  back: FlashcardBack;
   onCreated?: (flashcard: Flashcard) => void;
-  /** Custom trigger button, defaults to a Plus button */
   trigger?: React.ReactNode;
-  /** Whether to show a compact trigger */
   compact?: boolean;
 }
 
 export function CreateFlashcardDialog({
   front: initialFront = "",
-  type: initialType = "word",
-  translation: initialTranslation = "",
-  paradigm: paradigm,
+  back: flashcardBack,
   onCreated,
   trigger,
   compact = false,
@@ -56,15 +44,17 @@ export function CreateFlashcardDialog({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
-  const [front, setFront] = useState(initialFront);
-  const [translation, setTranslation] = useState(initialTranslation);
+  const [front, setFront] = useState<string>(initialFront);
+  const [translation, setTranslation] = useState<string>(
+    flashcardBack.translation,
+  );
 
   // Reset form when dialog opens
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (newOpen) {
       setFront(initialFront);
-      setTranslation(initialTranslation);
+      setTranslation(flashcardBack.translation);
       setNotes("");
       setError(null);
     }
@@ -76,10 +66,6 @@ export function CreateFlashcardDialog({
     setError(null);
 
     try {
-      const flashcardBack: FlashcardBack = paradigm
-        ? { type: "word", translation, paradigm }
-        : { type: "phrase", translation };
-
       const flashcard = await createFlashcard({
         front,
         back: flashcardBack,
@@ -126,7 +112,7 @@ export function CreateFlashcardDialog({
         <DialogHeader>
           <DialogTitle>Create Flashcard</DialogTitle>
           <DialogDescription>
-            Add this {initialType} to your flashcard deck for later study.
+            Save to your deck for later study.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -166,22 +152,18 @@ export function CreateFlashcardDialog({
               <TranslationInput
                 value={translation}
                 onChange={setTranslation}
+                className="w-full"
                 textToTranslate={front}
                 disabled={isLoading}
                 placeholder="Enter translation..."
               />
-              {!translation && (
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  Translation is required
-                </p>
-              )}
             </div>
-            {paradigm && paradigm.inflections.length > 0 && (
+            {flashcardBack.type === "word" && (
               <div className="space-y-2">
                 <Label>Inflections</Label>
                 <div className="text-sm text-muted-foreground bg-muted p-2 rounded-md">
-                  {paradigm.inflections.length} inflection(s) will be saved
+                  {flashcardBack.paradigm.inflections.length} inflection(s) will
+                  be saved
                 </div>
               </div>
             )}
