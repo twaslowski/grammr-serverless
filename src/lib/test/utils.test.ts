@@ -2,7 +2,6 @@ import { z } from "zod";
 
 import { snakeToCamel } from "@/lib/utils";
 
-
 const DeckStudySchema = z
   .object({
     id: z.uuid(),

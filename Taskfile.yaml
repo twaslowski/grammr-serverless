@@ -31,6 +31,7 @@ tasks:
     desc: Run formatter, linter, and tests
     cmds:
       - pnpm run fmt
+      - pnpm run lint:fix
       - pnpm run lint
       - pnpm run test
       - pnpm run build
