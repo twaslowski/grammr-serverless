@@ -1,11 +1,12 @@
 import "@testing-library/jest-dom";
+
 import {
-  getLastWarmupTimestamp,
-  setLastWarmupTimestamp,
-  isWarmupNeeded,
-  triggerPreflightWarmup,
-  PREFLIGHT_STORAGE_KEY,
   DEFAULT_COOLDOWN_MS,
+  getLastWarmupTimestamp,
+  isWarmupNeeded,
+  PREFLIGHT_STORAGE_KEY,
+  setLastWarmupTimestamp,
+  triggerPreflightWarmup,
 } from "@/lib/preflight";
 
 // Mock fetch globally

@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { LanguageCodeSchema } from "@/types/languages";
 
 export const TranslationRequestSchema = z.object({

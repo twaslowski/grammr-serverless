@@ -1,17 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TranslationResult } from "./translation-result";
-import { translate } from "@/lib/translation";
-import { Profile } from "@/types/profile";
-import { getLanguageByCode } from "@/lib/languages";
 import { ArrowRightLeft, Loader2 } from "lucide-react";
-import { EnrichedMorphologicalAnalysis } from "@/types/morphology";
-import { analyzeMorphology } from "@/lib/morphology";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { enrichWithParadigms } from "@/lib/inflections";
+import { getLanguageByCode } from "@/lib/languages";
+import { analyzeMorphology } from "@/lib/morphology";
+import { translate } from "@/lib/translation";
+import { EnrichedMorphologicalAnalysis } from "@/types/morphology";
+import { Profile } from "@/types/profile";
+
+import { TranslationResult } from "./translation-result";
 
 interface TranslationFormProps {
   profile: Profile;

@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { StudyCard } from "./study-card";
-import { StudyProgress } from "./study-progress";
-import { StudyComplete } from "./study-complete";
-import { loadSession, submitReview } from "@/lib/study";
-import { StudyCardItem, Rating } from "@/types/fsrs";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { loadSession, submitReview } from "@/lib/study";
+import { Rating, StudyCardItem } from "@/types/fsrs";
+
+import { StudyCard } from "./study-card";
+import { StudyComplete } from "./study-complete";
+import { StudyProgress } from "./study-progress";
 
 const BATCH_SIZE = 10;
 const REFETCH_THRESHOLD = 3;

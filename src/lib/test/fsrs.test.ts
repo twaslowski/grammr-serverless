@@ -4,21 +4,22 @@
  */
 
 import {
+  createEmptyCard,
+  Rating as TsFsrsRating,
+  State as TsFsrsState,
+} from "ts-fsrs";
+
+import {
   createFsrsInstance,
-  getDefaultParameters,
-  scheduleCard,
   formatInterval,
+  getDefaultParameters,
   mapCardToFsrs,
   mapFsrsCardToDb,
   mapFsrsLogToDb,
   mapRatingToFsrs,
   mapStateToDb,
+  scheduleCard,
 } from "@/lib/fsrs";
-import {
-  Rating as TsFsrsRating,
-  State as TsFsrsState,
-  createEmptyCard,
-} from "ts-fsrs";
 import { Card as DbCard } from "@/types/fsrs";
 
 describe("FSRS Service", () => {

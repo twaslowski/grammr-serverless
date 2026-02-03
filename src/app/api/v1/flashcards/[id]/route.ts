@@ -1,8 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
-import { UpdateFlashcardRequestSchema } from "../schema";
 import { revalidatePath } from "next/cache";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
+import { createClient } from "@/lib/supabase/server";
+import { UpdateFlashcardRequestSchema } from "../schema";
 
 interface RouteParams {
   params: Promise<{ id: string }>;

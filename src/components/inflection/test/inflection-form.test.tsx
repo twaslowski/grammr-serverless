@@ -1,10 +1,12 @@
+import "@testing-library/jest-dom";
+
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import { InflectionForm } from "../inflection-form";
-import { LanguageCode } from "@/types/languages";
-import { PartOfSpeech } from "@/types/inflections";
+
 import { getPosLabel } from "@/lib/feature-labels";
+import { PartOfSpeech } from "@/types/inflections";
+import { LanguageCode } from "@/types/languages";
+import { InflectionForm } from "../inflection-form";
 
 // Mock getInflections and getPosLabel
 jest.mock("@/lib/inflections", () => ({

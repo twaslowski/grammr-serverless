@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+
 import { LanguageSelector } from "@/components/auth/language-selector";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function SelectLanguagePage() {
   const supabase = await createClient();

@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { ArrowLeft, LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
+import { ArrowLeft, LucideIcon } from "lucide-react";
+import Link from "next/link";
 
 export interface PageHeaderProps {
   title: string;

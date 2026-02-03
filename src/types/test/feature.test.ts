@@ -1,9 +1,9 @@
 import {
+  FALLBACK_FEATURE_TYPE,
   Feature,
   FeatureSchema,
-  getFeatureDisplayValue,
   getFeatureDisplayType,
-  FALLBACK_FEATURE_TYPE,
+  getFeatureDisplayValue,
 } from "@/types/feature";
 
 describe("feature", () => {

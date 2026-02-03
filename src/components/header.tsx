@@ -1,8 +1,9 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
+import Link from "next/link";
+
 import { AuthButton } from "@/components/auth/auth-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { Button } from "@/components/ui/button";
 
 export const Header = () => {
   return (

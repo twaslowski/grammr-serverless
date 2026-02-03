@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { LanguageCodeSchema } from "@/types/languages";
+
 import { FeatureSchema } from "@/types/feature";
+import { LanguageCodeSchema } from "@/types/languages";
 
 // Part of Speech enum, defaults to X for unknown values
 export const PartOfSpeechEnum = z

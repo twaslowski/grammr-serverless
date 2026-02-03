@@ -3,8 +3,8 @@ import {
   getParadigm,
   InflectionError,
 } from "@/lib/inflections";
-import { MorphologicalAnalysis } from "@/types/morphology";
 import { Paradigm } from "@/types/inflections";
+import { MorphologicalAnalysis } from "@/types/morphology";
 
 // Mock fetch globally
 const mockFetch = jest.fn();

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { TTSRequestSchema } from "./schema";
-import { getApiGatewayConfig } from "@/lib/api-gateway";
 import { z } from "zod";
+
+import { getApiGatewayConfig } from "@/lib/api-gateway";
+import { createClient } from "@/lib/supabase/server";
+
+import { TTSRequestSchema } from "./schema";
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,7 +1,8 @@
 import { z } from "zod";
+
 import {
-  getFeatureValueLabel,
   getFeatureTypeLabel,
+  getFeatureValueLabel,
 } from "@/lib/feature-labels";
 
 export const FALLBACK_FEATURE_TYPE = "OTHER";

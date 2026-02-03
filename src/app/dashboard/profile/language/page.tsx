@@ -1,9 +1,10 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { LanguageSelector } from "@/components/auth/language-selector";
-import { ProfileSchema } from "@/types/profile";
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+import { LanguageSelector } from "@/components/auth/language-selector";
+import { createClient } from "@/lib/supabase/server";
+import { ProfileSchema } from "@/types/profile";
 
 export default async function LanguageSettingsPage() {
   const supabase = await createClient();

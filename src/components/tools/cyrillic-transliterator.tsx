@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+import CyrillicToTranslit from "cyrillic-to-translit-js";
+import { ArrowLeftRight } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { ArrowLeftRight } from "lucide-react";
-import CyrillicToTranslit from "cyrillic-to-translit-js";
 import { CopyButton } from "@/components/ui/copy-button";
+import { Textarea } from "@/components/ui/textarea";
 
 type TransliterationDirection = "toCyrillic" | "toLatin";
 

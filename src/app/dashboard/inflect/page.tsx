@@ -1,8 +1,8 @@
 "use client";
 
-import { InflectionForm } from "@/components/inflection";
 import { useProfile } from "@/components/dashboard/profile-provider";
 import { usePreflightWarmup } from "@/components/dashboard/use-preflight-warmup";
+import { InflectionForm } from "@/components/inflection";
 import { PageLayout } from "@/components/page-header";
 import { getLanguageByCode } from "@/lib/languages";
 

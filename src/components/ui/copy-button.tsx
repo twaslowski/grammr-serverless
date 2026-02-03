@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Check, Copy } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { Copy, Check } from "lucide-react";
 
 interface CopyButtonProps {
   text: string;

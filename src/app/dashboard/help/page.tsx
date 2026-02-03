@@ -1,14 +1,15 @@
-import { BookOpenCheck, ChevronDownIcon, Code2 } from "lucide-react";
-import StyledLink from "@/components/styled-link";
+import React from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@radix-ui/react-accordion";
-import React from "react";
-import { PageLayout } from "@/components/page-header";
+import { BookOpenCheck, ChevronDownIcon, Code2 } from "lucide-react";
+
 import { Footer } from "@/components/footer";
+import { PageLayout } from "@/components/page-header";
+import StyledLink from "@/components/styled-link";
 
 type FAQItem = {
   question: string;

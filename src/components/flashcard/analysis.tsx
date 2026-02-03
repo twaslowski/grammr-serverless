@@ -1,8 +1,9 @@
-import { EnrichedMorphologicalAnalysis } from "@/types/morphology";
-import { stripPunctuation } from "@/lib/morphology";
-import { WordDetailsDialog } from "@/components/translation/word-details-dialog";
 import React from "react";
+
+import { WordDetailsDialog } from "@/components/translation/word-details-dialog";
+import { stripPunctuation } from "@/lib/morphology";
 import { cn } from "@/lib/utils";
+import { EnrichedMorphologicalAnalysis } from "@/types/morphology";
 
 interface AnalysisProps {
   analysis: EnrichedMorphologicalAnalysis;

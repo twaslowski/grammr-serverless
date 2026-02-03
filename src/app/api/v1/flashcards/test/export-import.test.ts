@@ -8,13 +8,13 @@
  *    can export, user B can import to deckId 3)
  */
 
+import { ParadigmFlashcardBack } from "@/types/flashcards";
 import {
   ExportedFlashcardSchema,
   FlashcardExportSchema,
   FlashcardImportRequestSchema,
   ImportFlashcardSchema,
 } from "../schema";
-import { ParadigmFlashcardBack } from "@/types/flashcards";
 
 describe("Export/Import Schema Validation", () => {
   describe("ExportedFlashcardSchema", () => {

@@ -1,12 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
-import { LogoutButton } from "./logout-button";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
+import Link from "next/link";
+
 import { UserButton } from "@/components/auth/user-button";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
+
+import { LogoutButton } from "./logout-button";
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);

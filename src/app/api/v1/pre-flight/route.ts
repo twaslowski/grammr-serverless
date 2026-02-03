@@ -1,6 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+
 import { getApiGatewayConfig } from "@/lib/api-gateway";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Pre-flight endpoint to warm up image-based Lambda functions.

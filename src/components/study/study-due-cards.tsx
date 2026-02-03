@@ -1,15 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { ArrowRight, BookOpen, Loader2 } from "lucide-react";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { BookOpen, Loader2, ArrowRight } from "lucide-react";
 import { getDueCardsCount } from "@/lib/study";
 import { DueCardsCount } from "@/types/fsrs";
 

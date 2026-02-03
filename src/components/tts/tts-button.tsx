@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Volume2, Loader2 } from "lucide-react";
-import { useProfile } from "@/components/dashboard/profile-provider";
+import { useRef, useState } from "react";
+import { Loader2, Volume2 } from "lucide-react";
 import toast from "react-hot-toast";
+
+import { useProfile } from "@/components/dashboard/profile-provider";
+import { Button } from "@/components/ui/button";
 
 interface TTSButtonProps {
   text: string;

@@ -1,20 +1,21 @@
-import Link from "next/link";
 import {
-  Languages,
-  User,
-  Bell,
-  Shield,
   ArrowRight,
-  LucideIcon,
+  Bell,
+  Languages,
   Layers,
+  LucideIcon,
+  Shield,
+  User,
 } from "lucide-react";
+import Link from "next/link";
+
+import { PageLayout } from "@/components/page-header";
 import {
   Card,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { PageLayout } from "@/components/page-header";
 
 interface ProfileNavItem {
   title: string;

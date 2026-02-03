@@ -1,6 +1,7 @@
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
+
 import { signInWithProvider } from "@/app/auth/actions/auth";
+import { Button } from "@/components/ui/button";
 
 export const OneTapAuth = () => {
   const signInWithGoogle = signInWithProvider.bind(null, { name: "google" });

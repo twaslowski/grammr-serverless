@@ -1,14 +1,15 @@
 "use client";
 
+import React from "react";
+import { Layers, Plus } from "lucide-react";
+
 import { CreateFlashcardDialog } from "@/components/flashcard";
+import { Analysis } from "@/components/flashcard/analysis";
 import { TTSButton } from "@/components/tts/tts-button";
+import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { LanguageCode } from "@/types/languages";
 import { EnrichedMorphologicalAnalysis } from "@/types/morphology";
-import { CopyButton } from "@/components/ui/copy-button";
-import { Layers, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import React from "react";
-import { Analysis } from "@/components/flashcard/analysis";
 
 interface TranslationResultProps {
   originalText: string;

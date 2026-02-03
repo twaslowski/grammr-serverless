@@ -1,9 +1,11 @@
+import "./globals.css";
+
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import "./globals.css";
-import { Header } from "@/components/header";
 import { Toaster } from "react-hot-toast";
+
+import { Header } from "@/components/header";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

@@ -1,7 +1,8 @@
 import { z } from "zod";
+
 import { FeatureSchema } from "@/types/feature";
-import { LanguageCodeSchema } from "@/types/languages";
 import { ParadigmSchema, PartOfSpeechEnum } from "@/types/inflections";
+import { LanguageCodeSchema } from "@/types/languages";
 
 // Request schema
 export const MorphologyRequestSchema = z.object({

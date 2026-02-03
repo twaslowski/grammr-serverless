@@ -1,16 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
+import { Loader2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { getPosLabel } from "@/lib/feature-labels";
 import { getParadigm, InflectionError } from "@/lib/inflections";
 import { Paradigm, PartOfSpeech } from "@/types/inflections";
-import { InflectionsTable } from "./inflections-table";
 import { LanguageCode } from "@/types/languages";
-import { getPosLabel } from "@/lib/feature-labels";
+
+import { InflectionsTable } from "./inflections-table";
 
 interface InflectionFormProps {
   languageName: string;

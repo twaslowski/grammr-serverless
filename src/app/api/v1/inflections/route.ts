@@ -1,9 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-import { InflectionsRequestSchema } from "@/types/inflections";
 import { getApiGatewayConfig } from "@/lib/api-gateway";
+import { createClient } from "@/lib/supabase/server";
+import { InflectionsRequestSchema } from "@/types/inflections";
 
 export async function POST(request: NextRequest) {
   try {

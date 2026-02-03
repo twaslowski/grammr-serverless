@@ -1,16 +1,18 @@
 import { useState } from "react";
+
+import type { Deck } from "@/types/flashcards";
+
+import { Button } from "./button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
+  DialogHeader,
+  DialogTitle,
 } from "./dialog";
-import { Button } from "./button";
 import { Input } from "./input";
-import type { Deck } from "@/types/flashcards";
 
 interface DeckSelectDialogProps {
   open: boolean;

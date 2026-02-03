@@ -1,8 +1,10 @@
 /* eslint-disable testing-library/no-node-access */
-import { LanguageSelector } from "@/components/auth/language-selector";
-import { screen, render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+import { LanguageSelector } from "@/components/auth/language-selector";
 import { allLanguages } from "@/types/languages";
 
 const mockPush = jest.fn();

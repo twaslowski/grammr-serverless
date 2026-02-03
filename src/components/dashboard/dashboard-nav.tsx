@@ -1,22 +1,23 @@
 "use client";
 
-import Link from "next/link";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
-  Languages,
-  Table2,
-  Layers,
-  Settings,
-  LucideIcon,
   ArrowRight,
   HammerIcon,
   HelpCircleIcon,
+  Languages,
+  Layers,
+  LucideIcon,
+  Settings,
+  Table2,
 } from "lucide-react";
+import Link from "next/link";
+
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { LanguageCode } from "@/types/languages";
 
 export interface DashboardNavItem {

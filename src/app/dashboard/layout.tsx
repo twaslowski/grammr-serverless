@@ -1,7 +1,8 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import React from "react";
+import { redirect } from "next/navigation";
+
 import { ProfileProvider } from "@/components/dashboard/profile-provider";
+import { createClient } from "@/lib/supabase/server";
 import { ProfileSchema } from "@/types/profile";
 
 export default async function ProtectedLayout({

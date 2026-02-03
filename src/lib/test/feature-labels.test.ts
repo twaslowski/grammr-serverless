@@ -1,6 +1,6 @@
 import {
-  getFeatureValueLabel,
   getFeatureTypeLabel,
+  getFeatureValueLabel,
   getPosLabel,
 } from "@/lib/feature-labels";
 

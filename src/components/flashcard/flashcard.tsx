@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Trash2, Table2 } from "lucide-react";
-import { FlashcardWithDeck } from "@/types/flashcards";
-import { InflectionsDialog } from "@/components/inflection";
+import { Table2, Trash2 } from "lucide-react";
+
 import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
+import { InflectionsDialog } from "@/components/inflection";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FlashcardWithDeck } from "@/types/flashcards";
 
 interface FlashcardProps {
   flashcard: FlashcardWithDeck;

@@ -1,19 +1,19 @@
 "use client";
 
+import { CreateFlashcardDialog } from "@/components/flashcard";
+import { TTSButton } from "@/components/tts/tts-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getPosLabel } from "@/lib/feature-labels";
 import {
-  Paradigm,
+  CASE_LABELS,
+  CASE_ORDER,
   Inflection,
   isNounLike,
   isVerbLike,
-  CASE_ORDER,
-  CASE_LABELS,
-  PERSON_ORDER,
+  Paradigm,
   PERSON_LABELS,
+  PERSON_ORDER,
 } from "@/types/inflections";
-import { CreateFlashcardDialog } from "@/components/flashcard";
-import { TTSButton } from "@/components/tts/tts-button";
-import { getPosLabel } from "@/lib/feature-labels";
 
 interface InflectionsTableProps {
   paradigm: Paradigm;

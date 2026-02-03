@@ -1,8 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
-import { FlashcardImportRequestSchema } from "../schema";
 import { revalidatePath } from "next/cache";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+
+import { createClient } from "@/lib/supabase/server";
+import { FlashcardImportRequestSchema } from "../schema";
 
 // POST /api/v1/flashcards/import - Import flashcards to the default deck
 export async function POST(request: NextRequest) {

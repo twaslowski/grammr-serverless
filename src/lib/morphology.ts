@@ -1,9 +1,9 @@
 import {
-  MorphologyRequest,
-  MorphologicalAnalysis,
-  MorphologicalAnalysisSchema,
   EnrichedMorphologicalAnalysis,
   EnrichedToken,
+  MorphologicalAnalysis,
+  MorphologicalAnalysisSchema,
+  MorphologyRequest,
 } from "@/types/morphology";
 
 export async function analyzeMorphology(

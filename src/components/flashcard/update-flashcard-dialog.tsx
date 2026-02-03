@@ -1,4 +1,8 @@
-import { Flashcard, ParadigmFlashcardBack } from "@/types/flashcards";
+import React, { useState } from "react";
+import { AlertCircle, ArrowLeftRight, Edit2, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,13 +12,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { AlertCircle, ArrowLeftRight, Edit2, Loader2 } from "lucide-react";
-import React, { useState } from "react";
+import { Label } from "@/components/ui/label";
 import { getParadigm, updateFlashcard } from "@/lib/flashcards";
-import toast from "react-hot-toast";
+import { Flashcard, ParadigmFlashcardBack } from "@/types/flashcards";
 
 interface UpdateFlashcardDialogProps {
   flashcard: Flashcard;

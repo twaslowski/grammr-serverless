@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import React, { useCallback, useEffect, useState } from "react";
 import { Loader2, Search } from "lucide-react";
-import { FlashcardWithDeck } from "@/types/flashcards";
-import { getFlashcards, deleteFlashcard } from "@/lib/flashcards";
-import { Flashcard } from "./flashcard";
 import toast from "react-hot-toast";
+
 import { FlashcardListQuery } from "@/app/api/v1/flashcards/schema";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { deleteFlashcard, getFlashcards } from "@/lib/flashcards";
+import { FlashcardWithDeck } from "@/types/flashcards";
+
+import { Flashcard } from "./flashcard";
 
 interface FlashcardListProps {
   initialFlashcards?: FlashcardWithDeck[];

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect,test } from "@playwright/test";
 
 test.describe("Inflections Page", () => {
   test("should display inflections for a noun", async ({ page }) => {

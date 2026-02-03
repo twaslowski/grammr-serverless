@@ -1,9 +1,10 @@
 "use client";
 
-import { UserIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import React from "react";
+import { UserIcon } from "lucide-react";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 
 export function UserButton() {
   return (

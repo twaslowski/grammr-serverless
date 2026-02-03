@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, ArrowRight, LayersIcon } from "lucide-react";
+import { ArrowRight, CheckCircle2, LayersIcon } from "lucide-react";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface StudyCompleteProps {
   reviewed: number;

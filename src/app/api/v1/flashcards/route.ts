@@ -1,10 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+import { createClient } from "@/lib/supabase/server";
+
 import {
   CreateFlashcardRequestSchema,
   FlashcardListQuerySchema,
 } from "./schema";
-import { z } from "zod";
 
 // GET /api/v1/flashcards - List flashcards with optional filtering
 export async function GET(request: NextRequest) {

@@ -1,19 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CardWithFlashcard, SchedulingInfo, Rating } from "@/types/fsrs";
-import { cn } from "@/lib/utils";
 import { RotateCcw } from "lucide-react";
+
+import { Analysis } from "@/components/flashcard/analysis";
 import { InflectionsDialog } from "@/components/inflection";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   AnalysisFlashcardBack,
   FlashcardBack,
   ParadigmFlashcardBack,
   PhraseFlashcardBack,
 } from "@/types/flashcards";
-import { Analysis } from "@/components/flashcard/analysis";
+import { CardWithFlashcard, Rating, SchedulingInfo } from "@/types/fsrs";
 
 interface StudyCardProps {
   card: CardWithFlashcard;

@@ -1,8 +1,11 @@
-import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
-import { screen, render } from "@testing-library/react";
-import { simpleFlashcardFixture } from "./flashcard.fixture";
 import "@testing-library/jest-dom";
+
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
+
+import { simpleFlashcardFixture } from "./flashcard.fixture";
 
 jest.mock("next/navigation", () => ({
   useRouter() {

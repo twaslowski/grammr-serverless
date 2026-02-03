@@ -1,5 +1,6 @@
-import { LanguageCodeSchema } from "./languages";
 import { z } from "zod";
+
+import { LanguageCodeSchema } from "./languages";
 
 export const ProfileSchema = z.object({
   id: z.string(),

@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowLeft, ArrowRight, Loader2, SaveIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import toast from "react-hot-toast";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,17 +13,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 import {
   allLanguages,
   Language,
   LanguageCode,
   targetLanguages,
 } from "@/types/languages";
-import { cn } from "@/lib/utils";
-import { ArrowRight, ArrowLeft, Loader2, SaveIcon } from "lucide-react";
 import { Profile } from "@/types/profile";
-import toast from "react-hot-toast";
 
 interface LanguageSelectorProps {
   userId: string;

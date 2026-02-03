@@ -1,6 +1,8 @@
 import { z } from "zod";
-import { ParadigmSchema, PartOfSpeechEnum } from "./inflections";
+
 import { FeatureSchema } from "@/types/feature";
+
+import { ParadigmSchema, PartOfSpeechEnum } from "./inflections";
 
 // Flashcard type enum
 export const FlashcardTypeEnum = z.enum(["word", "phrase", "analysis"]);

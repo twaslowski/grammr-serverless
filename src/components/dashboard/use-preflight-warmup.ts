@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+
 import { triggerPreflightWarmup } from "@/lib/preflight";
 import { LanguageCode } from "@/types/languages";
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { PartOfSpeech } from "@/types/inflections";
 
 export const LanguageCodeSchema = z.enum([

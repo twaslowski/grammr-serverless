@@ -1,5 +1,5 @@
-import { SignUpForm } from "@/components/auth/sign-up-form";
 import { OneTapAuth } from "@/components/auth/one-tap";
+import { SignUpForm } from "@/components/auth/sign-up-form";
 
 export default function Page() {
   return (

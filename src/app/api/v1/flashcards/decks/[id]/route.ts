@@ -1,7 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { UpdateDeckRequestSchema } from "@/app/api/v1/flashcards/schema";
 import { z } from "zod";
+
+import { UpdateDeckRequestSchema } from "@/app/api/v1/flashcards/schema";
+import { createClient } from "@/lib/supabase/server";
 
 interface RouteParams {
   params: Promise<{ id: string }>;

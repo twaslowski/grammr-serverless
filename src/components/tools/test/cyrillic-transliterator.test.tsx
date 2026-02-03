@@ -1,7 +1,9 @@
-import { CyrillicTransliterator } from "@/components/tools/cyrillic-transliterator";
-import { screen, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
+
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+import { CyrillicTransliterator } from "@/components/tools/cyrillic-transliterator";
 
 // Mock clipboard API
 const mockWriteText = jest.fn();

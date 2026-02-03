@@ -1,9 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
+import {
+  AlertCircle,
+  ArrowLeftRight,
+  Layers,
+  Loader2,
+  Plus,
+} from "lucide-react";
+import toast from "react-hot-toast";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -13,17 +20,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Loader2,
-  Plus,
-  AlertCircle,
-  Layers,
-  ArrowLeftRight,
-} from "lucide-react";
-import { createFlashcard } from "@/lib/flashcards";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { TranslationInput } from "@/components/ui/translation-input";
-import { FlashcardBack, Flashcard } from "@/types/flashcards";
-import toast from "react-hot-toast";
+import { createFlashcard } from "@/lib/flashcards";
+import { Flashcard, FlashcardBack } from "@/types/flashcards";
 
 interface CreateFlashcardDialogProps {
   front: string;

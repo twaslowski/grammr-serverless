@@ -4,17 +4,18 @@
  */
 
 import {
+  Card as TsFsrsCard,
   FSRS,
   fsrs,
-  generatorParameters,
   FSRSParameters,
-  Card as TsFsrsCard,
-  Rating as TsFsrsRating,
+  generatorParameters,
   Grade as TsFsrsGrade,
-  State as TsFsrsState,
-  ReviewLog as TsFsrsReviewLog,
+  Rating as TsFsrsRating,
   RecordLogItem,
+  ReviewLog as TsFsrsReviewLog,
+  State as TsFsrsState,
 } from "ts-fsrs";
+
 import {
   Card as DbCard,
   CardState,

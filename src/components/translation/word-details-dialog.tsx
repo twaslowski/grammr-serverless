@@ -1,4 +1,14 @@
 import React, { useState } from "react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+
+import { CreateFlashcardDialog } from "@/components/flashcard";
+import { InflectionsTable } from "@/components/inflection/inflections-table";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   Dialog,
   DialogContent,
@@ -7,25 +17,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { TokenMorphology } from "@/types/morphology";
-import { Paradigm } from "@/types/inflections";
-import { InflectionsTable } from "@/components/inflection/inflections-table";
-import { CreateFlashcardDialog } from "@/components/flashcard";
+import { TranslationInput } from "@/components/ui/translation-input";
+import { getPosLabel } from "@/lib/feature-labels";
+import { createFlashcardBack } from "@/lib/flashcards";
 import {
   FALLBACK_FEATURE_TYPE,
   getFeatureDisplayType,
   getFeatureDisplayValue,
 } from "@/types/feature";
-import { getPosLabel } from "@/lib/feature-labels";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { TranslationInput } from "@/components/ui/translation-input";
-import { createFlashcardBack } from "@/lib/flashcards";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Paradigm } from "@/types/inflections";
+import { TokenMorphology } from "@/types/morphology";
 
 interface WordDetailsDialogProps {
   word: string;
@@ -91,8 +92,8 @@ export function WordDetailsDialog({
                 value={translation}
                 textToTranslate={word}
                 onChange={setTranslation}
-                readOnly={true}
-                className="max-w-32"
+                editable={false}
+                className="max-w-64"
                 placeholder="?"
               />
             </div>

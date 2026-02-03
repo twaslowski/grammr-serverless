@@ -4,11 +4,11 @@ import {
   Paradigm,
   ParadigmSchema,
 } from "@/types/inflections";
+import { LanguageCode } from "@/types/languages";
 import {
   EnrichedMorphologicalAnalysis,
   MorphologicalAnalysis,
 } from "@/types/morphology";
-import { LanguageCode } from "@/types/languages";
 
 export class InflectionError extends Error {
   constructor(

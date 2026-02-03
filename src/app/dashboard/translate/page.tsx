@@ -1,9 +1,9 @@
 "use client";
 
-import { TranslationForm } from "@/components/translation";
 import { useProfile } from "@/components/dashboard/profile-provider";
 import { usePreflightWarmup } from "@/components/dashboard/use-preflight-warmup";
 import { PageLayout } from "@/components/page-header";
+import { TranslationForm } from "@/components/translation";
 
 export default function TranslationPage() {
   const profile = useProfile();

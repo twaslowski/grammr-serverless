@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext } from "react";
+
 import { Profile } from "@/types/profile";
 
 interface ProfileContextValue {

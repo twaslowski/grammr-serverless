@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import { Table2 } from "lucide-react";
+
+import { InflectionsTable } from "@/components/inflection/inflections-table";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,9 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Table2 } from "lucide-react";
 import { Paradigm } from "@/types/inflections";
-import { InflectionsTable } from "@/components/inflection/inflections-table";
 
 interface InflectionsDialogProps {
   paradigm: Paradigm;

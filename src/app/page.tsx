@@ -1,9 +1,10 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function Home() {
   // Forward user to dashboard if authenticated

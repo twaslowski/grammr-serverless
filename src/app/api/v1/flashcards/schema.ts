@@ -1,5 +1,6 @@
-import { FlashcardBackSchema } from "@/types/flashcards";
 import { z } from "zod";
+
+import { FlashcardBackSchema } from "@/types/flashcards";
 
 export const CreateDeckRequestSchema = z.object({
   name: z.string().min(1, "Deck name is required"),
