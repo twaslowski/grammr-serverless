@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { snakeToCamel } from "@/lib/utils";
 import { FeatureSchema } from "@/types/feature";
 
 import { ParadigmSchema, PartOfSpeechEnum } from "./inflections";
@@ -21,6 +22,19 @@ export const DeckSchema = z.object({
   updated_at: z.string(),
 });
 export type Deck = z.infer<typeof DeckSchema>;
+
+export const DeckStudySchema = z
+  .object({
+    id: z.uuid(),
+    deck_id: z.number(),
+    user_id: z.uuid(),
+    last_studied_at: z.string().nullable(),
+    is_active: z.boolean(),
+    created_at: z.string(),
+    updated_at: z.string(),
+  })
+  .transform(snakeToCamel);
+export type DeckStudy = z.infer<typeof DeckStudySchema>;
 
 // Separate schemas for each type
 export const ParadigmFlashcardBackSchema = z.object({
