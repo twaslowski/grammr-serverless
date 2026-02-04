@@ -23,7 +23,6 @@ export async function GET() {
       .select(
         `
         front,
-        type,
         back,
         notes,
         deck!inner (
@@ -49,7 +48,6 @@ export async function GET() {
       const deck = card.deck as unknown as { name: string; user_id: string };
       return {
         front: card.front,
-        type: card.type,
         back: card.back,
         notes: card.notes,
         deck_name: deck.name,
