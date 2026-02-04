@@ -48,6 +48,7 @@ export async function queryWithValidation<T extends z.ZodTypeAny>(
     // Flatten the validation errors for better readability
     const flattenedErrors = z.flattenError(result.error);
 
+    console.warn("Got malformed result set:", data);
     throw new Error(
       `Validation failed: ${JSON.stringify(flattenedErrors, null, 2)}`,
     );

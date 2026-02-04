@@ -1,12 +1,10 @@
+import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-import { DueCardsQuerySchema } from "@/app/api/v1/study/schema";
-import { queryWithValidation } from "@/lib/database";
 import { scheduleCard } from "@/lib/fsrs";
-import { createClient } from "@/lib/supabase/server";
-import { DeckStudy, DeckStudySchema } from "@/types/flashcards";
 import { Card as DbCard } from "@/types/fsrs";
+import { DueCardsQuerySchema } from "@/app/api/v1/study/schema";
 
 /**
  * GET /api/v1/study - Get a batch of cards to study with scheduling options
@@ -26,7 +24,8 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const queryResult = DueCardsQuerySchema.safeParse({
-      limit: searchParams.get("limit"),
+      limit: searchParams.get("limit") ?? undefined,
+      include_new: searchParams.get("include_new") ?? undefined,
     });
 
     if (!queryResult.success) {
@@ -39,38 +38,28 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const limit = queryResult.data.limit || 20;
+    const limit = queryResult.data.limit;
 
     const now = new Date();
     const nowStr = now.toISOString();
 
-    // Step 1: Get deck IDs the user is studying
-    const studyingDecks: DeckStudy[] = await queryWithValidation(
-      supabase,
-      (client) =>
-        client.from("deck_study").select("deck_id").eq("user_id", user.id),
-      z.array(DeckStudySchema),
-    );
-    const deckIds = studyingDecks?.map((d) => d.deck_id) || [];
-
-    // Get due cards from those decks
+    // Fetch due review cards (priority over new cards)
     const { data: reviewCards, error: reviewError } = await supabase
       .from("card")
       .select(
         `
         *,
         flashcard (
-            id,
-            front,
-            back,
-            notes
+          id,
+          front,
+          back,
+          notes
         )
-    `,
+      `,
       )
       .eq("user_id", user.id)
       .neq("state", "New")
       .lte("due", nowStr)
-      .in("deck_id", deckIds)
       .order("due", { ascending: true })
       .limit(limit);
 
@@ -86,8 +75,6 @@ export async function GET(request: NextRequest) {
     const reviewCardCount = reviewCards?.length || 0;
     const remainingSlots = limit - reviewCardCount;
 
-    // For new cards, we need to find flashcards that don't have a card record for this user
-    // This is necessary because when studying shared decks, cards are not pre-created
     let newCards: typeof reviewCards = [];
     if (remainingSlots > 0) {
       const { data: fetchedNewCards, error: newError } = await supabase

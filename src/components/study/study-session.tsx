@@ -144,7 +144,7 @@ export function StudySession() {
           <h3 className="font-semibold text-lg text-destructive/90 mb-2">
             Error Loading Flashcards
           </h3>
-          <p className="text-sm text-muted-foreground">{error}</p>
+          <p className="text-sm text-destructive/70">{error}</p>
         </div>
         <Button onClick={() => fetchCards(true)}>Try again</Button>
       </Card>

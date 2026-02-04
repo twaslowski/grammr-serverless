@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { DueCardsQuerySchema } from "../schema";
+import {z} from "zod";
 
 /**
  * GET /api/v1/study/due - Get count of due cards for the current user
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Invalid query parameters",
-          details: queryResult.error.flatten(),
+          details: z.flattenError(queryResult.error),
         },
         { status: 400 },
       );

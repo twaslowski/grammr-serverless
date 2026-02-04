@@ -1,3 +1,4 @@
+import { PageLayout } from "@/components/page-header";
 import { StudySession } from "@/components/study";
 
 export const metadata = {
@@ -7,15 +8,17 @@ export const metadata = {
 
 export default function StudyPage() {
   return (
-    <div className="flex-1 w-full flex flex-col gap-8 max-w-4xl">
-      <div className="flex flex-col gap-2">
-        <h1 className="font-bold text-3xl">Study Session</h1>
-        <p className="text-muted-foreground">
-          Review your flashcards using spaced repetition
-        </p>
-      </div>
+      <PageLayout
+          header={{
+              title: "Study Session",
+              description:
+                  "Review your flashcards",
+              backHref: "/dashboard",
+              backLabel: "Back to Dashboard",
+          }}
+      >
 
       <StudySession />
-    </div>
+      </PageLayout>
   );
 }
