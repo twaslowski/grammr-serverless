@@ -3,8 +3,7 @@ tasks:
   start-env:
     desc: Start supabase
     cmds:
-      - supabase start
-      - supabase functions serve --env-file supabase/functions/.env.local
+      - supabase start --exclude storage-api,mailpit,edge-runtime,vector
 
   stop-env:
     desc: Start supabase

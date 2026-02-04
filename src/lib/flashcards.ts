@@ -7,6 +7,7 @@ import {
 } from "@/app/api/v1/flashcards/schema";
 import {
   Deck,
+  DeckVisibility,
   Flashcard,
   FlashcardBack,
   FlashcardWithDeck,
@@ -207,6 +208,9 @@ export async function exportFlashcards(): Promise<Blob> {
 
 export async function importFlashcards(data: {
   version: number;
+  language: string;
+  deck_name?: string;
+  visibility?: DeckVisibility;
   flashcards: Array<{
     front: string;
     type: string;

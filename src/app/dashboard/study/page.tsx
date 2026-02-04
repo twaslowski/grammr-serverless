@@ -8,17 +8,15 @@ export const metadata = {
 
 export default function StudyPage() {
   return (
-      <PageLayout
-          header={{
-              title: "Study Session",
-              description:
-                  "Review your flashcards",
-              backHref: "/dashboard",
-              backLabel: "Back to Dashboard",
-          }}
-      >
-
+    <PageLayout
+      header={{
+        title: "Study Session",
+        description: "Review your flashcards",
+        backHref: "/dashboard",
+        backLabel: "Back to Dashboard",
+      }}
+    >
       <StudySession />
-      </PageLayout>
+    </PageLayout>
   );
 }

@@ -1,10 +1,12 @@
 import { z } from "zod";
 
-import { FlashcardBackSchema } from "@/types/flashcards";
+import { DeckVisibilityEnum, FlashcardBackSchema } from "@/types/flashcards";
+import { LanguageCodeSchema } from "@/types/languages";
 
 export const CreateDeckRequestSchema = z.object({
   name: z.string().min(1, "Deck name is required"),
   description: z.string().optional(),
+  visibility: DeckVisibilityEnum.optional(),
 });
 export type CreateDeckRequest = z.infer<typeof CreateDeckRequestSchema>;
 
@@ -56,6 +58,8 @@ export const ExportedFlashcardSchema = z.object({
 export const FlashcardExportSchema = z.object({
   version: z.literal("1.0"),
   exported_at: z.string(),
+  language: LanguageCodeSchema.optional(),
+  visibility: DeckVisibilityEnum.optional(),
   flashcards: z.array(ExportedFlashcardSchema),
 });
 export type FlashcardExport = z.infer<typeof FlashcardExportSchema>;
@@ -69,5 +73,8 @@ export const ImportFlashcardSchema = z.object({
 
 export const FlashcardImportRequestSchema = z.object({
   version: z.string(),
+  deck_name: z.string().optional(),
+  language: LanguageCodeSchema,
+  visibility: DeckVisibilityEnum.optional(),
   flashcards: z.array(ImportFlashcardSchema),
 });

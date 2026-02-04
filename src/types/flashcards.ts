@@ -10,6 +10,7 @@ export const FlashcardTypeEnum = z.enum(["word", "phrase", "analysis"]);
 export type FlashcardType = z.infer<typeof FlashcardTypeEnum>;
 
 export const DeckVisibilityEnum = z.enum(["private", "public"]);
+export type DeckVisibility = z.infer<typeof DeckVisibilityEnum>;
 
 export const DeckSchema = z.object({
   id: z.number(),
@@ -34,7 +35,6 @@ export const DeckStudySchema = z
     updated_at: z.string(),
   })
   .transform(snakeToCamel);
-export type DeckStudy = z.infer<typeof DeckStudySchema>;
 
 // Separate schemas for each type
 export const ParadigmFlashcardBackSchema = z.object({

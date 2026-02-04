@@ -159,6 +159,7 @@ describe("Export/Import Schema Validation", () => {
       const flashcardWithoutNotes = {
         front: "тест",
         type: "word",
+        language: "de",
         back: { translation: "test", type: "phrase" },
       };
 
@@ -169,6 +170,7 @@ describe("Export/Import Schema Validation", () => {
     it("should reject empty front", () => {
       const emptyFront = {
         front: "",
+        language: "de",
         type: "word",
         back: { translation: "test", type: "phrase" },
       };
@@ -182,6 +184,7 @@ describe("Export/Import Schema Validation", () => {
     it("should validate a complete import request", () => {
       const validRequest = {
         version: "1.0",
+        language: "de",
         flashcards: [
           {
             front: "слово",
@@ -199,6 +202,7 @@ describe("Export/Import Schema Validation", () => {
       // Import accepts any version to allow forward compatibility
       const request = {
         version: "2.0",
+        language: "de",
         flashcards: [],
       };
 
@@ -271,6 +275,7 @@ describe("Deck ID Independence", () => {
       // Transform for import (stripping deck_name which isn't used)
       const importData = {
         version: exportedData.version,
+        language: "de",
         flashcards: exportedData.flashcards.map((card) => ({
           front: card.front,
           type: card.type,
@@ -324,6 +329,7 @@ describe("Deck ID Independence", () => {
 
       const exportPayload = {
         version: "1.0" as const,
+        language: "de",
         exported_at: new Date().toISOString(),
         flashcards: exportedFlashcards,
       };
@@ -343,6 +349,7 @@ describe("Deck ID Independence", () => {
       // The import route would parse the request
       const importRequest = {
         version: exportPayload.version,
+        language: "de",
         flashcards: exportPayload.flashcards.map((card) => ({
           front: card.front,
           type: card.type,

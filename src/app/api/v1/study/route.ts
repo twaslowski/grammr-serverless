@@ -1,10 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-import { scheduleCard } from "@/lib/fsrs";
-import { Card as DbCard } from "@/types/fsrs";
 import { DueCardsQuerySchema } from "@/app/api/v1/study/schema";
+import { scheduleCard } from "@/lib/fsrs";
+import { createClient } from "@/lib/supabase/server";
+import { Card as DbCard } from "@/types/fsrs";
 
 /**
  * GET /api/v1/study - Get a batch of cards to study with scheduling options

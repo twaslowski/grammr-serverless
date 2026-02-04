@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import { DueCardsQuerySchema } from "../schema";
-import {z} from "zod";
 
 /**
  * GET /api/v1/study/due - Get count of due cards for the current user

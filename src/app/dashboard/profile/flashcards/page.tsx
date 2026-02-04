@@ -76,7 +76,21 @@ export default function FlashcardImportExportPage() {
         return;
       }
 
-      const result = await importFlashcards(data);
+      // Map export format to import format
+      const importData = {
+        version: data.version,
+        language: data.language,
+        deck_name: data.deck_name,
+        visibility:
+          data.public !== undefined
+            ? data.public
+              ? ("public" as const)
+              : ("private" as const)
+            : data.visibility,
+        flashcards: data.flashcards,
+      };
+
+      const result = await importFlashcards(importData);
       toast.success(
         `Successfully imported ${result.imported_count} flashcards!`,
       );
