@@ -87,6 +87,6 @@ export type Flashcard = z.infer<typeof FlashcardSchema>;
 
 // Flashcard with deck info (for list view)
 export const FlashcardWithDeckSchema = FlashcardSchema.extend({
-  deck: DeckSchema.pick({ id: true, name: true }).optional(),
+  deck: DeckSchema.pick({ id: true, name: true, user_id: true }).optional(),
 });
 export type FlashcardWithDeck = z.infer<typeof FlashcardWithDeckSchema>;

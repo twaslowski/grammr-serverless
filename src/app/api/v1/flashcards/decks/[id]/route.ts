@@ -9,7 +9,7 @@ interface RouteParams {
 }
 
 // GET /api/v1/flashcards/decks/[id] - Get a single deck with its flashcards
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_: NextRequest, { params }: RouteParams) {
   try {
     const supabase = await createClient();
     const { id } = await params;
@@ -133,7 +133,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/v1/flashcards/decks/[id] - Delete a deck
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_: NextRequest, { params }: RouteParams) {
   try {
     const supabase = await createClient();
     const { id } = await params;

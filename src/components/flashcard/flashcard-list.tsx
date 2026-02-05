@@ -5,11 +5,18 @@ import { Loader2, Search } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { FlashcardListQuery } from "@/app/api/v1/flashcards/schema";
+import { useProfile } from "@/components/dashboard/profile-provider";
+import { DeckSelector } from "@/components/flashcard/deck-selector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { deleteFlashcard, getFlashcards } from "@/lib/flashcards";
-import { FlashcardWithDeck } from "@/types/flashcards";
+import {
+  deleteFlashcard,
+  getFlashcards,
+  getStudiedDecks,
+  stopStudyingFlashcard,
+} from "@/lib/flashcards";
+import { Deck, FlashcardWithDeck } from "@/types/flashcards";
 
 import { Flashcard } from "./flashcard";
 
@@ -25,9 +32,22 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     useState<FlashcardWithDeck[]>(initialFlashcards);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [decks, setDecks] = useState<Deck[]>([]);
+  const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
+
+  const profile = useProfile();
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
+
+  const fetchDecks = useCallback(async () => {
+    try {
+      const studiedDecks = await getStudiedDecks();
+      setDecks(studiedDecks);
+    } catch (err) {
+      console.error("Failed to fetch decks:", err);
+    }
+  }, []);
 
   const fetchFlashcards = useCallback(async () => {
     setIsLoading(true);
@@ -35,6 +55,7 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
 
     try {
       const query: FlashcardListQuery = {
+        deck_id: selectedDeck?.id,
         search: searchQuery || undefined,
         sort_by: sortBy,
         sort_order: sortOrder,
@@ -49,7 +70,7 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery, sortBy, sortOrder]);
+  }, [searchQuery, sortBy, sortOrder, selectedDeck]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this flashcard?")) {
@@ -67,6 +88,27 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     }
   };
 
+  const handleStopStudying = async (flashcard: FlashcardWithDeck) => {
+    if (
+      !confirm("Are you sure you don't want to see this flashcard anymore?")
+    ) {
+      return;
+    }
+
+    try {
+      await stopStudyingFlashcard(flashcard.id);
+      setFlashcards((prev) =>
+        prev.filter((f) => f.deck_id !== flashcard.deck_id),
+      );
+      toast.success("Stopped studying flashcard");
+      void fetchDecks(); // Refresh deck list
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to stop studying deck";
+      toast.error(message);
+    }
+  };
+
   // Fetch on mount and when filters change
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +116,10 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
   };
 
   // Initial fetch on mount
+  useEffect(() => {
+    void fetchDecks();
+  }, [fetchDecks]);
+
   useEffect(() => {
     if (initialFlashcards.length === 0) {
       void fetchFlashcards();
@@ -87,7 +133,12 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
         <CardContent className="pt-6">
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
+              <div className="flex flex-row gap-x-2 w-full">
+                <DeckSelector
+                  decks={decks}
+                  value={selectedDeck?.name}
+                  onChange={(deck) => setSelectedDeck(deck)}
+                />
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -98,15 +149,13 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
                   />
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "Search"
-                  )}
-                </Button>
-              </div>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Search"
+                )}
+              </Button>
             </div>
           </form>
         </CardContent>
@@ -147,7 +196,9 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
             <Flashcard
               key={flashcard.id}
               flashcard={flashcard}
+              isOwner={profile.id === flashcard.deck?.user_id}
               onDelete={handleDelete}
+              onStopStudying={handleStopStudying}
               onUpdate={(updated) => {
                 setFlashcards((prev) =>
                   prev.map((f) => (f.id === updated.id ? updated : f)),

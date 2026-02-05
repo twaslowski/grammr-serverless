@@ -2,6 +2,8 @@ module "morphology_lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 8.0"
 
+  depends_on = [module.morphology_logging]
+
   for_each = local.morphology.models
 
   function_name = "grammr-morphology-${each.key}-${var.environment}"
@@ -15,8 +17,20 @@ module "morphology_lambda" {
   memory_size = 1024
   timeout     = 30
 
-  cloudwatch_logs_retention_in_days = 14
-  attach_cloudwatch_logs_policy     = true
+  use_existing_cloudwatch_log_group = true
+  logging_log_group = module.morphology_logging.cloudwatch_log_group_name
+
+  attach_policy_statements = true
+  policy_statements = {
+    cloudwatch = {
+      effect = "Allow"
+      actions = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ]
+      resources = ["${module.morphology_logging.cloudwatch_log_group_arn}:*"]
+    }
+  }
 
   # https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/36#issuecomment-650217274
   create_current_version_allowed_triggers = false
@@ -26,6 +40,8 @@ module "morphology_lambda" {
 module "inflection_ru_lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 8.0"
+
+  depends_on = [module.inflection_logging]
 
   function_name = "grammr-inflections-ru-${var.environment}"
   description   = "Lambda function to inflect russian words"
@@ -38,8 +54,20 @@ module "inflection_ru_lambda" {
   memory_size = 1024
   timeout     = 30
 
-  cloudwatch_logs_retention_in_days = 14
-  attach_cloudwatch_logs_policy     = true
+  use_existing_cloudwatch_log_group = true
+  logging_log_group = module.inflection_logging.cloudwatch_log_group_name
+
+  attach_policy_statements = true
+  policy_statements = {
+    cloudwatch = {
+      effect = "Allow"
+      actions = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ]
+      resources = ["${module.inflection_logging.cloudwatch_log_group_arn}:*"]
+    }
+  }
 
   # https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/36#issuecomment-650217274
   create_current_version_allowed_triggers = false
@@ -63,8 +91,20 @@ module "inflection_latin_lambda" {
   memory_size = 1024
   timeout     = 60
 
-  cloudwatch_logs_retention_in_days = 14
-  attach_cloudwatch_logs_policy     = true
+  use_existing_cloudwatch_log_group = true
+  logging_log_group = module.inflection_logging.cloudwatch_log_group_name
+
+  attach_policy_statements = true
+  policy_statements = {
+    cloudwatch = {
+      effect = "Allow"
+      actions = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ]
+      resources = ["${module.inflection_logging.cloudwatch_log_group_arn}:*"]
+    }
+  }
 
   # https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/36#issuecomment-650217274
   create_current_version_allowed_triggers = false
