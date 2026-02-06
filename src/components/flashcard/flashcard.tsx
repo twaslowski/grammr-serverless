@@ -58,6 +58,8 @@ export function Flashcard({
                 <Button
                   variant="ghost"
                   size="sm"
+                  // feature not in scope for prototype, so disable for now
+                  disabled={true}
                   onClick={() => onStopStudying(flashcard)}
                   className="text-destructive hover:text-destructive"
                   title="Stop studying this deck"

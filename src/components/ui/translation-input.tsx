@@ -158,7 +158,7 @@ export function TranslationInput({
           </div>
         )}
       </div>
-      {!isTranslating && (
+      {!isTranslating && !isRevealed && (
         <Button
           type="button"
           variant="ghost"
