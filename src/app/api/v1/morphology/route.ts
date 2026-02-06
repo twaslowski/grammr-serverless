@@ -1,23 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 
+import { withApiHandler } from "@/lib/api/with-api-handler";
 import { getApiGatewayConfig } from "@/lib/api-gateway";
-import { createClient } from "@/lib/supabase/server";
 import { MorphologyRequestSchema } from "@/types/morphology";
 
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    // Check if user is authenticated
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+export const POST = withApiHandler(
+  {
+    bodySchema: MorphologyRequestSchema,
+  },
+  async ({ body }) => {
     const apiGwConfig = getApiGatewayConfig();
     if (!apiGwConfig) {
       console.error("API_GW_URL not configured");
@@ -27,21 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse and validate request body
-    const body = await request.json();
-    const validationResult = MorphologyRequestSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid request",
-          details: z.flattenError(validationResult.error),
-        },
-        { status: 400 },
-      );
-    }
-
-    const { phrase, language } = validationResult.data;
+    const { phrase, language } = body;
 
     // Forward to Lambda via API Gateway
     const response = await fetch(
@@ -67,11 +44,5 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
     return NextResponse.json(data);
-  } catch (error) {
-    console.error("Morphology error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

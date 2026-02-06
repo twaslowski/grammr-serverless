@@ -1,44 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 
-import { createClient } from "@/lib/supabase/server";
+import { withApiHandler } from "@/lib/api/with-api-handler";
 import { DueCardsQuerySchema } from "../schema";
 
 /**
  * GET /api/v1/study/due - Get count of due cards for the current user
  */
-export async function GET(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Parse query params
-    const searchParams = request.nextUrl.searchParams;
-
-    const queryResult = DueCardsQuerySchema.safeParse({
-      limit: searchParams.get("limit"),
-      include_new: searchParams.get("include_new"),
-    });
-
-    if (!queryResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid query parameters",
-          details: z.flattenError(queryResult.error),
-        },
-        { status: 400 },
-      );
-    }
-
-    const { include_new } = queryResult.data;
+export const GET = withApiHandler(
+  {
+    querySchema: DueCardsQuerySchema,
+  },
+  async ({ user, supabase, query }) => {
+    const { include_new } = query;
     const now = new Date().toISOString();
 
     // Count new cards
@@ -80,11 +53,5 @@ export async function GET(request: NextRequest) {
       newCount: newCount || 0,
       reviewCount: reviewCount || 0,
     });
-  } catch (error) {
-    console.error("Study due count error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

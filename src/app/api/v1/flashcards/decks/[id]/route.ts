@@ -1,33 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 
 import { UpdateDeckRequestSchema } from "@/app/api/v1/flashcards/schema";
-import { createClient } from "@/lib/supabase/server";
-
-interface RouteParams {
-  params: Promise<{ id: string }>;
-}
+import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 
 // GET /api/v1/flashcards/decks/[id] - Get a single deck with its flashcards
-export async function GET(_: NextRequest, { params }: RouteParams) {
-  try {
-    const supabase = await createClient();
-    const { id } = await params;
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const deckId = parseInt(id, 10);
-    if (isNaN(deckId)) {
-      return NextResponse.json({ error: "Invalid deck ID" }, { status: 400 });
-    }
-
+export const GET = withApiHandler(
+  {
+    paramsSchema: IdParamSchema,
+  },
+  async ({ user, supabase, params }) => {
     const { data: deck, error } = await supabase
       .from("deck")
       .select(
@@ -44,7 +25,7 @@ export async function GET(_: NextRequest, { params }: RouteParams) {
         )
       `,
       )
-      .eq("id", deckId)
+      .eq("id", params.id)
       .eq("user_id", user.id)
       .single();
 
@@ -53,53 +34,21 @@ export async function GET(_: NextRequest, { params }: RouteParams) {
     }
 
     return NextResponse.json(deck);
-  } catch (error) {
-    console.error("Deck get error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);
 
 // PATCH /api/v1/flashcards/decks/[id] - Update a deck
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
-  try {
-    const supabase = await createClient();
-    const { id } = await params;
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const deckId = parseInt(id, 10);
-    if (isNaN(deckId)) {
-      return NextResponse.json({ error: "Invalid deck ID" }, { status: 400 });
-    }
-
-    const body = await request.json();
-    const validationResult = UpdateDeckRequestSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid request",
-          details: z.flattenError(validationResult.error),
-        },
-        { status: 400 },
-      );
-    }
-
+export const PATCH = withApiHandler(
+  {
+    paramsSchema: IdParamSchema,
+    bodySchema: UpdateDeckRequestSchema,
+  },
+  async ({ user, supabase, params, body }) => {
     // Verify ownership first
     const { data: existing, error: existingError } = await supabase
       .from("deck")
       .select("id")
-      .eq("id", deckId)
+      .eq("id", params.id)
       .eq("user_id", user.id)
       .single();
 
@@ -109,8 +58,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     const { data: deck, error } = await supabase
       .from("deck")
-      .update(validationResult.data)
-      .eq("id", deckId)
+      .update(body)
+      .eq("id", params.id)
       .select()
       .single();
 
@@ -123,40 +72,20 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     return NextResponse.json(deck);
-  } catch (error) {
-    console.error("Deck update error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);
 
 // DELETE /api/v1/flashcards/decks/[id] - Delete a deck
-export async function DELETE(_: NextRequest, { params }: RouteParams) {
-  try {
-    const supabase = await createClient();
-    const { id } = await params;
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const deckId = parseInt(id, 10);
-    if (isNaN(deckId)) {
-      return NextResponse.json({ error: "Invalid deck ID" }, { status: 400 });
-    }
-
+export const DELETE = withApiHandler(
+  {
+    paramsSchema: IdParamSchema,
+  },
+  async ({ user, supabase, params }) => {
     // Verify ownership and check if it's the default deck
     const { data: existing, error: existingError } = await supabase
       .from("deck")
       .select("id, is_default")
-      .eq("id", deckId)
+      .eq("id", params.id)
       .eq("user_id", user.id)
       .single();
 
@@ -171,7 +100,7 @@ export async function DELETE(_: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const { error } = await supabase.from("deck").delete().eq("id", deckId);
+    const { error } = await supabase.from("deck").delete().eq("id", params.id);
 
     if (error) {
       console.error("Failed to delete deck:", error);
@@ -182,11 +111,5 @@ export async function DELETE(_: NextRequest, { params }: RouteParams) {
     }
 
     return new NextResponse(null, { status: 204 });
-  } catch (error) {
-    console.error("Deck delete error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

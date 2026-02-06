@@ -1,39 +1,16 @@
 import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 
-import { createClient } from "@/lib/supabase/server";
+import { withApiHandler } from "@/lib/api/with-api-handler";
 import { FlashcardImportRequestSchema } from "../schema";
 
 // POST /api/v1/flashcards/import - Import flashcards to a specified deck or default deck
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const validationResult = FlashcardImportRequestSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid import data",
-          details: z.flattenError(validationResult.error),
-        },
-        { status: 400 },
-      );
-    }
-
-    const { flashcards, deck_name, language, visibility } =
-      validationResult.data;
+export const POST = withApiHandler(
+  {
+    bodySchema: FlashcardImportRequestSchema,
+  },
+  async ({ user, supabase, body }) => {
+    const { flashcards, deck_name, language, visibility } = body;
 
     if (flashcards.length === 0) {
       return NextResponse.json(
@@ -127,11 +104,5 @@ export async function POST(request: NextRequest) {
       message: "Flashcards imported successfully",
       imported_count: insertedFlashcards.length,
     });
-  } catch (error) {
-    console.error("Flashcard import error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

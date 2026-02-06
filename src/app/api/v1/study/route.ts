@@ -1,44 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 
 import { DueCardsQuerySchema } from "@/app/api/v1/study/schema";
+import { withApiHandler } from "@/lib/api/with-api-handler";
 import { scheduleCard } from "@/lib/fsrs";
-import { createClient } from "@/lib/supabase/server";
 import { Card as DbCard } from "@/types/fsrs";
 
 /**
  * GET /api/v1/study - Get a batch of cards to study with scheduling options
  */
-export async function GET(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const searchParams = request.nextUrl.searchParams;
-    const queryResult = DueCardsQuerySchema.safeParse({
-      limit: searchParams.get("limit") ?? undefined,
-      include_new: searchParams.get("include_new") ?? undefined,
-    });
-
-    if (!queryResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid query parameters",
-          details: z.flattenError(queryResult.error),
-        },
-        { status: 400 },
-      );
-    }
-
-    const limit = queryResult.data.limit;
+export const GET = withApiHandler(
+  {
+    querySchema: DueCardsQuerySchema,
+  },
+  async ({ user, supabase, query }) => {
+    const limit = query.limit;
 
     const now = new Date();
     const nowStr = now.toISOString();
@@ -180,11 +155,5 @@ export async function GET(request: NextRequest) {
         total: remaining,
       },
     });
-  } catch (error) {
-    console.error("Study session error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

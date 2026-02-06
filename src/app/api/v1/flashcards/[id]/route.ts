@@ -1,37 +1,15 @@
 import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 
-import { createClient } from "@/lib/supabase/server";
+import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 import { UpdateFlashcardRequestSchema } from "../schema";
 
-interface RouteParams {
-  params: Promise<{ id: string }>;
-}
-
 // GET /api/v1/flashcards/[id] - Get a single flashcard
-export async function GET(request: NextRequest, { params }: RouteParams) {
-  try {
-    const supabase = await createClient();
-    const { id } = await params;
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const flashcardId = parseInt(id, 10);
-    if (isNaN(flashcardId)) {
-      return NextResponse.json(
-        { error: "Invalid flashcard ID" },
-        { status: 400 },
-      );
-    }
-
+export const GET = withApiHandler(
+  {
+    paramsSchema: IdParamSchema,
+  },
+  async ({ user, supabase, params }) => {
     const { data: flashcard, error } = await supabase
       .from("flashcard")
       .select(
@@ -44,7 +22,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         )
       `,
       )
-      .eq("id", flashcardId)
+      .eq("id", params.id)
       .eq("deck.user_id", user.id)
       .single();
 
@@ -59,51 +37,16 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       ...flashcard,
       deck: { id: flashcard.deck.id, name: flashcard.deck.name },
     });
-  } catch (error) {
-    console.error("Flashcard get error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);
 
 // PATCH /api/v1/flashcards/[id] - Update a flashcard
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
-  try {
-    const supabase = await createClient();
-    const { id } = await params;
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const flashcardId = parseInt(id, 10);
-    if (isNaN(flashcardId)) {
-      return NextResponse.json(
-        { error: "Invalid flashcard ID" },
-        { status: 400 },
-      );
-    }
-
-    const body = await request.json();
-    const validationResult = UpdateFlashcardRequestSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid request",
-          details: z.flattenError(validationResult.error),
-        },
-        { status: 400 },
-      );
-    }
-
+export const PATCH = withApiHandler(
+  {
+    paramsSchema: IdParamSchema,
+    bodySchema: UpdateFlashcardRequestSchema,
+  },
+  async ({ user, supabase, params, body }) => {
     // Verify ownership first
     const { data: existing, error: existingError } = await supabase
       .from("flashcard")
@@ -115,7 +58,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         )
       `,
       )
-      .eq("id", flashcardId)
+      .eq("id", params.id)
       .eq("deck.user_id", user.id)
       .single();
 
@@ -127,11 +70,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     // If updating deck_id, verify new deck ownership
-    if (validationResult.data.deck_id) {
+    if (body.deck_id) {
       const { data: newDeck, error: deckError } = await supabase
         .from("deck")
         .select("id")
-        .eq("id", validationResult.data.deck_id)
+        .eq("id", body.deck_id)
         .eq("user_id", user.id)
         .single();
 
@@ -146,10 +89,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const { data: flashcard, error } = await supabase
       .from("flashcard")
       .update({
-        ...validationResult.data,
+        ...body,
         version: existing.id, // Increment version on update
       })
-      .eq("id", flashcardId)
+      .eq("id", params.id)
       .select()
       .single();
 
@@ -162,41 +105,18 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     revalidatePath(`/dashboard/flashcards`);
-    revalidatePath(`/flashcards/${flashcardId}`);
+    revalidatePath(`/flashcards/${params.id}`);
 
     return NextResponse.json(flashcard);
-  } catch (error) {
-    console.error("Flashcard update error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);
 
 // DELETE /api/v1/flashcards/[id] - Delete a flashcard
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
-  try {
-    const supabase = await createClient();
-    const { id } = await params;
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const flashcardId = parseInt(id, 10);
-    if (isNaN(flashcardId)) {
-      return NextResponse.json(
-        { error: "Invalid flashcard ID" },
-        { status: 400 },
-      );
-    }
-
+export const DELETE = withApiHandler(
+  {
+    paramsSchema: IdParamSchema,
+  },
+  async ({ user, supabase, params }) => {
     // Verify ownership first
     const { data: existing, error: existingError } = await supabase
       .from("flashcard")
@@ -208,7 +128,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         )
       `,
       )
-      .eq("id", flashcardId)
+      .eq("id", params.id)
       .eq("deck.user_id", user.id)
       .single();
 
@@ -222,7 +142,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const { error } = await supabase
       .from("flashcard")
       .delete()
-      .eq("id", flashcardId);
+      .eq("id", params.id);
 
     if (error) {
       console.error("Failed to delete flashcard:", error);
@@ -233,14 +153,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     revalidatePath(`/dashboard/flashcards`);
-    revalidatePath(`/flashcards/${flashcardId}`);
+    revalidatePath(`/flashcards/${params.id}`);
 
     return new NextResponse(null, { status: 204 });
-  } catch (error) {
-    console.error("Flashcard delete error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

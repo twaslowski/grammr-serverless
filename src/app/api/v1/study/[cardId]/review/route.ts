@@ -1,60 +1,27 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
+import { IdParamSchema, withApiHandler} from "@/lib/api/with-api-handler";
 import { processReview } from "@/lib/fsrs";
-import { createClient } from "@/lib/supabase/server";
 import { Card as DbCard } from "@/types/fsrs";
 import { SubmitReviewRequestSchema } from "../../schema";
-
-interface RouteParams {
-  params: Promise<{
-    cardId: string;
-  }>;
-}
 
 /**
  * POST /api/v1/study/[cardId]/review - Submit a review for a card
  */
-export async function POST(request: NextRequest, { params }: RouteParams) {
-  try {
-    const supabase = await createClient();
-    const { cardId } = await params;
-    const cardIdNum = parseInt(cardId, 10);
-
-    if (isNaN(cardIdNum)) {
-      return NextResponse.json({ error: "Invalid card ID" }, { status: 400 });
-    }
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Parse request body
-    const body = await request.json();
-    const bodyResult = SubmitReviewRequestSchema.safeParse(body);
-
-    if (!bodyResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid request body",
-          details: bodyResult.error.flatten(),
-        },
-        { status: 400 },
-      );
-    }
-
-    const { rating } = bodyResult.data;
+export const POST = withApiHandler(
+  {
+    paramsSchema: IdParamSchema,
+    bodySchema: SubmitReviewRequestSchema,
+  },
+  async ({ user, supabase, params, body }) => {
+    const { rating } = body;
     const now = new Date();
 
     // Fetch the card
     const { data: cardData, error: cardError } = await supabase
       .from("card")
       .select("*")
-      .eq("id", cardIdNum)
+      .eq("id", params.id)
       .eq("user_id", user.id)
       .single();
 
@@ -102,7 +69,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         last_review:
           updatedCard.last_review?.toISOString() || now.toISOString(),
       })
-      .eq("id", cardIdNum)
+      .eq("id", params.id)
       .eq("user_id", user.id)
       .select()
       .single();
@@ -119,7 +86,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const { data: reviewLogData, error: logError } = await supabase
       .from("review_log")
       .insert({
-        card_id: cardIdNum,
+        card_id: params.id,
         rating: reviewLog.rating,
         state: reviewLog.state,
         due: reviewLog.due.toISOString(),
@@ -145,11 +112,5 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       updatedCard: updatedCardData,
       reviewLog: reviewLogData || reviewLog,
     });
-  } catch (error) {
-    console.error("Review submission error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

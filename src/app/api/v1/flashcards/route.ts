@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 
-import { createClient } from "@/lib/supabase/server";
+import { withApiHandler } from "@/lib/api/with-api-handler";
 import { FlashcardWithDeck } from "@/types/flashcards";
 
 import {
@@ -10,43 +9,16 @@ import {
 } from "./schema";
 
 // GET /api/v1/flashcards - List flashcards with optional filtering
-export async function GET(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Parse query params
-    const searchParams = request.nextUrl.searchParams;
-    const queryResult = FlashcardListQuerySchema.safeParse({
-      deck_id: searchParams.get("deck_id"),
-      search: searchParams.get("search"),
-      sort_by: searchParams.get("sort_by"),
-      sort_order: searchParams.get("sort_order"),
-    });
-
-    if (!queryResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid query parameters",
-          details: z.flattenError(queryResult.error),
-        },
-        { status: 400 },
-      );
-    }
-
-    const { deck_id, search, sort_by, sort_order } = queryResult.data;
+export const GET = withApiHandler(
+  {
+    querySchema: FlashcardListQuerySchema,
+  },
+  async ({ user, supabase, query }) => {
+    const { deck_id, search, sort_by, sort_order } = query;
 
     // Build query - join with deck_study to filter by decks the user is studying
     // This includes both owned decks and public decks they're studying
-    let query = supabase
+    let dbQuery = supabase
       .from("flashcard")
       .select(
         `
@@ -65,21 +37,21 @@ export async function GET(request: NextRequest) {
 
     // Filter by deck if specified
     if (deck_id) {
-      query = query.eq("deck_id", deck_id);
+      dbQuery = dbQuery.eq("deck_id", deck_id);
     }
 
     if (search) {
-      query = query.or(
+      dbQuery = dbQuery.or(
         `front.ilike.%${search}%,back->>translation.ilike.%${search}%`,
       );
     }
 
     // Sort
-    query = query.order(sort_by || "created_at", {
+    dbQuery = dbQuery.order(sort_by || "created_at", {
       ascending: sort_order === "asc",
     });
 
-    const { data, error } = await query;
+    const { data, error } = await dbQuery;
 
     if (error) {
       console.error("Failed to fetch flashcards:", error);
@@ -98,43 +70,16 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json(flashcards);
-  } catch (error) {
-    console.error("Flashcards list error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);
 
 // POST /api/v1/flashcards - Create a new flashcard
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const validationResult = CreateFlashcardRequestSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid request",
-          details: z.flattenError(validationResult.error),
-        },
-        { status: 400 },
-      );
-    }
-
-    const { deck_id, front, back, notes } = validationResult.data;
+export const POST = withApiHandler(
+  {
+    bodySchema: CreateFlashcardRequestSchema,
+  },
+  async ({ user, supabase, body }) => {
+    const { deck_id, front, back, notes } = body;
 
     // If no deck_id provided, get the user's default deck
     let targetDeckId = deck_id;
@@ -190,11 +135,5 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(flashcard, { status: 201 });
-  } catch (error) {
-    console.error("Flashcard creation error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

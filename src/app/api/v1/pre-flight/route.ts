@@ -1,34 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { z } from "zod";
 
+import { withApiHandler } from "@/lib/api/with-api-handler";
 import { getApiGatewayConfig } from "@/lib/api-gateway";
-import { createClient } from "@/lib/supabase/server";
+
+const PreflightQuerySchema = z.object({
+  language: z.string().min(1, "Language is required"),
+});
 
 /**
  * Pre-flight endpoint to warm up image-based Lambda functions.
  * Sends requests to inflections and morphology endpoints to reduce cold start latency.
  */
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    // Check if user is authenticated
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const searchParams = request.nextUrl.searchParams;
-    const language = searchParams.get("language");
-
-    if (!language) {
-      return NextResponse.json(
-        { error: "Language not specified" },
-        { status: 400 },
-      );
-    }
+export const POST = withApiHandler(
+  {
+    querySchema: PreflightQuerySchema,
+  },
+  async ({ query }) => {
+    const { language } = query;
 
     const apiGwConfig = getApiGatewayConfig();
     if (!apiGwConfig) {
@@ -64,9 +53,5 @@ export async function POST(request: NextRequest) {
     await Promise.allSettled(warmupPromises);
 
     return NextResponse.json({ status: "ok" });
-  } catch (error) {
-    console.error("Pre-flight error:", error);
-    // Still return success since warmup is best-effort
-    return NextResponse.json({ status: "ok" });
-  }
-}
+  },
+);

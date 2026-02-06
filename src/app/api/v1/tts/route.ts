@@ -1,23 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 
+import { withApiHandler } from "@/lib/api/with-api-handler";
 import { getApiGatewayConfig } from "@/lib/api-gateway";
-import { createClient } from "@/lib/supabase/server";
 
 import { TTSRequestSchema } from "./schema";
 
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+export const POST = withApiHandler(
+  {
+    bodySchema: TTSRequestSchema,
+  },
+  async ({ body }) => {
     const apiGwConfig = getApiGatewayConfig();
 
     if (!apiGwConfig) {
@@ -28,20 +20,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse and validate request body
-    const body = await request.json();
-    const validationResult = TTSRequestSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid request",
-          details: z.flattenError(validationResult.error),
-        },
-        { status: 400 },
-      );
-    }
-
     // Forward to Lambda via API Gateway
     const response = await fetch(`${apiGwConfig.endpoint}/tts`, {
       method: "POST",
@@ -49,7 +27,7 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json",
         "x-api-key": apiGwConfig.apiKey,
       },
-      body: JSON.stringify(validationResult.data),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -72,11 +50,5 @@ export async function POST(request: NextRequest) {
         "Content-Disposition": 'inline; filename="speech.mp3"',
       },
     });
-  } catch (error) {
-    console.error("TTS error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

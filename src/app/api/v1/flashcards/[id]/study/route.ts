@@ -1,37 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-import { createClient } from "@/lib/supabase/server";
+import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 
-interface RouteParams {
-  params: Promise<{ id: string }>;
-}
-
-export async function GET(_: NextRequest, { params }: RouteParams) {
-  try {
-    const supabase = await createClient();
-    const { id } = await params;
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const flashcardId = parseInt(id, 10);
-    if (isNaN(flashcardId)) {
-      return NextResponse.json(
-        { error: "Invalid flashcard ID" },
-        { status: 400 },
-      );
-    }
-
+// GET /api/v1/flashcards/[id]/study - Get study card for a flashcard
+export const GET = withApiHandler(
+  {
+    paramsSchema: IdParamSchema,
+  },
+  async ({ supabase, params }) => {
     const { data: card, error } = await supabase
       .from("card")
       .select("*")
-      .eq("flashcard_id", flashcardId)
+      .eq("flashcard_id", params.id)
       .single();
 
     if (error || !card) {
@@ -42,41 +22,19 @@ export async function GET(_: NextRequest, { params }: RouteParams) {
     }
 
     return NextResponse.json(card);
-  } catch (error) {
-    console.error("Flashcard get error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);
 
-export async function DELETE(_: NextRequest, { params }: RouteParams) {
-  try {
-    const supabase = await createClient();
-    const { id } = await params;
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const flashcardId = parseInt(id, 10);
-    if (isNaN(flashcardId)) {
-      return NextResponse.json(
-        { error: "Invalid flashcard ID" },
-        { status: 400 },
-      );
-    }
-
+// DELETE /api/v1/flashcards/[id]/study - Delete study card for a flashcard
+export const DELETE = withApiHandler(
+  {
+    paramsSchema: IdParamSchema,
+  },
+  async ({ supabase, params }) => {
     const { error } = await supabase
       .from("card")
       .delete()
-      .eq("flashcard_id", flashcardId)
+      .eq("flashcard_id", params.id)
       .single();
 
     if (error) {
@@ -87,11 +45,5 @@ export async function DELETE(_: NextRequest, { params }: RouteParams) {
     }
 
     return NextResponse.json({ message: "Flashcard deleted successfully" });
-  } catch (error) {
-    console.error("Flashcard get error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

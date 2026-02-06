@@ -1,23 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 
+import { withApiHandler } from "@/lib/api/with-api-handler";
 import { getApiGatewayConfig } from "@/lib/api-gateway";
-import { createClient } from "@/lib/supabase/server";
 import { InflectionsRequestSchema } from "@/types/inflections";
 
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    // Check if user is authenticated
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+export const POST = withApiHandler(
+  {
+    bodySchema: InflectionsRequestSchema,
+  },
+  async ({ body }) => {
     const apiGwConfig = getApiGatewayConfig();
     if (!apiGwConfig) {
       console.error("API_GW_URL not configured");
@@ -27,21 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse and validate request body
-    const body = await request.json();
-    const validationResult = InflectionsRequestSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid request",
-          details: z.flattenError(validationResult.error),
-        },
-        { status: 400 },
-      );
-    }
-
-    const { lemma, pos, language } = validationResult.data;
+    const { lemma, pos, language } = body;
 
     // Forward to Lambda via API Gateway with language-specific endpoint
     const response = await fetch(
@@ -92,11 +69,5 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(responseData);
-  } catch (error) {
-    console.error("Inflections error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);

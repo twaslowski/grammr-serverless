@@ -1,46 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 
+import { withApiHandler } from "@/lib/api/with-api-handler";
 import { getApiGatewayConfig } from "@/lib/api-gateway";
-import { createClient } from "@/lib/supabase/server";
 import {
   TranslationRequestSchema,
   TranslationResponseSchema,
 } from "@/types/translation";
 
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-
-    // Check if user is authenticated
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+export const POST = withApiHandler(
+  {
+    bodySchema: TranslationRequestSchema,
+  },
+  async ({ body }) => {
     const apiGwConfig = getApiGatewayConfig();
     if (!apiGwConfig) {
       console.error("API_GW_URL not configured");
       return NextResponse.json(
         { error: "Service not configured" },
         { status: 503 },
-      );
-    }
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validationResult = TranslationRequestSchema.safeParse(body);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid request",
-          details: z.flattenError(validationResult.error),
-        },
-        { status: 400 },
       );
     }
 
@@ -51,7 +28,7 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json",
         "x-api-key": apiGwConfig.apiKey,
       },
-      body: JSON.stringify(validationResult.data),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -74,11 +51,5 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(parsed.data);
-  } catch (error) {
-    console.error("Inflections error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+  },
+);
