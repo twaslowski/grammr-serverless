@@ -60,7 +60,7 @@ const defaultNavItems: DashboardNavItem[] = [
   {
     title: "Profile Settings",
     description: "Manage your profile, languages, and preferences",
-    href: "/dashboard/profile",
+    href: "/dashboard/settings",
     icon: Settings,
   },
   {

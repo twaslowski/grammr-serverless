@@ -40,7 +40,7 @@ const profileNavItems: ProfileNavItem[] = [
   },
   {
     title: "Account",
-    description: "Manage your data, export and import flashcards",
+    description: "Manage your account settings",
     href: "/dashboard/profile/account",
     icon: User,
     disabled: true,

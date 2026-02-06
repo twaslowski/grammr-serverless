@@ -42,6 +42,7 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
 
   const fetchDecks = useCallback(async () => {
     try {
+      // todo: also get owned decks that aren't studied yet
       const studiedDecks = await getStudiedDecks();
       setDecks(studiedDecks);
     } catch (err) {

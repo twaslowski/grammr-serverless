@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 logging.getLogger("urllib3.connectionpool").setLevel(level=logging.WARN)
 
 
-def main(language: str, max_lines: int):
+def main(language: str, max_lines: int | None):
     import_file_data = {
         "version": "1.0",
         "exported_at": datetime.datetime.now().isoformat(),
@@ -138,5 +138,5 @@ if __name__ == "__main__":
             "Usage: main.py <language> <max_lines>; expects data/<language>.csv to be present"
         )
     lang = sys.argv[1]
-    max_lines = int(sys.argv[2]) if sys.argv[2] != "None" else None
+    max_lines = int(sys.argv[2]) if len(sys.argv) == 3 else None
     main(lang, max_lines)
