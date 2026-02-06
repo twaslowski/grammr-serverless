@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { createClient } from "@/lib/supabase/client";
+import { saveProfile } from "@/lib/db/profile";
 import { cn } from "@/lib/utils";
 import {
   allLanguages,
@@ -63,17 +63,7 @@ export function LanguageSelector({
     setError(null);
 
     try {
-      const supabase = createClient();
-
-      // Use upsert to handle both new profiles and existing profiles without languages
-      const { error: upsertError } = await supabase.from("profiles").upsert({
-        id: userId,
-        source_language: selectedSourceLanguage,
-        target_language: selectedTargetLanguage,
-      });
-
-      if (upsertError) throw upsertError;
-
+      await saveProfile(userId, selectedSourceLanguage, selectedTargetLanguage);
       toast.success("Updated language settings");
       router.push("/dashboard");
     } catch {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
+import { LanguageCode } from "@/types/languages";
 import { FlashcardExport } from "../schema";
 
 // GET /api/v1/flashcards/export - Export all user's flashcards (without progress)
@@ -17,7 +18,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch all flashcards for the user, joining with deck to get deck name
+    // Fetch all flashcards for the user, joining with deck to get deck name and language
     const { data: flashcards, error } = await supabase
       .from("flashcard")
       .select(
@@ -27,7 +28,9 @@ export async function GET() {
         notes,
         deck!inner (
           name,
-          user_id
+          user_id,
+          language,
+          visibility
         )
       `,
       )
@@ -45,7 +48,12 @@ export async function GET() {
     // Transform to export format
     const exportedFlashcards = flashcards.map((card) => {
       // deck comes as an object when using !inner join, but TypeScript infers it as array
-      const deck = card.deck as unknown as { name: string; user_id: string };
+      const deck = card.deck as unknown as {
+        name: string;
+        user_id: string;
+        language: string;
+        visibility: string;
+      };
       return {
         front: card.front,
         back: card.back,
@@ -54,9 +62,18 @@ export async function GET() {
       };
     });
 
+    // Get language and visibility from the first deck
+    // (assuming most exports will be from decks with the same language)
+    const firstDeck = flashcards[0]?.deck as unknown as {
+      language?: string;
+      visibility?: string;
+    };
+
     const exportData: FlashcardExport = {
       version: "1.0",
       exported_at: new Date().toISOString(),
+      language: firstDeck?.language as LanguageCode | undefined,
+      visibility: firstDeck?.visibility as "private" | "public" | undefined,
       flashcards: exportedFlashcards,
     };
 

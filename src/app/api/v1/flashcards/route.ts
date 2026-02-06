@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { FlashcardWithDeck } from "@/types/flashcards";
 
 import {
   CreateFlashcardRequestSchema,
@@ -43,7 +44,8 @@ export async function GET(request: NextRequest) {
 
     const { deck_id, search, sort_by, sort_order } = queryResult.data;
 
-    // Build query - join with deck to filter by user ownership
+    // Build query - join with deck_study to filter by decks the user is studying
+    // This includes both owned decks and public decks they're studying
     let query = supabase
       .from("flashcard")
       .select(
@@ -52,11 +54,14 @@ export async function GET(request: NextRequest) {
         deck!inner (
           id,
           name,
-          user_id
+          user_id,
+          deck_study!inner (
+            user_id
+          )
         )
       `,
       )
-      .eq("deck.user_id", user.id);
+      .eq("deck.deck_study.user_id", user.id);
 
     // Filter by deck if specified
     if (deck_id) {
@@ -85,9 +90,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform to include deck info
-    const flashcards = data.map((item) => ({
-      ...item,
-      deck: item.deck ? { id: item.deck.id, name: item.deck.name } : undefined,
+    const flashcards = data.map((fc: FlashcardWithDeck) => ({
+      ...fc,
+      deck: fc.deck
+        ? { id: fc.deck.id, name: fc.deck.name, user_id: fc.deck.user_id }
+        : undefined,
     }));
 
     return NextResponse.json(flashcards);

@@ -26,9 +26,12 @@ def main(language: str, max_lines: int):
     import_file_data = {
         "version": "1.0",
         "exported_at": datetime.datetime.now().isoformat(),
+        "language": language,
+        "deck_name": f"{language} flashcards",
+        "public": True,
         "flashcards": [],
     }
-    with open(f"data/{language}.csv", "r", encoding="utf-8") as f:
+    with open(f"data/in/{language}.csv", "r", encoding="utf-8") as f:
         r = csv.reader(f, delimiter="|")
         for idx, line in enumerate(r):
             if max_lines is not None and idx >= max_lines:
@@ -59,7 +62,7 @@ def main(language: str, max_lines: int):
                 if token["pos"] in ["NOUN", "ADJ", "VERB", "AUX"]:
                     try:
                         inflections = retrieve_inflections(
-                            token["text"], token["pos"], language
+                            token["lemma"], token["pos"], language
                         )
                     except Exception as e:
                         _logger.error(
@@ -80,7 +83,7 @@ def main(language: str, max_lines: int):
             if idx % 10 == 0:
                 _logger.info("Progress: %s/?", idx)
 
-    with open(f'data/{language}.json', 'w', encoding='utf-8') as out:
+    with open(f'data/out/{language}.json', 'w', encoding='utf-8') as out:
         out.write(json.dumps(import_file_data, ensure_ascii=False))
 
 
@@ -125,14 +128,14 @@ def retrieve_inflections(word: str, pos: str, language: str) -> dict:
         response.json(),
     )
     if response.status_code != 200:
-        raise Exception("Inflection retrieval failed")
+        raise Exception("Inflection retrieval failed: " + response.text)
     return response.json()
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         raise ValueError(
-            "Usage: main.py <language>; expects <language>.txt to be present"
+            "Usage: main.py <language> <max_lines>; expects data/<language>.csv to be present"
         )
     lang = sys.argv[1]
     max_lines = int(sys.argv[2]) if sys.argv[2] != "None" else None

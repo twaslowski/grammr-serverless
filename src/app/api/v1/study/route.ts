@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import { DueCardsQuerySchema } from "@/app/api/v1/study/schema";
 import { scheduleCard } from "@/lib/fsrs";
@@ -23,20 +24,21 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const queryResult = DueCardsQuerySchema.safeParse({
-      limit: searchParams.get("limit"),
+      limit: searchParams.get("limit") ?? undefined,
+      include_new: searchParams.get("include_new") ?? undefined,
     });
 
     if (!queryResult.success) {
       return NextResponse.json(
         {
           error: "Invalid query parameters",
-          details: queryResult.error.flatten(),
+          details: z.flattenError(queryResult.error),
         },
         { status: 400 },
       );
     }
 
-    const limit = queryResult.data.limit || 20;
+    const limit = queryResult.data.limit;
 
     const now = new Date();
     const nowStr = now.toISOString();

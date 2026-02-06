@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Table2, Trash2 } from "lucide-react";
+import { Ban, Table2, Trash2 } from "lucide-react";
 
 import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
 import { InflectionsDialog } from "@/components/inflection";
@@ -11,11 +11,21 @@ import { FlashcardWithDeck } from "@/types/flashcards";
 
 interface FlashcardProps {
   flashcard: FlashcardWithDeck;
+  isOwner: boolean;
   onDelete: (id: number) => void;
+  onStopStudying?: (flashcard: FlashcardWithDeck) => void;
   onUpdate?: (updatedFlashcard: FlashcardWithDeck) => void;
 }
 
-export function Flashcard({ flashcard, onDelete, onUpdate }: FlashcardProps) {
+export function Flashcard({
+  flashcard,
+  isOwner,
+  onDelete,
+  onStopStudying,
+  onUpdate,
+}: FlashcardProps) {
+  // Check if user owns this flashcard's deck
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -27,15 +37,37 @@ export function Flashcard({ flashcard, onDelete, onUpdate }: FlashcardProps) {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <UpdateFlashcardDialog flashcard={flashcard} onUpdate={onUpdate} />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onDelete(flashcard.id)}
-              className="text-destructive hover:text-destructive"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            {isOwner ? (
+              <>
+                <UpdateFlashcardDialog
+                  flashcard={flashcard}
+                  onUpdate={onUpdate}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete(flashcard.id)}
+                  className="text-destructive hover:text-destructive"
+                  title="Delete flashcard"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              onStopStudying && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  // feature not in scope for prototype, so disable for now
+                  disabled={true}
+                  onClick={() => onStopStudying(flashcard)}
+                  className="text-destructive hover:text-destructive"
+                  title="Stop studying this deck"
+                >
+                  <Ban className="h-4 w-4" />
+                </Button>
+              )
+            )}
           </div>
         </div>
       </CardHeader>

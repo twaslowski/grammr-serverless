@@ -7,6 +7,7 @@ import {
 } from "@/app/api/v1/flashcards/schema";
 import {
   Deck,
+  DeckVisibility,
   Flashcard,
   FlashcardBack,
   FlashcardWithDeck,
@@ -24,6 +25,20 @@ export async function getDecks(): Promise<Deck[]> {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to fetch decks");
+  }
+
+  return response.json();
+}
+
+export async function getStudiedDecks(): Promise<Deck[]> {
+  const response = await fetch(`${BASE_URL}/decks/studied`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to fetch studied decks");
   }
 
   return response.json();
@@ -99,6 +114,18 @@ export async function deleteDeck(id: number): Promise<void> {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to delete deck");
+  }
+}
+
+export async function stopStudyingDeck(id: number): Promise<void> {
+  const response = await fetch(`${BASE_URL}/decks/studied/${id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to stop studying deck");
   }
 }
 
@@ -189,6 +216,28 @@ export async function deleteFlashcard(id: number): Promise<void> {
   }
 }
 
+export async function studyFlashcard(id: number): Promise<void> {
+  const response = await fetch(`${BASE_URL}/${id}/study`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to study flashcard");
+  }
+}
+
+export async function stopStudyingFlashcard(id: number): Promise<void> {
+  const response = await fetch(`${BASE_URL}/${id}/study`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to study flashcard");
+  }
+}
+
 // --- Export/Import operations ---
 
 export async function exportFlashcards(): Promise<Blob> {
@@ -207,6 +256,9 @@ export async function exportFlashcards(): Promise<Blob> {
 
 export async function importFlashcards(data: {
   version: number;
+  language: string;
+  deck_name?: string;
+  visibility?: DeckVisibility;
   flashcards: Array<{
     front: string;
     type: string;

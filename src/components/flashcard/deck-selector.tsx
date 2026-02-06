@@ -21,15 +21,12 @@ export function DeckSelector({ decks, value, onChange }: DeckSelectorProps) {
   };
 
   return (
-    <Select.Root
-      value={value || "Select deck"}
-      onValueChange={(val) => findDeckByName(val)}
-    >
+    <Select.Root value={value} onValueChange={(val) => findDeckByName(val)}>
       <Select.Trigger
         className="inline-flex items-center justify-between rounded-md border border-primary/50 px-3 py-1"
         aria-label="deck-select"
       >
-        <Select.Value placeholder="Select deck" />
+        <Select.Value placeholder="Select a deck" />
         <Select.Icon>
           <ChevronDownIcon className="h-4 w-4 opacity-70" />
         </Select.Icon>

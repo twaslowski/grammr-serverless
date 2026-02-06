@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import { DueCardsQuerySchema } from "../schema";
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Invalid query parameters",
-          details: queryResult.error.flatten(),
+          details: z.flattenError(queryResult.error),
         },
         { status: 400 },
       );

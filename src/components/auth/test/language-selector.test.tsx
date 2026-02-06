@@ -8,7 +8,7 @@ import { LanguageSelector } from "@/components/auth/language-selector";
 import { allLanguages } from "@/types/languages";
 
 const mockPush = jest.fn();
-const mockUpsert = jest.fn();
+const mockSaveProfile = jest.fn();
 
 jest.mock("next/navigation", () => ({
   useRouter() {
@@ -19,12 +19,16 @@ jest.mock("next/navigation", () => ({
   },
 }));
 
-jest.mock("@/lib/supabase/client", () => ({
-  createClient: () => ({
-    from: () => ({
-      upsert: mockUpsert,
-    }),
-  }),
+jest.mock("@/lib/db/profile", () => ({
+  saveProfile: (...args: unknown[]) => mockSaveProfile(...args),
+}));
+
+jest.mock("react-hot-toast", () => ({
+  __esModule: true,
+  default: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
 }));
 
 // NOTE: Throughout this test suite, a common theme is that getByText does not work well with English,
@@ -36,7 +40,7 @@ describe("LanguageSelector", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUpsert.mockResolvedValue({ error: null });
+    mockSaveProfile.mockResolvedValue(undefined);
   });
 
   describe("Step 1 - Source Language Selection", () => {
@@ -191,20 +195,14 @@ describe("LanguageSelector", () => {
       await user.click(screen.getByRole("button", { name: /continue/i }));
 
       await waitFor(() => {
-        expect(mockUpsert).toHaveBeenCalledWith({
-          id: userId,
-          source_language: "de",
-          target_language: "ru",
-        });
+        expect(mockSaveProfile).toHaveBeenCalledWith(userId, "de", "ru");
       });
 
       expect(mockPush).toHaveBeenCalledWith("/dashboard");
     });
 
     it("should display an error message on save failure", async () => {
-      mockUpsert.mockResolvedValueOnce({
-        error: { message: "Database error" },
-      });
+      mockSaveProfile.mockRejectedValueOnce(new Error("Database error"));
 
       const user = userEvent.setup();
       render(<LanguageSelector userId={userId} />);
@@ -224,12 +222,10 @@ describe("LanguageSelector", () => {
     });
 
     it("should show loading state while saving", async () => {
-      // Make the upsert take some time
-      mockUpsert.mockImplementation(
+      // Make the saveProfile take some time
+      mockSaveProfile.mockImplementation(
         () =>
-          new Promise((resolve) =>
-            setTimeout(() => resolve({ error: null }), 100),
-          ),
+          new Promise((resolve) => setTimeout(() => resolve(undefined), 100)),
       );
 
       const user = userEvent.setup();

@@ -80,7 +80,7 @@ export function TranslationInput({
       setIsRevealed(true);
     } else {
       // If no translation, fetch it
-      handleFetchTranslation();
+      void handleFetchTranslation();
     }
   };
 
@@ -155,11 +155,10 @@ export function TranslationInput({
             <span className="text-xs text-muted-foreground ml-2">
               Click to reveal
             </span>
-            {!isTranslating && <Eye className="h-4 w-4" />}
           </div>
         )}
       </div>
-      {!isTranslating && (
+      {!isTranslating && !isRevealed && (
         <Button
           type="button"
           variant="ghost"
