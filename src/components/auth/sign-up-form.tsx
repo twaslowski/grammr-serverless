@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { OneTapAuth } from "@/components/auth/one-tap";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,7 +17,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-import {OneTapAuth} from "@/components/auth/one-tap";
 
 export function SignUpForm({
   className,
@@ -104,7 +104,12 @@ export function SignUpForm({
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" aria-label="sign-up" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                aria-label="sign-up"
+                disabled={isLoading}
+              >
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
             </div>

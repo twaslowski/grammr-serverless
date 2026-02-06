@@ -1,5 +1,4 @@
 import { LoginForm } from "@/components/auth/login-form";
-import { OneTapAuth } from "@/components/auth/one-tap";
 
 export default function Page() {
   return (

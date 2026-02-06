@@ -34,13 +34,14 @@ describe("InflectionForm", () => {
     });
   });
 
-  it("does not render part of speech labels if distinguishPos is false", () => {
+  it("renders pos buttons as disabled if distinguishPos is false", () => {
     render(<InflectionForm {...baseProps} distinguishPos={false} />);
     // Should not render the label for part of speech
-    expect(screen.queryByText(/Part of Speech/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Part of Speech/i)).toBeInTheDocument();
     // Should not render any part of speech buttons
     baseProps.availablePos.forEach((pos) => {
-      expect(screen.queryByText(getPosLabel(pos))).not.toBeInTheDocument();
+      expect(screen.queryByText(getPosLabel(pos))).toBeInTheDocument();
+      expect(screen.queryByText(getPosLabel(pos))).toBeDisabled();
     });
   });
 });
