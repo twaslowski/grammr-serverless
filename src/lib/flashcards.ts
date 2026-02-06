@@ -130,7 +130,6 @@ export async function stopStudyingDeck(id: number): Promise<void> {
 }
 
 // --- Flashcard operations ---
-
 export async function getFlashcards(
   query?: FlashcardListQuery,
 ): Promise<FlashcardWithDeck[]> {

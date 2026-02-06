@@ -29,33 +29,33 @@ const profileNavItems: ProfileNavItem[] = [
   {
     title: "Language Settings",
     description: "Change your native language and the language you're learning",
-    href: "/dashboard/profile/language",
+    href: "/dashboard/settings/language",
     icon: Languages,
   },
   {
     title: "Flashcards",
     description: "Manage your flashcards and decks",
-    href: "/dashboard/profile/flashcards",
+    href: "/dashboard/settings/flashcards",
     icon: Layers,
   },
   {
     title: "Account",
     description: "Manage your account settings",
-    href: "/dashboard/profile/account",
+    href: "/dashboard/settings/account",
     icon: User,
     disabled: true,
   },
   {
     title: "Notifications",
     description: "Configure email and push notification preferences",
-    href: "/dashboard/profile/notifications",
+    href: "/dashboard/settings/notifications",
     icon: Bell,
     disabled: true,
   },
   {
     title: "Privacy & Security",
     description: "Manage your data and security settings",
-    href: "/dashboard/profile/privacy",
+    href: "/dashboard/settings/privacy",
     icon: Shield,
     disabled: true,
   },
@@ -65,7 +65,7 @@ export default function ProfilePage() {
   return (
     <PageLayout
       header={{
-        title: "Profile Settings",
+        title: "Settings",
         description:
           "Manage your account, language preferences, and other settings.",
         backHref: "/dashboard",

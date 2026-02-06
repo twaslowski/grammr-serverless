@@ -11,7 +11,7 @@ export default function FlashcardImportExportPage() {
         title: "Import & Export Flashcards",
         description:
           "Easily back up or transfer your flashcards by exporting them to a JSON file, or import flashcards from a previously exported file.",
-        backHref: "/dashboard/profile",
+        backHref: "/dashboard/settings",
         backLabel: "Back to settings",
       }}
     >

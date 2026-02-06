@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   deleteFlashcard,
+  getDecks,
   getFlashcards,
   getStudiedDecks,
   stopStudyingFlashcard,
@@ -42,9 +43,8 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
 
   const fetchDecks = useCallback(async () => {
     try {
-      // todo: also get owned decks that aren't studied yet
-      const studiedDecks = await getStudiedDecks();
-      setDecks(studiedDecks);
+      const decks = await getDecks();
+      setDecks(decks);
     } catch (err) {
       console.error("Failed to fetch decks:", err);
     }
