@@ -8,6 +8,9 @@ import { defineConfig, devices } from "@playwright/test";
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+// Import test target languages to create projects
+const testTargetLanguages = ["ru", "it", "fr", "es", "pt"];
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -34,33 +37,36 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    // Setup project - runs authentication first
-    {
-      name: "setup",
+    // Setup projects - runs authentication for each language
+    ...testTargetLanguages.map((lang) => ({
+      name: `setup-${lang}`,
       testMatch: /auth\.setup\.ts/,
-    },
+      grep: new RegExp(`authenticate-${lang}`),
+    })),
 
-    // Tests that require authentication
-    {
-      name: "chromium",
+    // Test projects for each language in Chromium
+    ...testTargetLanguages.map((lang) => ({
+      name: `chromium-${lang}`,
       use: {
         ...devices["Desktop Chrome"],
-        // Use saved authentication state
-        storageState: "e2e/.auth/user.json",
+        storageState: `e2e/.auth/user-${lang}.json`,
       },
-      dependencies: ["setup"],
+      dependencies: [`setup-${lang}`],
       testDir: "./e2e/tests",
-    },
+      grep: new RegExp(`- ${lang === "ru" ? "Russian" : lang === "it" ? "Italian" : lang === "fr" ? "French" : lang === "es" ? "Spanish" : "Portuguese"}`),
+    })),
 
-    {
-      name: "firefox",
+    // Optional: Firefox projects for each language
+    ...testTargetLanguages.map((lang) => ({
+      name: `firefox-${lang}`,
       use: {
         ...devices["Desktop Firefox"],
-        storageState: "e2e/.auth/user.json",
+        storageState: `e2e/.auth/user-${lang}.json`,
       },
-      dependencies: ["setup"],
+      dependencies: [`setup-${lang}`],
       testDir: "./e2e/tests",
-    },
+      grep: new RegExp(`- ${lang === "ru" ? "Russian" : lang === "it" ? "Italian" : lang === "fr" ? "French" : lang === "es" ? "Spanish" : "Portuguese"}`),
+    })),
   ],
 
   /* Run your local dev server before starting the tests */

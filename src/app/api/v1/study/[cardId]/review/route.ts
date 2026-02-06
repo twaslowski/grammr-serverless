@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { IdParamSchema, withApiHandler} from "@/lib/api/with-api-handler";
+import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 import { processReview } from "@/lib/fsrs";
 import { Card as DbCard } from "@/types/fsrs";
 import { SubmitReviewRequestSchema } from "../../schema";

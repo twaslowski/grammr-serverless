@@ -16,7 +16,7 @@ export const OneTapAuth = () => {
             height={16}
             alt="google icon"
           />
-          <p>Sign up with Google</p>
+          <p>Sign in with Google</p>
         </Button>
       </form>
     </div>

@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import {OneTapAuth} from "@/components/auth/one-tap";
 
 export function SignUpForm({
   className,
@@ -103,7 +104,7 @@ export function SignUpForm({
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full" aria-label="sign-up" disabled={isLoading}>
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
             </div>
@@ -114,6 +115,8 @@ export function SignUpForm({
               </Link>
             </div>
           </form>
+          <div className="border border-foreground/20 my-4" />
+          <OneTapAuth />
         </CardContent>
       </Card>
     </div>

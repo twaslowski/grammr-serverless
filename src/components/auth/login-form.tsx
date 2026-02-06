@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import {OneTapAuth} from "@/components/auth/one-tap";
 
 export function LoginForm({
   className,
@@ -104,6 +105,8 @@ export function LoginForm({
               </Link>
             </div>
           </form>
+          <div className="border border-foreground/20 my-4" />
+          <OneTapAuth />
         </CardContent>
       </Card>
     </div>

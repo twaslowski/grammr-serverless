@@ -94,25 +94,23 @@ export function InflectionForm({
               />
             </div>
 
-            {distinguishPos && (
-              <div className="space-y-2">
-                <Label htmlFor="pos">Part of Speech</Label>
-                <div className="flex flex-wrap gap-2">
-                  {availablePos.map((opt) => (
-                    <Button
-                      key={opt}
-                      type="button"
-                      variant={pos === opt ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setPos(opt)}
-                      disabled={isLoading}
-                    >
-                      {getPosLabel(opt)}
-                    </Button>
-                  ))}
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="pos">Part of Speech</Label>
+              <div className="flex flex-wrap gap-2">
+                {availablePos.map((opt) => (
+                  <Button
+                    key={opt}
+                    type="button"
+                    variant={pos === opt ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setPos(opt)}
+                    disabled={!distinguishPos || isLoading}
+                  >
+                    {getPosLabel(opt)}
+                  </Button>
+                ))}
               </div>
-            )}
+            </div>
 
             <Button
               type="submit"

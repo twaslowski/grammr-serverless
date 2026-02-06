@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { getApiGatewayConfig } from "@/lib/api/api-gateway";
 import { withApiHandler } from "@/lib/api/with-api-handler";
-import { getApiGatewayConfig } from "@/lib/api-gateway";
 
 const PreflightQuerySchema = z.object({
   language: z.string().min(1, "Language is required"),

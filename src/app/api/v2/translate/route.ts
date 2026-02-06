@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { getApiGatewayConfig } from "@/lib/api/api-gateway";
 import { withApiHandler } from "@/lib/api/with-api-handler";
-import { getApiGatewayConfig } from "@/lib/api-gateway";
 import {
   TranslationRequestSchema,
   TranslationResponseSchema,
