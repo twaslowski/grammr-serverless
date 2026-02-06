@@ -18,7 +18,7 @@ module "morphology_lambda" {
   timeout     = 30
 
   use_existing_cloudwatch_log_group = true
-  logging_log_group = module.morphology_logging.cloudwatch_log_group_name
+  logging_log_group                 = module.morphology_logging.cloudwatch_log_group_name
 
   attach_policy_statements = true
   policy_statements = {
@@ -55,7 +55,7 @@ module "inflection_ru_lambda" {
   timeout     = 30
 
   use_existing_cloudwatch_log_group = true
-  logging_log_group = module.inflection_logging.cloudwatch_log_group_name
+  logging_log_group                 = module.inflection_logging.cloudwatch_log_group_name
 
   attach_policy_statements = true
   policy_statements = {
@@ -92,7 +92,7 @@ module "inflection_latin_lambda" {
   timeout     = 60
 
   use_existing_cloudwatch_log_group = true
-  logging_log_group = module.inflection_logging.cloudwatch_log_group_name
+  logging_log_group                 = module.inflection_logging.cloudwatch_log_group_name
 
   attach_policy_statements = true
   policy_statements = {
@@ -146,7 +146,7 @@ module "polly_lambda" {
 }
 
 module "translate_lambda" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
   version = "8.4.0"
 
   function_name = "grammr-translate-${var.environment}"

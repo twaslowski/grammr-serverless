@@ -36,7 +36,6 @@ jest.mock("react-hot-toast", () => ({
 // Workarounds include simply querying for other languages (often German) or using getAllByText()[0].
 
 describe("LanguageSelector", () => {
-
   beforeEach(() => {
     jest.clearAllMocks();
     mockSaveProfile.mockResolvedValue(undefined);

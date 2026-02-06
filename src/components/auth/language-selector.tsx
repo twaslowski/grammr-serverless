@@ -30,10 +30,7 @@ interface LanguageSelectorProps {
 
 type Step = "source" | "target";
 
-export function LanguageSelector({
-  profile,
-  mode,
-}: LanguageSelectorProps) {
+export function LanguageSelector({ profile, mode }: LanguageSelectorProps) {
   const [step, setStep] = useState<Step>("source");
   const [selectedSourceLanguage, setSelectedSourceLanguage] = useState<
     LanguageCode | undefined

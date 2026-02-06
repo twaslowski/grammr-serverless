@@ -29,7 +29,7 @@ import { deckStudy } from "./deckStudy";
 import { flashcards } from "./flashcard";
 import { profile } from "./profile";
 import { reviewLogs } from "./reviewLog";
-import { cardStateEnum, studyCard } from "./studyCard";
+import { studyCard } from "./studyCard";
 
 // Define all relations in one place to avoid circular dependencies
 
@@ -85,4 +85,3 @@ export const reviewLogsRelations = relations(reviewLogs, ({ one }) => ({
     references: [studyCard.id],
   }),
 }));
-

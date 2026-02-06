@@ -18,4 +18,3 @@ export const flashcards = pgTable("flashcards", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-

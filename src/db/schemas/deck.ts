@@ -26,4 +26,3 @@ export const decks = pgTable("decks", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-

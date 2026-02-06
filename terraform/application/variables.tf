@@ -25,9 +25,14 @@ variable "zone_id" {
   type        = string
 }
 
-variable "supabase_project_url" {
+variable "supabase_project_id" {
   type        = string
   description = "The Supabase project URL."
+}
+
+variable "supabase_db_password" {
+  type      = string
+  sensitive = true
 }
 
 variable "supabase_publishable_key" {

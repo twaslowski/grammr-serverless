@@ -34,4 +34,3 @@ export const studyCard = pgTable("card", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-

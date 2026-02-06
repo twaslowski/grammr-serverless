@@ -7,4 +7,3 @@ export const profile = pgTable("profiles", {
   targetLanguage: text("target_language").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-

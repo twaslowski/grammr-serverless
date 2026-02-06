@@ -24,4 +24,3 @@ export const reviewLogs = pgTable("review_log", {
   review: timestamp("review").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-
