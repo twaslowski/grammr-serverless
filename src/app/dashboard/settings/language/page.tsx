@@ -43,7 +43,7 @@ export default async function LanguageSettingsPage() {
       </div>
 
       <section className="flex justify-center py-6">
-        <LanguageSelector userId={user.id} profile={profile} mode="edit" />
+        <LanguageSelector profile={profile} mode="edit" />
       </section>
     </div>
   );

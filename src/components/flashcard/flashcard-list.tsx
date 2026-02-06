@@ -14,7 +14,6 @@ import {
   deleteFlashcard,
   getDecks,
   getFlashcards,
-  getStudiedDecks,
   stopStudyingFlashcard,
 } from "@/lib/flashcards";
 import { Deck, FlashcardWithDeck } from "@/types/flashcards";

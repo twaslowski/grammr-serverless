@@ -9,7 +9,6 @@ tasks:
     desc: Start supabase
     cmds:
       - supabase stop
-      - pkill functions || true
 
   run:
     desc: Run the development server

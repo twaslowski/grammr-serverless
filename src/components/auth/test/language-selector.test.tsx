@@ -19,7 +19,7 @@ jest.mock("next/navigation", () => ({
   },
 }));
 
-jest.mock("@/lib/db/profile", () => ({
+jest.mock("@/lib/profile", () => ({
   saveProfile: (...args: unknown[]) => mockSaveProfile(...args),
 }));
 
@@ -36,7 +36,6 @@ jest.mock("react-hot-toast", () => ({
 // Workarounds include simply querying for other languages (often German) or using getAllByText()[0].
 
 describe("LanguageSelector", () => {
-  const userId = "test-user-id";
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -45,7 +44,7 @@ describe("LanguageSelector", () => {
 
   describe("Step 1 - Source Language Selection", () => {
     it("should render the source language selection step initially", () => {
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       expect(
         screen.getByText("What is your native language?"),
@@ -54,7 +53,7 @@ describe("LanguageSelector", () => {
     });
 
     it("should display all available languages", () => {
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       allLanguages.forEach((language) => {
         expect(screen.getAllByText(language.name)).not.toHaveLength(0);
@@ -63,7 +62,7 @@ describe("LanguageSelector", () => {
     });
 
     it("should have the continue button disabled when no language is selected", () => {
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       const continueButton = screen.getByRole("button", { name: /continue/i });
       expect(continueButton).toBeDisabled();
@@ -71,7 +70,7 @@ describe("LanguageSelector", () => {
 
     it("should enable the continue button when a language is selected", async () => {
       const user = userEvent.setup();
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       await user.click(screen.getAllByText("English")[0]);
 
@@ -81,13 +80,13 @@ describe("LanguageSelector", () => {
 
     it("should pre-select source language from profile if provided", () => {
       const profile = {
-        id: userId,
+        id: "some-user-id",
         source_language: "de" as const,
         target_language: "ru" as const,
         created_at: "2024-01-01T00:00:00Z",
       };
 
-      render(<LanguageSelector userId={userId} profile={profile} />);
+      render(<LanguageSelector profile={profile} />);
 
       // The German language card should have the selected styling
       const germanButton = screen.getByText("German").closest("button");
@@ -98,7 +97,7 @@ describe("LanguageSelector", () => {
   describe("Step 2 - Target Language Selection", () => {
     it("should navigate to step 2 when continue is clicked", async () => {
       const user = userEvent.setup();
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       await user.click(screen.getByText("German"));
       await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -111,7 +110,7 @@ describe("LanguageSelector", () => {
 
     it("should not show the selected source language in target options", async () => {
       const user = userEvent.setup();
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       await user.click(screen.getByText("German"));
       await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -125,7 +124,7 @@ describe("LanguageSelector", () => {
 
     it("should go back to step 1 when back button is clicked", async () => {
       const user = userEvent.setup();
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       await user.click(screen.getByText("German"));
       await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -139,7 +138,7 @@ describe("LanguageSelector", () => {
 
     it("should preserve source language selection when going back", async () => {
       const user = userEvent.setup();
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       await user.click(screen.getByText("German"));
       await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -151,7 +150,7 @@ describe("LanguageSelector", () => {
 
     it("should have the continue button disabled when no target language is selected", async () => {
       const user = userEvent.setup();
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       await user.click(screen.getByText("German"));
       await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -167,13 +166,13 @@ describe("LanguageSelector", () => {
     it("should pre-select target language from profile if provided", async () => {
       const user = userEvent.setup();
       const profile = {
-        id: userId,
+        id: "some-user-id",
         source_language: "en" as const,
         target_language: "ru" as const,
         created_at: "2024-01-01T00:00:00Z",
       };
 
-      render(<LanguageSelector userId={userId} profile={profile} />);
+      render(<LanguageSelector profile={profile} />);
 
       // Navigate to step 2
       await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -187,7 +186,7 @@ describe("LanguageSelector", () => {
   describe("Saving languages", () => {
     it("should save languages and redirect to dashboard on success", async () => {
       const user = userEvent.setup();
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       await user.click(screen.getByText("German"));
       await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -195,7 +194,7 @@ describe("LanguageSelector", () => {
       await user.click(screen.getByRole("button", { name: /continue/i }));
 
       await waitFor(() => {
-        expect(mockSaveProfile).toHaveBeenCalledWith(userId, "de", "ru");
+        expect(mockSaveProfile).toHaveBeenCalledWith("de", "ru");
       });
 
       expect(mockPush).toHaveBeenCalledWith("/dashboard");
@@ -205,7 +204,7 @@ describe("LanguageSelector", () => {
       mockSaveProfile.mockRejectedValueOnce(new Error("Database error"));
 
       const user = userEvent.setup();
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       await user.click(screen.getByText("German"));
       await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -229,7 +228,7 @@ describe("LanguageSelector", () => {
       );
 
       const user = userEvent.setup();
-      render(<LanguageSelector userId={userId} />);
+      render(<LanguageSelector />);
 
       await user.click(screen.getByText("German"));
       await user.click(screen.getByRole("button", { name: /continue/i }));

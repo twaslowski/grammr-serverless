@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { saveProfile } from "@/lib/db/profile";
+import { saveProfile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 import {
   allLanguages,
@@ -24,7 +24,6 @@ import {
 import { Profile } from "@/types/profile";
 
 interface LanguageSelectorProps {
-  userId: string;
   profile?: Profile | null;
   mode?: "signup" | "edit";
 }
@@ -32,7 +31,6 @@ interface LanguageSelectorProps {
 type Step = "source" | "target";
 
 export function LanguageSelector({
-  userId,
   profile,
   mode,
 }: LanguageSelectorProps) {
@@ -63,7 +61,7 @@ export function LanguageSelector({
     setError(null);
 
     try {
-      await saveProfile(userId, selectedSourceLanguage, selectedTargetLanguage);
+      await saveProfile(selectedSourceLanguage, selectedTargetLanguage);
       toast.success("Updated language settings");
       router.push("/dashboard");
     } catch {
