@@ -52,7 +52,13 @@ def handler(event, _):
                     }
                 )
             )
-            return lambda_util.fail(400, "Invalid request body")
+            return lambda_util.fail(
+                400,
+                "Invalid request body",
+                context={
+                    "raw_event": event,
+                },
+            )
 
         # Generate all possible feature combinations for the POS
         features = feature_retriever.derive_features(request.part_of_speech)
@@ -64,38 +70,35 @@ def handler(event, _):
             expected_pos=request.part_of_speech,
         )
 
-        logger.info(
-            json.dumps(
-                {
-                    "success": True,
-                    "word": request.lemma,
-                    "part_of_speech": request.part_of_speech.name,
-                    "detected_part_of_speech": inflections._parse.tag.POS,
-                    "confidence": inflections._parse.score,
-                    "inflections_count": len(inflections.inflections),
-                }
-            )
+        return lambda_util.ok(
+            inflections.json(),
+            context={
+                "success": True,
+                "word": request.lemma,
+                "part_of_speech": request.part_of_speech.name,
+                "detected_part_of_speech": str(inflections._parse.tag.POS),
+                "confidence": inflections._parse.score,
+                "inflections_count": len(inflections.inflections),
+            },
         )
-        return lambda_util.ok(inflections.json())
 
     except InflectionError as e:
-        # Handle expected inflection errors (low confidence, POS mismatch)
-        logger.warning(
-            json.dumps(
-                {
-                    "success": False,
-                    "error": str(e),
-                    "expected_pos": e.expected_pos,
-                    "word": e.word,
-                    "confidence": e.parse.score,
-                    "detected_pos": e.parse.tag.POS,
-                }
-            )
+        return lambda_util.fail(
+            400,
+            "Encountered an error when performing inflection.",
+            context={
+                "success": False,
+                "error": str(e),
+                "expected_pos": str(e.expected_pos),
+                "word": e.word,
+                "confidence": e.parse.score,
+                "detected_pos": str(e.parse.tag.POS),
+            },
         )
-        return lambda_util.fail(400, "Encountered an error when performing inflection.")
 
     except Exception as e:
-        logger.critical(
-            json.dumps({"success": False, "error": str(e), "raw_event": event})
+        return lambda_util.fail(
+            500,
+            "Encountered unexpected error",
+            context={"success": False, "error": str(e), "raw_event": event},
         )
-        return lambda_util.fail(500, "Encountered unexpected error")

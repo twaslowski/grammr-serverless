@@ -49,6 +49,9 @@ class DeepLTranslator(Translator):
         :param _context: context, not used.
         :return:
         """
+        # "target_lang=\"EN\" is deprecated, please use \"EN-GB\" or \"EN-US\"instead."
+        if target_language == "en":
+            target_language = "EN-US"
         return self.client.translate_text(text, target_lang=target_language).text
 
 

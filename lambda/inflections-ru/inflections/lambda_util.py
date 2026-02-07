@@ -1,23 +1,14 @@
-"""
-Utility functions for AWS Lambda HTTP responses.
-
-Provides helper functions for creating standardized API Gateway responses.
-"""
-
 import json
-from typing import Optional
+import logging
+
+logger = logging.getLogger("root")
+logger.setLevel(logging.INFO)
 
 
-def ok(res: dict | list) -> dict:
-    """
-    Create a successful HTTP 200 response.
+def ok(res: dict | list, context: dict) -> dict:
+    context.update({"success": True, "status": 200, "language": "ru"})
+    logger.info(json.dumps(context, ensure_ascii=False))
 
-    Args:
-        res: The response body to serialize as JSON.
-
-    Returns:
-        API Gateway-compatible response dict.
-    """
     return {
         "statusCode": 200,
         "headers": {"Content-Type": "application/json"},
@@ -25,37 +16,19 @@ def ok(res: dict | list) -> dict:
     }
 
 
-def fail(status: int, error_message: str) -> dict:
-    """
-    Create an error HTTP response.
+def fail(status: int, error: str, context: dict) -> dict:
+    context.update({"success": False, "status": status, "language": "ru"})
+    logger.error(json.dumps(context, ensure_ascii=False))
 
-    Args:
-        status: HTTP status code for the error response.
-
-    Returns:
-        API Gateway-compatible error response dict.
-    """
     return {
         "statusCode": status,
         "headers": {"Content-Type": "application/json"},
-        "body": json.dumps({"error": error_message}),
+        "body": json.dumps({"error": error}),
     }
 
 
-def check_keep_warm(event: dict[str, str]) -> Optional[dict]:
-    """
-    Check if this is a keep-warm request and return appropriate response.
-
-    Keep-warm requests are used to prevent Lambda cold starts by
-    periodically invoking the function.
-
-    Args:
-        event: The Lambda event to check.
-
-    Returns:
-        A success response if this is a keep-warm request, None otherwise.
-    """
+def check_keep_warm(event: dict[str, str]) -> dict | None:
     body = json.loads(event.get("body", "{}"))
     if body.get("keep-warm") is not None:
-        return ok({"keep-warm": "success"})
+        return ok({"keep-warm": "success"}, {})
     return None
