@@ -6,7 +6,7 @@ import { Card as DbCard } from "@/types/fsrs";
 import { SubmitReviewRequestSchema } from "../../schema";
 
 /**
- * POST /api/v1/study/[cardId]/review - Submit a review for a card
+ * POST /api/v1/study/[id]/review - Submit a review for a card
  */
 export const POST = withApiHandler(
   {

@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { decks, flashcards as flashcardsTable } from "@/db/schemas";
+import { decks, deckStudy, flashcards as flashcardsTable } from "@/db/schemas";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { FlashcardImportRequestSchema } from "../schema";
 
@@ -36,7 +36,7 @@ export const POST = withApiHandler(
         // Use existing deck
         targetDeckId = existingDeck[0].id;
       } else {
-        // Create a new deck with the provided name
+        // Create a new deck with the provided name and start studying it
         const [{ id: newDeckId }] = await db
           .insert(decks)
           .values({
@@ -48,6 +48,13 @@ export const POST = withApiHandler(
           })
           .returning({ id: decks.id });
         targetDeckId = newDeckId;
+
+        await db.insert(deckStudy).values({
+          deckId: newDeckId,
+          userId: user.id,
+          lastStudiedAt: null,
+          isActive: true,
+        });
       }
     } else {
       // No deck name provided, use default deck
