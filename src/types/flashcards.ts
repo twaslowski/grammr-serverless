@@ -4,6 +4,8 @@ import { snakeToCamel } from "@/lib/utils";
 import { FeatureSchema } from "@/types/feature";
 
 import { ParadigmSchema, PartOfSpeechEnum } from "./inflections";
+import {createSelectSchema} from "drizzle-zod";
+import {decks} from "@/db/schemas";
 
 // Flashcard type enum
 export const FlashcardTypeEnum = z.enum(["word", "phrase", "analysis"]);
@@ -12,16 +14,7 @@ export type FlashcardType = z.infer<typeof FlashcardTypeEnum>;
 export const DeckVisibilityEnum = z.enum(["private", "public"]);
 export type DeckVisibility = z.infer<typeof DeckVisibilityEnum>;
 
-export const DeckSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  user_id: z.uuid(),
-  visibility: DeckVisibilityEnum,
-  description: z.string().nullable(),
-  is_default: z.boolean(),
-  created_at: z.string(),
-  updated_at: z.string(),
-});
+export const DeckSchema = createSelectSchema(decks);
 export type Deck = z.infer<typeof DeckSchema>;
 
 export const DeckStudySchema = z
@@ -87,6 +80,6 @@ export type Flashcard = z.infer<typeof FlashcardSchema>;
 
 // Flashcard with deck info (for list view)
 export const FlashcardWithDeckSchema = FlashcardSchema.extend({
-  deck: DeckSchema.pick({ id: true, name: true, user_id: true }).optional(),
+  deck: DeckSchema.pick({ id: true, name: true, userId: true }).optional(),
 });
 export type FlashcardWithDeck = z.infer<typeof FlashcardWithDeckSchema>;
