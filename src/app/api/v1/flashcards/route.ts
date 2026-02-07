@@ -65,7 +65,7 @@ export const GET = withApiHandler(
     const flashcards = data.map((fc: FlashcardWithDeck) => ({
       ...fc,
       deck: fc.deck
-        ? { id: fc.deck.id, name: fc.deck.name, user_id: fc.deck.user_id }
+        ? { id: fc.deck.id, name: fc.deck.name, userId: fc.deck.userId }
         : undefined,
     }));
 

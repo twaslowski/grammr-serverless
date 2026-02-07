@@ -1,12 +1,6 @@
-import {
-  boolean,
-  pgTable,
-  serial,
-  text,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
-import {timestamps} from "@/db/schemas/timestamp";
+import { boolean, pgTable, serial, text, uuid } from "drizzle-orm/pg-core";
+
+import { timestamps } from "@/db/schemas/timestamp";
 
 // Deck table
 export const decks = pgTable("deck", {
@@ -17,5 +11,5 @@ export const decks = pgTable("deck", {
   description: text("description"),
   language: text("language").notNull(),
   isDefault: boolean("is_default").notNull().default(false),
-  ...timestamps
+  ...timestamps,
 });

@@ -98,7 +98,7 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     try {
       await stopStudyingFlashcard(flashcard.id);
       setFlashcards((prev) =>
-        prev.filter((f) => f.deck_id !== flashcard.deck_id),
+        prev.filter((f) => f.deckId !== flashcard.deckId),
       );
       toast.success("Stopped studying flashcard");
       void fetchDecks(); // Refresh deck list
@@ -196,7 +196,7 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
             <Flashcard
               key={flashcard.id}
               flashcard={flashcard}
-              isOwner={profile.id === flashcard.deck?.user_id}
+              isOwner={profile.id === flashcard.deck?.userId}
               onDelete={handleDelete}
               onStopStudying={handleStopStudying}
               onUpdate={(updated) => {

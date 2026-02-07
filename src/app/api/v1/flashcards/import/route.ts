@@ -1,6 +1,9 @@
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
+import { db } from "@/db/connect";
+import { decks, flashcards as flashcardsTable } from "@/db/schemas";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { FlashcardImportRequestSchema } from "../schema";
 
@@ -9,7 +12,7 @@ export const POST = withApiHandler(
   {
     bodySchema: FlashcardImportRequestSchema,
   },
-  async ({ user, supabase, body }) => {
+  async ({ user, body }) => {
     const { flashcards, deck_name, language, visibility } = body;
 
     if (flashcards.length === 0) {
@@ -23,86 +26,60 @@ export const POST = withApiHandler(
 
     if (deck_name) {
       // Check if a deck with this name already exists for the user
-      const { data: existingDeck } = await supabase
-        .from("deck")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("name", deck_name)
-        .single();
+      const existingDeck = await db
+        .select()
+        .from(decks)
+        .where(and(eq(decks.name, deck_name), eq(decks.userId, user.id)))
+        .limit(1);
 
-      if (existingDeck) {
+      if (existingDeck.length > 0) {
         // Use existing deck
-        targetDeckId = existingDeck.id;
+        targetDeckId = existingDeck[0].id;
       } else {
         // Create a new deck with the provided name
-        const { data: newDeck, error: createDeckError } = await supabase
-          .from("deck")
-          .insert({
+        const [{ id: newDeckId }] = await db
+          .insert(decks)
+          .values({
             name: deck_name,
-            user_id: user.id,
-            language: language,
+            userId: user.id,
             visibility: visibility || "private",
-            is_default: false,
+            language,
+            isDefault: false,
           })
-          .select("id")
-          .single();
-
-        if (createDeckError || !newDeck) {
-          console.error("Failed to create deck:", createDeckError);
-          return NextResponse.json(
-            { error: "Failed to create new deck" },
-            { status: 500 },
-          );
-        }
-
-        targetDeckId = newDeck.id;
+          .returning({ id: decks.id });
+        targetDeckId = newDeckId;
       }
     } else {
       // No deck name provided, use default deck
-      const { data: defaultDeck, error: deckError } = await supabase
-        .from("deck")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("is_default", true)
-        .single();
-
-      if (deckError || !defaultDeck) {
-        return NextResponse.json(
-          { error: "No default deck found. Please create a deck first." },
-          { status: 400 },
-        );
-      }
+      const defaultDeck = await db
+        .select()
+        .from(decks)
+        .where(and(eq(decks.userId, user.id), eq(decks.isDefault, true)))
+        .limit(1)
+        .then((res) => res[0]);
 
       targetDeckId = defaultDeck.id;
     }
 
     // Prepare flashcards for insertion
     const flashcardsToInsert = flashcards.map((card) => ({
-      deck_id: targetDeckId,
+      deckId: targetDeckId,
       front: card.front,
       back: card.back,
       notes: card.notes || null,
     }));
 
     // Insert all flashcards in a single batch
-    const { data: insertedFlashcards, error: insertError } = await supabase
-      .from("flashcard")
-      .insert(flashcardsToInsert)
-      .select();
-
-    if (insertError) {
-      console.error("Failed to import flashcards:", insertError);
-      return NextResponse.json(
-        { error: "Failed to import flashcards" },
-        { status: 500 },
-      );
-    }
+    const result = await db
+      .insert(flashcardsTable)
+      .values(flashcardsToInsert)
+      .returning();
 
     revalidatePath("/dashboard/flashcards");
 
     return NextResponse.json({
       message: "Flashcards imported successfully",
-      imported_count: insertedFlashcards.length,
+      imported_count: result.length,
     });
   },
 );

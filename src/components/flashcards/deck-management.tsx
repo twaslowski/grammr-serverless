@@ -91,7 +91,7 @@ export function DeckManagement() {
                     <div className="flex-1">
                       <h3 className="font-medium">
                         {deck.name}
-                        {deck.is_default && (
+                        {deck.isDefault && (
                           <span className="ml-2 text-xs text-muted-foreground">
                             (Default)
                           </span>
@@ -107,7 +107,7 @@ export function DeckManagement() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setDeckToDelete(deck)}
-                      disabled={deck.is_default}
+                      disabled={deck.isDefault}
                       className="ml-4"
                     >
                       <Trash2 className="h-4 w-4" />

@@ -1,18 +1,20 @@
+import { z } from "zod";
+
 import {
   CreateFlashcardRequest,
   FlashcardListQuery,
   UpdateFlashcardRequest,
 } from "@/app/api/v1/flashcards/schema";
+import { createValidatedFetcher } from "@/lib/api/validated-fetcher";
 import {
-  Deck, DeckSchema,
+  Deck,
+  DeckSchema,
   DeckVisibility,
   Flashcard,
   FlashcardBack,
   FlashcardWithDeck,
 } from "@/types/flashcards";
 import { Paradigm } from "@/types/inflections";
-import {createValidatedFetcher} from "@/lib/api/validated-fetcher";
-import {z} from "zod";
 
 const BASE_URL = "/api/v1/flashcards";
 

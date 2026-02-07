@@ -1,11 +1,6 @@
-import {
-  integer,
-  jsonb,
-  pgTable,
-  serial,
-  text,
-  timestamp,
-} from "drizzle-orm/pg-core";
+import { integer, jsonb, pgTable, serial, text } from "drizzle-orm/pg-core";
+
+import { timestamps } from "@/db/schemas/timestamp";
 
 // Flashcard table
 export const flashcards = pgTable("flashcard", {
@@ -15,6 +10,5 @@ export const flashcards = pgTable("flashcard", {
   back: jsonb("back").notNull(),
   notes: text("notes"),
   version: integer("version").notNull().default(1),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  ...timestamps,
 });

@@ -1,33 +1,19 @@
+import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { snakeToCamel } from "@/lib/utils";
+import { decks, flashcards } from "@/db/schemas";
 import { FeatureSchema } from "@/types/feature";
 
 import { ParadigmSchema, PartOfSpeechEnum } from "./inflections";
-import {createSelectSchema} from "drizzle-zod";
-import {decks} from "@/db/schemas";
 
 // Flashcard type enum
 export const FlashcardTypeEnum = z.enum(["word", "phrase", "analysis"]);
-export type FlashcardType = z.infer<typeof FlashcardTypeEnum>;
 
 export const DeckVisibilityEnum = z.enum(["private", "public"]);
 export type DeckVisibility = z.infer<typeof DeckVisibilityEnum>;
 
 export const DeckSchema = createSelectSchema(decks);
 export type Deck = z.infer<typeof DeckSchema>;
-
-export const DeckStudySchema = z
-  .object({
-    id: z.uuid(),
-    deck_id: z.number(),
-    user_id: z.uuid(),
-    last_studied_at: z.string().nullable(),
-    is_active: z.boolean(),
-    created_at: z.string(),
-    updated_at: z.string(),
-  })
-  .transform(snakeToCamel);
 
 // Separate schemas for each type
 export const ParadigmFlashcardBackSchema = z.object({
@@ -66,15 +52,9 @@ export const FlashcardBackSchema = z.discriminatedUnion("type", [
 ]);
 export type FlashcardBack = z.infer<typeof FlashcardBackSchema>;
 
-export const FlashcardSchema = z.object({
-  id: z.number(),
-  deck_id: z.number(),
-  front: z.string(),
+// Create base schema from Drizzle table and refine the 'back' field
+export const FlashcardSchema = createSelectSchema(flashcards, {
   back: FlashcardBackSchema,
-  notes: z.string().nullable(),
-  version: z.number(),
-  created_at: z.string(),
-  updated_at: z.string(),
 });
 export type Flashcard = z.infer<typeof FlashcardSchema>;
 
