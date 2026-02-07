@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 // Flashcard table
-export const flashcards = pgTable("flashcards", {
+export const flashcards = pgTable("flashcard", {
   id: serial("id").primaryKey(),
   deckId: integer("deck_id").notNull(),
   front: text("front").notNull(),

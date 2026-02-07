@@ -58,6 +58,7 @@ export function DeckManagement() {
     }
   };
 
+  // todo: indicate read-only decks cannot be deleted, only un-studied
   return (
     <>
       <section className="space-y-4">

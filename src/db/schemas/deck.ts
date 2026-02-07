@@ -1,6 +1,5 @@
 import {
   boolean,
-  pgEnum,
   pgTable,
   serial,
   text,
@@ -8,18 +7,12 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-// Enums
-export const deckVisibilityEnum = pgEnum("deck_visibility", [
-  "private",
-  "public",
-]);
-
 // Deck table
-export const decks = pgTable("decks", {
+export const decks = pgTable("deck", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   userId: uuid("user_id").notNull(),
-  visibility: deckVisibilityEnum("visibility").notNull().default("private"),
+  visibility: text("visibility").notNull().default("private"),
   description: text("description"),
   language: text("language").notNull(),
   isDefault: boolean("is_default").notNull().default(false),

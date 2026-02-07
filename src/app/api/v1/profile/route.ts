@@ -19,22 +19,24 @@ export const POST = withApiHandler(
     bodySchema: SaveProfileRequestSchema,
   },
   async ({ user, body }) => {
+    const { sourceLanguage, targetLanguage } = body;
+
     await db
       .insert(profile)
       .values({
         id: user.id,
-        sourceLanguage: body.sourceLanguage,
-        targetLanguage: body.targetLanguage,
+        sourceLanguage: sourceLanguage,
+        targetLanguage: targetLanguage,
       })
       .onConflictDoUpdate({
         target: profile.id,
         set: {
-          sourceLanguage: body.sourceLanguage,
-          targetLanguage: body.targetLanguage,
+          sourceLanguage: sourceLanguage,
+          targetLanguage: targetLanguage,
         },
       });
 
-    await syncDeckStudies(user.id, body.targetLanguage);
+    await syncDeckStudies(user.id, targetLanguage);
 
     return NextResponse.json({
       message: "Profile saved successfully",
@@ -53,7 +55,7 @@ export const syncDeckStudies = async (
 };
 
 export const getPublicDecks = async (language: LanguageCode) => {
-  return await db
+  return db
     .select()
     .from(decks)
     .where(and(eq(decks.language, language), eq(decks.visibility, "public")));
