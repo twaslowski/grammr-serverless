@@ -6,13 +6,12 @@ import {
   UpdateFlashcardRequest,
 } from "@/app/api/v1/flashcards/schema";
 import { createValidatedFetcher } from "@/lib/api/validated-fetcher";
+import { Deck, DeckSchema, DeckVisibility } from "@/types/deck";
 import {
-  Deck,
-  DeckSchema,
-  DeckVisibility,
   Flashcard,
   FlashcardBack,
   FlashcardWithDeck,
+  FlashcardWithDeckSchema,
 } from "@/types/flashcards";
 import { Paradigm } from "@/types/inflections";
 
@@ -44,24 +43,18 @@ export async function getFlashcards(
   query?: FlashcardListQuery,
 ): Promise<FlashcardWithDeck[]> {
   const params = new URLSearchParams();
-  if (query?.deck_id) params.set("deck_id", query.deck_id.toString());
+  if (query?.deckId) params.set("deckId", query.deckId.toString());
   if (query?.search) params.set("search", query.search);
-  if (query?.sort_by) params.set("sort_by", query.sort_by);
-  if (query?.sort_order) params.set("sort_order", query.sort_order);
 
   const url = params.toString() ? `${BASE_URL}?${params}` : BASE_URL;
 
-  const response = await fetch(url, {
+  const fetchFlashcards = createValidatedFetcher(
+    z.array(FlashcardWithDeckSchema),
+  );
+  return fetchFlashcards(url, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to fetch flashcards");
-  }
-
-  return response.json();
 }
 
 export async function createFlashcard(

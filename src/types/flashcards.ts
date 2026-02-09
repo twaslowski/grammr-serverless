@@ -1,38 +1,30 @@
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { decks, flashcards } from "@/db/schemas";
+import { flashcards } from "@/db/schemas";
+import { DeckSchema } from "@/types/deck";
 import { FeatureSchema } from "@/types/feature";
 
 import { ParadigmSchema, PartOfSpeechEnum } from "./inflections";
 
-// Flashcard type enum
-export const FlashcardTypeEnum = z.enum(["word", "phrase", "analysis"]);
-
-export const DeckVisibilityEnum = z.enum(["private", "public"]);
-export type DeckVisibility = z.infer<typeof DeckVisibilityEnum>;
-
-export const DeckSchema = createSelectSchema(decks);
-export type Deck = z.infer<typeof DeckSchema>;
-
 // Separate schemas for each type
 export const ParadigmFlashcardBackSchema = z.object({
-  translation: z.string(),
   type: z.literal("word"),
+  translation: z.string(),
   paradigm: ParadigmSchema,
 });
 export type ParadigmFlashcardBack = z.infer<typeof ParadigmFlashcardBackSchema>;
 
-export const PhraseFlashcardBackSchema = z.object({
-  translation: z.string(),
+export const SimpleFlashcardBackSchema = z.object({
   type: z.literal("phrase"),
+  translation: z.string(),
 });
-export type PhraseFlashcardBack = z.infer<typeof PhraseFlashcardBackSchema>;
+export type PhraseFlashcardBack = z.infer<typeof SimpleFlashcardBackSchema>;
 
 export const AnalysisFlashcardBackSchema = z.object({
+  type: z.literal("analysis"),
   source_phrase: z.string(),
   translation: z.string(),
-  type: z.literal("analysis"),
   tokens: z.array(
     z.object({
       text: z.string(),
@@ -47,7 +39,7 @@ export type AnalysisFlashcardBack = z.infer<typeof AnalysisFlashcardBackSchema>;
 
 export const FlashcardBackSchema = z.discriminatedUnion("type", [
   ParadigmFlashcardBackSchema,
-  PhraseFlashcardBackSchema,
+  SimpleFlashcardBackSchema,
   AnalysisFlashcardBackSchema,
 ]);
 export type FlashcardBack = z.infer<typeof FlashcardBackSchema>;

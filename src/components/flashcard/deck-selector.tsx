@@ -2,7 +2,7 @@ import React from "react";
 import * as Select from "@radix-ui/react-select";
 import { ChevronDownIcon } from "lucide-react";
 
-import { Deck } from "@/types/flashcards";
+import { Deck } from "@/types/deck";
 
 interface DeckSelectorProps {
   decks: Deck[];

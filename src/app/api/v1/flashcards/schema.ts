@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-import { DeckVisibilityEnum, FlashcardBackSchema } from "@/types/flashcards";
+import { DeckVisibilityEnum } from "@/types/deck";
+import { FlashcardBackSchema } from "@/types/flashcards";
 import { LanguageCodeSchema } from "@/types/languages";
 
 export const CreateDeckRequestSchema = z.object({
@@ -37,13 +38,8 @@ export type UpdateFlashcardRequest = z.infer<
 >;
 
 export const FlashcardListQuerySchema = z.object({
-  deck_id: z.coerce.number().optional(),
-  search: z.string().optional().nullable(),
-  sort_by: z
-    .enum(["created_at", "updated_at"])
-    .optional()
-    .default("created_at"),
-  sort_order: z.enum(["asc", "desc"]).optional().default("desc"),
+  deckId: z.coerce.number().optional(),
+  search: z.string().optional(),
 });
 export type FlashcardListQuery = z.infer<typeof FlashcardListQuerySchema>;
 

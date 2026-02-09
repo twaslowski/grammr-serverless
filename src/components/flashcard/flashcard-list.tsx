@@ -16,7 +16,8 @@ import {
   getFlashcards,
   stopStudyingFlashcard,
 } from "@/lib/flashcards";
-import { Deck, FlashcardWithDeck } from "@/types/flashcards";
+import { Deck } from "@/types/deck";
+import { FlashcardWithDeck } from "@/types/flashcards";
 
 import { Flashcard } from "./flashcard";
 
@@ -25,9 +26,6 @@ interface FlashcardListProps {
 }
 
 export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
-  const sortOrder = "desc";
-  const sortBy = "created_at";
-
   const [flashcards, setFlashcards] =
     useState<FlashcardWithDeck[]>(initialFlashcards);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,10 +53,8 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
 
     try {
       const query: FlashcardListQuery = {
-        deck_id: selectedDeck?.id,
+        deckId: selectedDeck?.id,
         search: searchQuery || undefined,
-        sort_by: sortBy,
-        sort_order: sortOrder,
       };
 
       const data = await getFlashcards(query);
@@ -70,7 +66,7 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery, sortBy, sortOrder, selectedDeck]);
+  }, [searchQuery, selectedDeck]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this flashcard?")) {

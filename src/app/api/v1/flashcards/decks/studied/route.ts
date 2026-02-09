@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { withApiHandler } from "@/lib/api/with-api-handler";
-import { DeckSchema } from "@/types/flashcards";
+import { DeckSchema } from "@/types/deck";
 
 // GET /api/v1/flashcards/decks/studied - List all decks the user is studying
 export const GET = withApiHandler({}, async ({ user, supabase }) => {

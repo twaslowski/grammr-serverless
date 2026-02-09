@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { deleteDeck, getDecks } from "@/lib/flashcards";
-import { Deck } from "@/types/flashcards";
+import { Deck } from "@/types/deck";
 
 export function DeckManagement() {
   const [decks, setDecks] = useState<Deck[]>([]);

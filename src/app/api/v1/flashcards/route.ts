@@ -1,7 +1,11 @@
+import { User } from "@supabase/supabase-js";
+import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { db } from "@/db/connect";
+import { decks, deckStudy, flashcards } from "@/db/schemas";
 import { withApiHandler } from "@/lib/api/with-api-handler";
-import { FlashcardWithDeck } from "@/types/flashcards";
+import { FlashcardBack, FlashcardWithDeck } from "@/types/flashcards";
 
 import {
   CreateFlashcardRequestSchema,
@@ -13,101 +17,110 @@ export const GET = withApiHandler(
   {
     querySchema: FlashcardListQuerySchema,
   },
-  async ({ user, supabase, query }) => {
-    const { deck_id, search, sort_by, sort_order } = query;
+  async ({ user, query }) => {
+    const { deckId, search } = query;
 
-    // Build query - join with deck_study to filter by decks the user is studying
-    // This includes both owned decks and public decks they're studying
-    let dbQuery = supabase
-      .from("flashcard")
-      .select(
-        `
-        *,
-        deck!inner (
-          id,
-          name,
-          user_id,
-          deck_study!inner (
-            user_id
-          )
-        )
-      `,
-      )
-      .eq("deck.deck_study.user_id", user.id);
+    // Build where conditions
+    const conditions = buildConditions(user, deckId, search);
 
-    // Filter by deck if specified
-    if (deck_id) {
-      dbQuery = dbQuery.eq("deck_id", deck_id);
-    }
+    // Build and execute query
+    const result = await db
+      .select({
+        flashcard: flashcards,
+        deck: {
+          id: decks.id,
+          name: decks.name,
+          userId: decks.userId,
+        },
+      })
+      .from(flashcards)
+      .innerJoin(decks, eq(flashcards.deckId, decks.id))
+      .where(and(...conditions))
+      .orderBy(desc(flashcards.updatedAt));
 
-    if (search) {
-      dbQuery = dbQuery.or(
-        `front.ilike.%${search}%,back->>translation.ilike.%${search}%`,
-      );
-    }
-
-    // Sort
-    dbQuery = dbQuery.order(sort_by || "created_at", {
-      ascending: sort_order === "asc",
-    });
-
-    const { data, error } = await dbQuery;
-
-    if (error) {
-      console.error("Failed to fetch flashcards:", error);
-      return NextResponse.json(
-        { error: "Failed to fetch flashcards" },
-        { status: 500 },
-      );
-    }
-
-    // Transform to include deck info
-    const flashcards = data.map((fc: FlashcardWithDeck) => ({
-      ...fc,
-      deck: fc.deck
-        ? { id: fc.deck.id, name: fc.deck.name, userId: fc.deck.userId }
-        : undefined,
+    // Transform to match expected format
+    const flashcardsWithDeck: FlashcardWithDeck[] = result.map((row) => ({
+      ...row.flashcard,
+      back: row.flashcard.back as FlashcardBack,
+      deck: row.deck,
     }));
 
-    return NextResponse.json(flashcards);
+    return NextResponse.json(flashcardsWithDeck);
   },
 );
+
+function buildConditions(
+  user: User,
+  deckId: number | undefined,
+  search: string | undefined,
+) {
+  const conditions = [];
+
+  // Join with deck_study to filter by decks the user is studying
+  // This includes both owned decks and public decks they're studying
+  const userDecks = db
+    .select({ deckId: deckStudy.deckId })
+    .from(deckStudy)
+    .where(eq(deckStudy.userId, user.id));
+
+  conditions.push(inArray(flashcards.deckId, userDecks));
+
+  // Filter by deck if specified
+  if (deckId) {
+    conditions.push(eq(flashcards.deckId, deckId));
+  }
+
+  // Handle search
+  if (search) {
+    conditions.push(
+      or(
+        ilike(flashcards.front, `%${search}%`),
+        sql`${flashcards.back}->>'translation' ILIKE '%' ||
+            ${search}
+            ||
+            '%'`,
+      ),
+    );
+  }
+  return conditions;
+}
 
 // POST /api/v1/flashcards - Create a new flashcard
 export const POST = withApiHandler(
   {
     bodySchema: CreateFlashcardRequestSchema,
   },
-  async ({ user, supabase, body }) => {
+  async ({ user, body }) => {
     const { deck_id, front, back, notes } = body;
 
     // If no deck_id provided, get the user's default deck
     let targetDeckId = deck_id;
     if (!targetDeckId) {
-      const { data: defaultDeck, error: deckError } = await supabase
-        .from("deck")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("is_default", true)
-        .single();
+      const defaultDeck = await db
+        .select()
+        .from(decks)
+        .where(and(eq(decks.userId, user.id), eq(decks.isDefault, true)))
+        .limit(1)
+        .then((res) => res[0]);
 
-      if (deckError || !defaultDeck) {
+      if (!defaultDeck) {
         return NextResponse.json(
           { error: "No default deck found. Please create a deck first." },
           { status: 400 },
         );
       }
+
       targetDeckId = defaultDeck.id;
     } else {
       // Verify the deck belongs to the user
-      const { data: deck, error: deckError } = await supabase
-        .from("deck")
-        .select("id")
-        .eq("id", targetDeckId)
-        .eq("user_id", user.id)
-        .single();
+      const deck = await db
+        .select()
+        .from(decks)
+        .where(and(eq(decks.id, targetDeckId), eq(decks.userId, user.id)))
+        .limit(1)
+        .then((res) => res[0]);
 
-      if (deckError || !deck) {
+      if (!deck) {
         return NextResponse.json(
           { error: "Deck not found or access denied" },
           { status: 404 },
@@ -115,24 +128,15 @@ export const POST = withApiHandler(
       }
     }
 
-    const { data: flashcard, error } = await supabase
-      .from("flashcard")
-      .insert({
-        deck_id: targetDeckId,
+    const [flashcard] = await db
+      .insert(flashcards)
+      .values({
+        deckId: targetDeckId,
         front,
         back,
         notes: notes || null,
       })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Failed to create flashcard:", error);
-      return NextResponse.json(
-        { error: "Failed to create flashcard" },
-        { status: 500 },
-      );
-    }
+      .returning();
 
     return NextResponse.json(flashcard, { status: 201 });
   },
