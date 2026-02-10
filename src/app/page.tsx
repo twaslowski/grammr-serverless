@@ -1,8 +1,10 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { Footer } from "@/components/footer";
+import { AnalysisDemo } from "@/components/landing";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
@@ -21,7 +23,8 @@ export default async function Home() {
 
   return (
     <div className="pb-24">
-      <div className="relative mx-auto flex max-w-6xl flex-col gap-12 px-6 py-24 text-center lg:px-8">
+      {/* Hero Section */}
+      <div className="relative min-h-screen mx-auto flex max-w-6xl flex-col gap-12 px-6 py-24 text-center lg:px-8">
         <div className="mx-auto flex flex-col items-center gap-6">
           <Image src="/logo.png" width={128} height={128} alt="grammr logo" />
           <div className="flex flex-col items-center gap-2">
@@ -45,11 +48,21 @@ export default async function Home() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="px-6">
-              <Link href="/dashboard">Already have an account?</Link>
+              <Link href="#demo">
+                Learn More
+                <ArrowDown className="h-4 w-4" />
+              </Link>
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Analysis Demo Section */}
+      <div id="demo" className="scroll-mt-8 min-h-screen">
+        <AnalysisDemo />
+      </div>
+
+      <Footer />
     </div>
   );
 }

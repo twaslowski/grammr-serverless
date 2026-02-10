@@ -4,14 +4,15 @@ import { useRef, useState } from "react";
 import { Loader2, Volume2 } from "lucide-react";
 import toast from "react-hot-toast";
 
-import { useProfile } from "@/components/dashboard/profile-provider";
 import { Button } from "@/components/ui/button";
+import { LanguageCode } from "@/types/languages";
 
 interface TTSButtonProps {
   text: string;
   variant?: "default" | "ghost" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
+  language?: LanguageCode;
 }
 
 export function TTSButton({
@@ -19,13 +20,11 @@ export function TTSButton({
   variant = "outline",
   size = "icon",
   className,
+  language,
 }: TTSButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const profile = useProfile();
-  const language = profile.target_language;
 
   const handlePlay = async () => {
     if (isLoading || !language) return;

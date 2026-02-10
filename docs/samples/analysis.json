@@ -1,0 +1,623 @@
+{
+  "front": "Музей Москвы был открыт в девятнадцатом веке.",
+  "notes": "",
+  "back": {
+    "type": "analysis",
+    "source_phrase": "Музей Москвы был открыт в девятнадцатом веке.",
+    "translation": "The Moscow Museum opened in the nineteenth century.",
+    "tokens": [
+      {
+        "text": "Музей",
+        "lemma": "музей",
+        "pos": "NOUN",
+        "features": [
+          {
+            "type": "animacy",
+            "value": "INAN"
+          },
+          {
+            "type": "case",
+            "value": "NOM"
+          },
+          {
+            "type": "gender",
+            "value": "MASC"
+          },
+          {
+            "type": "number",
+            "value": "SING"
+          }
+        ],
+        "paradigm": {
+          "partOfSpeech": "NOUN",
+          "lemma": "музей",
+          "inflections": [
+            {
+              "lemma": "музей",
+              "inflected": "музей",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "NOM"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музея",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "GEN"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музею",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "DAT"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музей",
+              "features": [
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                },
+                {
+                  "type": "CASE",
+                  "value": "ACC"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музеем",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "ABL"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музее",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "LOC"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музеи",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "NOM"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музеев",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "GEN"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музеям",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "DAT"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музеи",
+              "features": [
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                },
+                {
+                  "type": "CASE",
+                  "value": "ACC"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музеями",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "ABL"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            },
+            {
+              "lemma": "музей",
+              "inflected": "музеях",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "LOC"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "text": "Москвы",
+        "lemma": "москва",
+        "pos": "PROPN",
+        "features": [
+          {
+            "type": "animacy",
+            "value": "INAN"
+          },
+          {
+            "type": "case",
+            "value": "GEN"
+          },
+          {
+            "type": "gender",
+            "value": "FEM"
+          },
+          {
+            "type": "number",
+            "value": "SING"
+          }
+        ]
+      },
+      {
+        "text": "был",
+        "lemma": "быть",
+        "pos": "AUX",
+        "features": [
+          {
+            "type": "aspect",
+            "value": "IMP"
+          },
+          {
+            "type": "gender",
+            "value": "MASC"
+          },
+          {
+            "type": "mood",
+            "value": "IND"
+          },
+          {
+            "type": "number",
+            "value": "SING"
+          },
+          {
+            "type": "tense",
+            "value": "PAST"
+          },
+          {
+            "type": "verbform",
+            "value": "FIN"
+          },
+          {
+            "type": "voice",
+            "value": "ACT"
+          }
+        ]
+      },
+      {
+        "text": "открыт",
+        "lemma": "открыть",
+        "pos": "VERB",
+        "features": [
+          {
+            "type": "aspect",
+            "value": "PERF"
+          },
+          {
+            "type": "gender",
+            "value": "MASC"
+          },
+          {
+            "type": "number",
+            "value": "SING"
+          },
+          {
+            "type": "stylevariant",
+            "value": "SHORT"
+          },
+          {
+            "type": "tense",
+            "value": "PAST"
+          },
+          {
+            "type": "verbform",
+            "value": "PART"
+          },
+          {
+            "type": "voice",
+            "value": "PASS"
+          }
+        ],
+        "paradigm": {
+          "partOfSpeech": "VERB",
+          "lemma": "открыть",
+          "inflections": [
+            {
+              "lemma": "открыть",
+              "inflected": "открою",
+              "features": [
+                {
+                  "type": "PERSON",
+                  "value": "FIRST"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "открыть",
+              "inflected": "откроем",
+              "features": [
+                {
+                  "type": "PERSON",
+                  "value": "FIRST"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            },
+            {
+              "lemma": "открыть",
+              "inflected": "откроешь",
+              "features": [
+                {
+                  "type": "PERSON",
+                  "value": "SECOND"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "открыть",
+              "inflected": "откроете",
+              "features": [
+                {
+                  "type": "PERSON",
+                  "value": "SECOND"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            },
+            {
+              "lemma": "открыть",
+              "inflected": "откроет",
+              "features": [
+                {
+                  "type": "PERSON",
+                  "value": "THIRD"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "открыть",
+              "inflected": "откроют",
+              "features": [
+                {
+                  "type": "PERSON",
+                  "value": "THIRD"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "text": "в",
+        "lemma": "в",
+        "pos": "ADP",
+        "features": []
+      },
+      {
+        "text": "девятнадцатом",
+        "lemma": "девятнадцатый",
+        "pos": "ADJ",
+        "features": [
+          {
+            "type": "case",
+            "value": "LOC"
+          },
+          {
+            "type": "degree",
+            "value": "POS"
+          },
+          {
+            "type": "gender",
+            "value": "MASC"
+          },
+          {
+            "type": "number",
+            "value": "SING"
+          }
+        ],
+        "paradigm": {
+          "partOfSpeech": "ADJ",
+          "lemma": "девятнадцатый",
+          "inflections": [
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатый",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "NOM"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатого",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "GEN"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатому",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "DAT"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатый",
+              "features": [
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                },
+                {
+                  "type": "CASE",
+                  "value": "ACC"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатым",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "ABL"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатом",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "LOC"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатые",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "NOM"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатых",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "GEN"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатым",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "DAT"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатые",
+              "features": [
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                },
+                {
+                  "type": "CASE",
+                  "value": "ACC"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатыми",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "ABL"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатых",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "LOC"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "text": "веке",
+        "lemma": "век",
+        "pos": "NOUN",
+        "features": [
+          {
+            "type": "animacy",
+            "value": "INAN"
+          },
+          {
+            "type": "case",
+            "value": "LOC"
+          },
+          {
+            "type": "gender",
+            "value": "MASC"
+          },
+          {
+            "type": "number",
+            "value": "SING"
+          }
+        ]
+      },
+      {
+        "text": ".",
+        "lemma": ".",
+        "pos": "PUNCT",
+        "features": []
+      }
+    ]
+  }
+}
