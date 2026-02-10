@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { useConfirm } from "@/components/ui/confirmation-provider";
 import {
   deleteDeck,
   getDecks,
@@ -25,12 +25,9 @@ import { Deck } from "@/types/deck";
 export function DeckManagement() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [isLoadingDecks, setIsLoadingDecks] = useState(true);
-  const [deckToDelete, setDeckToDelete] = useState<Deck | null>(null);
-  const [deckToUnstudy, setDeckToUnstudy] = useState<Deck | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isUnstudying, setIsUnstudying] = useState(false);
 
   const profile = useProfile();
+  const confirm = useConfirm();
 
   useEffect(() => {
     void fetchDecks();
@@ -50,22 +47,23 @@ export function DeckManagement() {
     }
   };
 
-  const handleDeleteDeck = async () => {
-    if (!deckToDelete) return;
-
-    setIsDeleting(true);
-    try {
-      await deleteDeck(deckToDelete.id);
-      toast.success(`Deck "${deckToDelete.name}" deleted successfully!`);
-      setDeckToDelete(null);
-      await fetchDecks(); // Refresh the deck list
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to delete deck";
-      toast.error(message);
-    } finally {
-      setIsDeleting(false);
-    }
+  const handleDeleteDeck = async (deck: Deck) => {
+    confirm({
+      title: "Delete Deck",
+      description: (
+        <>
+          Are you sure you want to delete &quot;{deck.name}&quot;? This action
+          cannot be undone and will delete all flashcards in this deck.
+        </>
+      ),
+      confirmText: "Delete",
+      confirmVariant: "destructive",
+      onConfirm: async () => {
+        await deleteDeck(deck.id);
+        toast.success(`Deck "${deck.name}" deleted successfully!`);
+        await fetchDecks();
+      },
+    });
   };
 
   const handleStudyDeck = async (deck: Deck) => {
@@ -82,22 +80,23 @@ export function DeckManagement() {
     }
   };
 
-  const handleUnstudyDeck = async () => {
-    if (!deckToUnstudy) return;
-
-    setIsUnstudying(true);
-    try {
-      await stopStudyingDeck(deckToUnstudy.id);
-      toast.success(`Stopped studying "${deckToUnstudy.name}"!`);
-      setDeckToUnstudy(null);
-      await fetchDecks();
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to stop studying deck";
-      toast.error(message);
-    } finally {
-      setIsUnstudying(false);
-    }
+  const handleStopStudyingDeck = async (deck: Deck) => {
+    confirm({
+      title: "Stop Studying Deck",
+      description: (
+        <>
+          Are you sure you want to stop studying &quot;{deck.name}&quot;? This
+          will remove all your progress for flashcards in this deck.
+        </>
+      ),
+      confirmText: "Stop Studying",
+      confirmVariant: "destructive",
+      onConfirm: async () => {
+        await stopStudyingDeck(deck.id);
+        toast.success(`Stopped studying "${deck.name}"!`);
+        await fetchDecks();
+      },
+    });
   };
 
   return (
@@ -156,7 +155,7 @@ export function DeckManagement() {
                             size="sm"
                             onClick={() =>
                               isStudying
-                                ? setDeckToUnstudy(deck)
+                                ? handleStopStudyingDeck(deck)
                                 : handleStudyDeck(deck)
                             }
                             title={
@@ -176,7 +175,7 @@ export function DeckManagement() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setDeckToDelete(deck)}
+                            onClick={() => handleDeleteDeck(deck)}
                             disabled={deck.isDefault}
                             title={
                               deck.isDefault
@@ -196,40 +195,6 @@ export function DeckManagement() {
           </CardContent>
         </Card>
       </section>
-
-      <ConfirmationDialog
-        open={!!deckToDelete}
-        onClose={() => setDeckToDelete(null)}
-        onConfirm={handleDeleteDeck}
-        title="Delete Deck"
-        description={
-          <>
-            Are you sure you want to delete &quot;{deckToDelete?.name}&quot;?
-            This action cannot be undone and will delete all flashcards in this
-            deck.
-          </>
-        }
-        confirmText="Delete"
-        isLoading={isDeleting}
-        loadingText="Deleting..."
-      />
-
-      <ConfirmationDialog
-        open={!!deckToUnstudy}
-        onClose={() => setDeckToUnstudy(null)}
-        onConfirm={handleUnstudyDeck}
-        title="Stop Studying Deck"
-        description={
-          <>
-            Are you sure you want to stop studying &quot;{deckToUnstudy?.name}
-            &quot;? This will remove all your progress for flashcards in this
-            deck.
-          </>
-        }
-        confirmText="Stop Studying"
-        isLoading={isUnstudying}
-        loadingText="Removing..."
-      />
     </>
   );
 }

@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
 
 import { Header } from "@/components/header";
+import { ConfirmationProvider } from "@/components/ui/confirmation-provider";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -44,13 +45,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex flex-col h-screen">
-            <div className="border-b border-b-muted-foreground/10 shrink-0">
-              <Header />
+          <ConfirmationProvider>
+            <div className="flex flex-col h-screen">
+              <div className="border-b border-b-muted-foreground/10 shrink-0">
+                <Header />
+              </div>
+              <Toaster />
+              <main className="flex-1 overflow-auto">{children}</main>
             </div>
-            <Toaster />
-            <main className="flex-1 overflow-auto">{children}</main>
-          </div>
+          </ConfirmationProvider>
         </ThemeProvider>
       </body>
     </html>
