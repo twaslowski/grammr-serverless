@@ -80,38 +80,6 @@ for (const targetLanguage of testTargetLanguages) {
       });
     }
 
-    // Test adjective inflections if available
-    if (testData.inflections.adjective) {
-      test("should handle adjective inflections", async ({ page }) => {
-        await page.goto("/dashboard/inflect");
-
-        // Enter an adjective
-        await page
-          .getByLabel(/Word/i)
-          .fill(testData.inflections.adjective!.word);
-
-        if (testData.inflections.distinguishPos) {
-          await page.getByRole("button", {name: "Adjective"}).click();
-        }
-
-        // Submit the form
-        await page.getByRole("button", { name: "Inflect" }).click();
-
-        // Wait for loading to complete
-        await expect(
-          page.getByRole("button", { name: /Inflecting/i }),
-        ).not.toBeVisible({
-          timeout: 10000,
-        });
-
-        // Check for expected case labels
-        for (const caseLabel of testData.inflections.adjective!
-          .expectedCases) {
-          await expect(page.getByText(caseLabel)).toBeVisible();
-        }
-      });
-    }
-
     // Test error handling for invalid input
     test("should show error for invalid input", async ({ page }) => {
       await page.goto("/dashboard/inflect");

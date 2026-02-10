@@ -11,10 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
+  deleteCardStudy,
   deleteFlashcard,
   getDecks,
   getFlashcards,
-  stopStudyingFlashcard,
 } from "@/lib/flashcards";
 import { Deck } from "@/types/deck";
 import { FlashcardWithDeck } from "@/types/flashcards";
@@ -84,26 +84,45 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     }
   };
 
-  const handleStopStudying = async (flashcard: FlashcardWithDeck) => {
-    if (
-      !confirm("Are you sure you don't want to see this flashcard anymore?")
-    ) {
+  const handleSuspendFlashcard = async (flashcard: FlashcardWithDeck) => {
+    if (!confirm("Are you sure you want to suspend this flashcard?")) {
+      return;
+    }
+
+    if (!flashcard.studyCard) {
+      toast.error("This flashcard is already suspended");
       return;
     }
 
     try {
-      await stopStudyingFlashcard(flashcard.id);
+      await deleteCardStudy(flashcard.id);
       setFlashcards((prev) =>
         prev.filter((f) => f.deckId !== flashcard.deckId),
       );
-      toast.success("Stopped studying flashcard");
-      void fetchDecks(); // Refresh deck list
+      toast.success("Flashcard suspended");
+      void fetchFlashcards();
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to stop studying deck";
+        err instanceof Error ? err.message : "Failed to suspend flashcard";
       toast.error(message);
     }
   };
+
+  // todo: not easily supportable; so far has been implemented via triggers.
+  // const handleStudyFlashcard = async (flashcard: FlashcardWithDeck) => {
+  //   try {
+  //     await createCardStudy(flashcard.id);
+  //     setFlashcards((prev) =>
+  //       prev.filter((f) => f.deckId !== flashcard.deckId),
+  //     );
+  //     toast.success("Flashcard suspended");
+  //     void fetchDecks();
+  //   } catch (err) {
+  //     const message =
+  //       err instanceof Error ? err.message : "Failed to suspend flashcard";
+  //     toast.error(message);
+  //   }
+  // };
 
   // Fetch on mount and when filters change
   const handleSearch = (e: React.FormEvent) => {
@@ -194,7 +213,8 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
               flashcard={flashcard}
               isOwner={profile.id === flashcard.deck?.userId}
               onDelete={handleDelete}
-              onStopStudying={handleStopStudying}
+              onStudy={() => {}}
+              onSuspend={handleSuspendFlashcard}
               onUpdate={(updated) => {
                 setFlashcards((prev) =>
                   prev.map((f) => (f.id === updated.id ? updated : f)),

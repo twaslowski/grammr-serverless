@@ -38,6 +38,30 @@ export async function deleteDeck(id: number): Promise<void> {
   }
 }
 
+export async function studyDeck(id: number): Promise<void> {
+  const response = await fetch(`${BASE_URL}/decks/study/${id}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to start studying deck");
+  }
+}
+
+export async function stopStudyingDeck(id: number): Promise<void> {
+  const response = await fetch(`${BASE_URL}/decks/study/${id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to stop studying deck");
+  }
+}
+
 // --- Flashcard operations ---
 export async function getFlashcards(
   query?: FlashcardListQuery,
@@ -104,7 +128,7 @@ export async function deleteFlashcard(id: number): Promise<void> {
   }
 }
 
-export async function stopStudyingFlashcard(id: number): Promise<void> {
+export async function deleteCardStudy(id: number): Promise<void> {
   const response = await fetch(`${BASE_URL}/${id}/study`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },

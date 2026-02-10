@@ -1,9 +1,9 @@
 import { User } from "@supabase/supabase-js";
-import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { and, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { decks, deckStudy, flashcards } from "@/db/schemas";
+import { decks, deckStudy, flashcards, studyCard } from "@/db/schemas";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { FlashcardBack, FlashcardWithDeck } from "@/types/flashcards";
 
@@ -25,24 +25,33 @@ export const GET = withApiHandler(
 
     // Build and execute query
     const result = await db
-      .select({
+      .selectDistinctOn([flashcards.id], {
         flashcard: flashcards,
         deck: {
           id: decks.id,
           name: decks.name,
           userId: decks.userId,
         },
+        studyCard: studyCard.id,
       })
       .from(flashcards)
       .innerJoin(decks, eq(flashcards.deckId, decks.id))
+      .leftJoin(
+        studyCard,
+        and(
+          eq(flashcards.id, studyCard.flashcardId),
+          eq(studyCard.userId, user.id),
+        ),
+      )
       .where(and(...conditions))
-      .orderBy(desc(flashcards.updatedAt));
+      .orderBy(flashcards.id, flashcards.updatedAt);
 
     // Transform to match expected format
     const flashcardsWithDeck: FlashcardWithDeck[] = result.map((row) => ({
       ...row.flashcard,
       back: row.flashcard.back as FlashcardBack,
       deck: row.deck,
+      studyCard: row.studyCard || undefined,
     }));
 
     return NextResponse.json(flashcardsWithDeck);

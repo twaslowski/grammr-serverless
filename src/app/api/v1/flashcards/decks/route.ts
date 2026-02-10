@@ -1,4 +1,4 @@
-import { eq, inArray, or } from "drizzle-orm";
+import { and, eq, inArray, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { CreateDeckRequestSchema } from "@/app/api/v1/flashcards/schema";
@@ -9,8 +9,23 @@ import { withApiHandler } from "@/lib/api/with-api-handler";
 // GET /api/v1/flashcards/decks - List all decks the user owns or studies, via a deck_study subquery
 export const GET = withApiHandler({}, async ({ user }) => {
   const result = await db
-    .selectDistinct()
+    .selectDistinct({
+      id: decks.id,
+      name: decks.name,
+      userId: decks.userId,
+      visibility: decks.visibility,
+      description: decks.description,
+      language: decks.language,
+      isDefault: decks.isDefault,
+      createdAt: decks.createdAt,
+      updatedAt: decks.updatedAt,
+      deckStudyId: deckStudy.id,
+    })
     .from(decks)
+    .leftJoin(
+      deckStudy,
+      and(eq(decks.id, deckStudy.deckId), eq(deckStudy.userId, user.id)),
+    )
     .where(
       or(
         eq(decks.userId, user.id),
@@ -24,7 +39,21 @@ export const GET = withApiHandler({}, async ({ user }) => {
       ),
     );
 
-  return NextResponse.json(result);
+  // Transform the result to include isStudying flag
+  const decksWithStudyStatus = result.map((row) => ({
+    id: row.id,
+    name: row.name,
+    userId: row.userId,
+    visibility: row.visibility,
+    description: row.description,
+    language: row.language,
+    isDefault: row.isDefault,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    isStudying: !!row.deckStudyId,
+  }));
+
+  return NextResponse.json(decksWithStudyStatus);
 });
 
 // POST /api/v1/flashcards/decks - Create a new deck

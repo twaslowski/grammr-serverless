@@ -1,5 +1,8 @@
+import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { db } from "@/db/connect";
+import { studyCard } from "@/db/schemas";
 import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 
 // GET /api/v1/flashcards/[id]/study - Get study card for a flashcard
@@ -7,21 +10,26 @@ export const GET = withApiHandler(
   {
     paramsSchema: IdParamSchema,
   },
-  async ({ supabase, params }) => {
-    const { data: card, error } = await supabase
-      .from("card")
-      .select("*")
-      .eq("flashcard_id", params.id)
-      .single();
+  async ({ params, user }) => {
+    const result = await db
+      .select()
+      .from(studyCard)
+      .where(
+        and(
+          eq(studyCard.flashcardId, params.id),
+          eq(studyCard.userId, user.id),
+        ),
+      )
+      .limit(1);
 
-    if (error || !card) {
+    if (result.length === 0) {
       return NextResponse.json(
-        { error: "Flashcard not found" },
+        { error: "Study card not found or not owned by user" },
         { status: 404 },
       );
     }
 
-    return NextResponse.json(card);
+    return NextResponse.json(result[0]);
   },
 );
 
@@ -30,17 +38,21 @@ export const DELETE = withApiHandler(
   {
     paramsSchema: IdParamSchema,
   },
-  async ({ supabase, params }) => {
-    const { error } = await supabase
-      .from("card")
-      .delete()
-      .eq("flashcard_id", params.id)
-      .single();
+  async ({ params, user }) => {
+    const result = await db
+      .delete(studyCard)
+      .where(
+        and(
+          eq(studyCard.flashcardId, params.id),
+          eq(studyCard.userId, user.id),
+        ),
+      )
+      .returning();
 
-    if (error) {
+    if (result.length === 0) {
       return NextResponse.json(
-        { error: "Could not delete flashcard", reason: error.details },
-        { status: 400 },
+        { error: "Study card not found or not owned by user" },
+        { status: 404 },
       );
     }
 

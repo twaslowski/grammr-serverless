@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Ban, Table2, Trash2 } from "lucide-react";
+import { EyeIcon, EyeOff, Table2, Trash2 } from "lucide-react";
 
 import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
 import { InflectionsDialog } from "@/components/inflection";
@@ -13,18 +13,29 @@ interface FlashcardProps {
   flashcard: FlashcardWithDeck;
   isOwner: boolean;
   onDelete: (id: number) => void;
-  onStopStudying?: (flashcard: FlashcardWithDeck) => void;
-  onUpdate?: (updatedFlashcard: FlashcardWithDeck) => void;
+  onStudy: (flashcard: FlashcardWithDeck) => void;
+  onSuspend: (flashcard: FlashcardWithDeck) => void;
+  onUpdate: (updatedFlashcard: FlashcardWithDeck) => void;
 }
 
 export function Flashcard({
   flashcard,
   isOwner,
   onDelete,
-  onStopStudying,
+  onSuspend,
   onUpdate,
 }: FlashcardProps) {
-  // Check if user owns this flashcard's deck
+  const isStudying = !!flashcard.studyCard;
+
+  // todo: currently, unsuspending a card is not supported. The API operations are simply not in place yet.
+  const handleToggleStudying = () => {
+    if (isStudying) {
+      onSuspend(flashcard);
+    } else {
+      return;
+      // onStartStudying(flashcard);
+    }
+  };
 
   return (
     <Card>
@@ -37,7 +48,24 @@ export function Flashcard({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {isOwner ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={!isStudying}
+              onClick={handleToggleStudying}
+              title={
+                isStudying
+                  ? "Suspend this flashcard"
+                  : "Unsuspend this flashcard"
+              }
+            >
+              {isStudying ? (
+                <EyeIcon className="h-4 w-4" />
+              ) : (
+                <EyeOff className="h-4 w-4" />
+              )}
+            </Button>
+            {isOwner && (
               <>
                 <UpdateFlashcardDialog
                   flashcard={flashcard}
@@ -53,20 +81,6 @@ export function Flashcard({
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </>
-            ) : (
-              onStopStudying && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  // feature not in scope for prototype, so disable for now
-                  disabled={true}
-                  onClick={() => onStopStudying(flashcard)}
-                  className="text-destructive hover:text-destructive"
-                  title="Stop studying this deck"
-                >
-                  <Ban className="h-4 w-4" />
-                </Button>
-              )
             )}
           </div>
         </div>

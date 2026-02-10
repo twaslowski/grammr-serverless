@@ -1,5 +1,5 @@
+import { Deck } from "@/types/deck";
 import { Flashcard } from "@/types/flashcards";
-import {Deck} from "@/types/deck";
 
 export const deckFixture: Deck = {
   id: 1,
