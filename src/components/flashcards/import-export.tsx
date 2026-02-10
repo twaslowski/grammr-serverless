@@ -14,7 +14,13 @@ import {
 } from "@/components/ui/card";
 import { exportFlashcards, importFlashcards } from "@/lib/flashcards";
 
-export function FlashcardImportExport() {
+interface FlashcardImportExportProps {
+  onImportComplete: () => Promise<void>;
+}
+
+export function FlashcardImportExport({
+  onImportComplete,
+}: FlashcardImportExportProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -93,6 +99,8 @@ export function FlashcardImportExport() {
       toast.success(
         `Successfully imported ${result.imported_count} flashcards!`,
       );
+
+      await onImportComplete();
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to import flashcards";

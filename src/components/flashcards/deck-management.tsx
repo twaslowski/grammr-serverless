@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { EyeIcon, EyeOff, Loader2, Trash2 } from "lucide-react";
+import React from "react";
+import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { useProfile } from "@/components/dashboard/profile-provider";
-import { Button } from "@/components/ui/button";
+import { DeckItem } from "@/components/flashcards/deck-item";
 import {
   Card,
   CardContent,
@@ -16,36 +16,25 @@ import {
 import { useConfirm } from "@/components/ui/confirmation-provider";
 import {
   deleteDeck,
-  getDecks,
   stopStudyingDeck,
   studyDeck,
+  updateDeck,
 } from "@/lib/flashcards";
 import { Deck } from "@/types/deck";
 
-export function DeckManagement() {
-  const [decks, setDecks] = useState<Deck[]>([]);
-  const [isLoadingDecks, setIsLoadingDecks] = useState(true);
+interface DeckManagementProps {
+  decks: Deck[];
+  isLoadingDecks: boolean;
+  onRefresh: () => Promise<void>;
+}
 
+export function DeckManagement({
+  decks,
+  isLoadingDecks,
+  onRefresh,
+}: DeckManagementProps) {
   const profile = useProfile();
   const confirm = useConfirm();
-
-  useEffect(() => {
-    void fetchDecks();
-  }, []);
-
-  const fetchDecks = async () => {
-    setIsLoadingDecks(true);
-    try {
-      const data = await getDecks();
-      setDecks(data);
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to fetch decks";
-      toast.error(message);
-    } finally {
-      setIsLoadingDecks(false);
-    }
-  };
 
   const handleDeleteDeck = async (deck: Deck) => {
     confirm({
@@ -61,7 +50,7 @@ export function DeckManagement() {
       onConfirm: async () => {
         await deleteDeck(deck.id);
         toast.success(`Deck "${deck.name}" deleted successfully!`);
-        await fetchDecks();
+        await onRefresh();
       },
     });
   };
@@ -70,7 +59,7 @@ export function DeckManagement() {
     try {
       await studyDeck(deck.id);
       toast.success(`Started studying "${deck.name}"!`);
-      await fetchDecks();
+      await onRefresh();
     } catch (error) {
       const message =
         error instanceof Error
@@ -94,9 +83,18 @@ export function DeckManagement() {
       onConfirm: async () => {
         await stopStudyingDeck(deck.id);
         toast.success(`Stopped studying "${deck.name}"!`);
-        await fetchDecks();
+        await onRefresh();
       },
     });
+  };
+
+  const handleRenameDeck = async (
+    deck: Deck,
+    newName: string,
+    newDescription: string,
+  ) => {
+    await updateDeck(deck.id, { name: newName, description: newDescription });
+    await onRefresh();
   };
 
   return (
@@ -108,9 +106,9 @@ export function DeckManagement() {
           <CardHeader>
             <CardTitle>Your Decks</CardTitle>
             <CardDescription>
-              Manage your flashcard decks. You can delete decks you own (except
-              the default deck) and study or stop studying public decks created
-              by others.
+              Manage your flashcard decks. You can edit and delete decks you own
+              (except the default deck) and study or stop studying public decks
+              created by others.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -126,68 +124,17 @@ export function DeckManagement() {
               <div className="space-y-2">
                 {decks.map((deck) => {
                   const isOwner = deck.userId === profile.id;
-                  const isStudying = deck.isStudying;
 
                   return (
-                    <div
+                    <DeckItem
                       key={deck.id}
-                      className="flex items-center justify-between p-3 border rounded-lg"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium">{deck.name}</h3>
-                          {!isOwner && (
-                            <span className="text-xs bg-muted px-2 py-0.5 rounded">
-                              Public
-                            </span>
-                          )}
-                        </div>
-                        {deck.description && (
-                          <p className="text-sm text-muted-foreground">
-                            {deck.description}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 ml-4">
-                        {!isOwner && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              isStudying
-                                ? handleStopStudyingDeck(deck)
-                                : handleStudyDeck(deck)
-                            }
-                            title={
-                              isStudying
-                                ? "Stop studying this deck"
-                                : "Start studying this deck"
-                            }
-                          >
-                            {isStudying ? (
-                              <EyeOff className="h-4 w-4" />
-                            ) : (
-                              <EyeIcon className="h-4 w-4" />
-                            )}
-                          </Button>
-                        )}
-                        {isOwner && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteDeck(deck)}
-                            disabled={deck.isDefault}
-                            title={
-                              deck.isDefault
-                                ? "Cannot delete default deck"
-                                : "Delete deck"
-                            }
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+                      deck={deck}
+                      isOwner={isOwner}
+                      onDelete={handleDeleteDeck}
+                      onStudy={handleStudyDeck}
+                      onStopStudying={handleStopStudyingDeck}
+                      onRename={handleRenameDeck}
+                    />
                   );
                 })}
               </div>

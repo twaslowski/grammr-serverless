@@ -26,6 +26,24 @@ export async function getDecks(): Promise<Deck[]> {
   });
 }
 
+export async function updateDeck(
+  id: number,
+  data: { name?: string; description?: string },
+): Promise<Deck> {
+  const response = await fetch(`${BASE_URL}/decks/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to update deck");
+  }
+
+  return response.json();
+}
+
 export async function deleteDeck(id: number): Promise<void> {
   const response = await fetch(`${BASE_URL}/decks/${id}`, {
     method: "DELETE",

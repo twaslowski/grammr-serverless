@@ -43,7 +43,6 @@ const profileNavItems: ProfileNavItem[] = [
     description: "Manage your account settings",
     href: "/dashboard/settings/account",
     icon: User,
-    disabled: true,
   },
   {
     title: "Notifications",
