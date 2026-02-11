@@ -22,20 +22,20 @@ export * from "./deckStudy";
 export * from "./flashcard";
 export * from "./profile";
 export * from "./reviewLog";
-export * from "./studyCard";
+export * from "./flashcardStudy";
 
 import { decks } from "./deck";
 import { deckStudy } from "./deckStudy";
 import { flashcards } from "./flashcard";
 import { profile } from "./profile";
 import { reviewLogs } from "./reviewLog";
-import { studyCard } from "./studyCard";
+import { flashcardStudy } from "./flashcardStudy";
 
 // Define all relations in one place to avoid circular dependencies
 
 export const profileRelations = relations(profile, ({ many }) => ({
   decks: many(decks),
-  cards: many(studyCard),
+  cards: many(flashcardStudy),
   deckStudy: many(deckStudy),
 }));
 
@@ -64,24 +64,24 @@ export const flashcardsRelations = relations(flashcards, ({ one, many }) => ({
     fields: [flashcards.deckId],
     references: [decks.id],
   }),
-  studyCards: many(studyCard),
+  studyCards: many(flashcardStudy),
 }));
 
-export const cardsRelations = relations(studyCard, ({ one, many }) => ({
+export const cardsRelations = relations(flashcardStudy, ({ one, many }) => ({
   flashcard: one(flashcards, {
-    fields: [studyCard.flashcardId],
+    fields: [flashcardStudy.flashcardId],
     references: [flashcards.id],
   }),
   user: one(profile, {
-    fields: [studyCard.userId],
+    fields: [flashcardStudy.userId],
     references: [profile.id],
   }),
   reviewLogs: many(reviewLogs),
 }));
 
 export const reviewLogsRelations = relations(reviewLogs, ({ one }) => ({
-  studyCard: one(studyCard, {
+  studyCard: one(flashcardStudy, {
     fields: [reviewLogs.cardId],
-    references: [studyCard.id],
+    references: [flashcardStudy.id],
   }),
 }));

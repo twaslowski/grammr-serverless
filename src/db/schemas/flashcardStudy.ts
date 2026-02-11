@@ -11,7 +11,7 @@ import { cardStateEnum } from "@/db/schemas/enum";
 import { timestamps } from "@/db/schemas/timestamp";
 
 // Card table (FSRS)
-export const studyCard = pgTable("card", {
+export const flashcardStudy = pgTable("flashcard_study", {
   id: serial("id").primaryKey(),
   flashcardId: integer("flashcard_id").notNull(),
   userId: uuid("user_id").notNull(),

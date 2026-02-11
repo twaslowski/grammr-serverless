@@ -3,7 +3,7 @@ import { and, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { decks, deckStudy, flashcards, studyCard } from "@/db/schemas";
+import { decks, deckStudy, flashcards, flashcardStudy } from "@/db/schemas";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { FlashcardBack, FlashcardWithDeck } from "@/types/flashcards";
 
@@ -32,15 +32,15 @@ export const GET = withApiHandler(
           name: decks.name,
           userId: decks.userId,
         },
-        studyCard: studyCard.id,
+        studyCard: flashcardStudy.id,
       })
       .from(flashcards)
       .innerJoin(decks, eq(flashcards.deckId, decks.id))
       .leftJoin(
-        studyCard,
+        flashcardStudy,
         and(
-          eq(flashcards.id, studyCard.flashcardId),
-          eq(studyCard.userId, user.id),
+          eq(flashcards.id, flashcardStudy.flashcardId),
+          eq(flashcardStudy.userId, user.id),
         ),
       )
       .where(and(...conditions))

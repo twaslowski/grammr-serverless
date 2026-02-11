@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { studyCard } from "@/db/schemas";
+import { flashcardStudy } from "@/db/schemas";
 import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 
 // GET /api/v1/flashcards/[id]/study - Get study card for a flashcard
@@ -13,11 +13,11 @@ export const GET = withApiHandler(
   async ({ params, user }) => {
     const result = await db
       .select()
-      .from(studyCard)
+      .from(flashcardStudy)
       .where(
         and(
-          eq(studyCard.flashcardId, params.id),
-          eq(studyCard.userId, user.id),
+          eq(flashcardStudy.flashcardId, params.id),
+          eq(flashcardStudy.userId, user.id),
         ),
       )
       .limit(1);
@@ -40,11 +40,11 @@ export const DELETE = withApiHandler(
   },
   async ({ params, user }) => {
     const result = await db
-      .delete(studyCard)
+      .delete(flashcardStudy)
       .where(
         and(
-          eq(studyCard.flashcardId, params.id),
-          eq(studyCard.userId, user.id),
+          eq(flashcardStudy.flashcardId, params.id),
+          eq(flashcardStudy.userId, user.id),
         ),
       )
       .returning();

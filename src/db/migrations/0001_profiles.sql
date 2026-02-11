@@ -1,11 +1,24 @@
--- WARNING: This schema is for context only and is not meant to be run.
--- Table order and constraints may not be valid for execution.
+-- ============================================================================
+-- PROFILES TABLE
+-- Stores user profile data with language preferences
+-- ============================================================================
 
-CREATE TABLE public.profiles
+CREATE TABLE IF NOT EXISTS "profiles"
 (
-    id              uuid                                      NOT NULL PRIMARY KEY REFERENCES auth.users (id),
-    source_language character varying                         NOT NULL,
-    target_language character varying                         NOT NULL,
-    created_at      timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at      timestamp without time zone DEFAULT now() NOT NULL
+    id              UUID PRIMARY KEY        NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
+    source_language TEXT                    NOT NULL,
+    target_language TEXT                    NOT NULL,
+    created_at      TIMESTAMP DEFAULT now() NOT NULL
 );
+
+-- ============================================================================
+-- ROW LEVEL SECURITY
+-- ============================================================================
+
+ALTER TABLE profiles
+    ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "owned entity access"
+    ON profiles
+    FOR ALL
+    USING ((SELECT auth.uid()) = id);
