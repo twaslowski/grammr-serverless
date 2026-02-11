@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 import analysisData from "@/../public/analysis.json";
-import { Analysis } from "@/components/flashcard/analysis";
+import { AnalysisDemo as AnalysisDemoComponent } from "@/components/landing/analysis-demo-component";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EnrichedMorphologicalAnalysis } from "@/types/morphology";
 
@@ -39,9 +39,9 @@ export function AnalysisDemo() {
               <p className="text-sm text-muted-foreground mb-3">
                 Russian sentence:
               </p>
-              <Analysis
+              <AnalysisDemoComponent
                 analysis={analysisData.back as EnrichedMorphologicalAnalysis}
-                textStyle="text-2xl"
+                textStyle="text-xl"
               />
             </div>
 

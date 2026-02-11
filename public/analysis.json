@@ -12,10 +12,6 @@
         "pos": "NOUN",
         "features": [
           {
-            "type": "animacy",
-            "value": "INAN"
-          },
-          {
             "type": "case",
             "value": "NOM"
           },
@@ -210,10 +206,6 @@
         "pos": "PROPN",
         "features": [
           {
-            "type": "animacy",
-            "value": "INAN"
-          },
-          {
             "type": "case",
             "value": "GEN"
           },
@@ -234,16 +226,8 @@
         "pos": "AUX",
         "features": [
           {
-            "type": "aspect",
-            "value": "IMP"
-          },
-          {
             "type": "gender",
             "value": "MASC"
-          },
-          {
-            "type": "mood",
-            "value": "IND"
           },
           {
             "type": "number",
@@ -252,14 +236,6 @@
           {
             "type": "tense",
             "value": "PAST"
-          },
-          {
-            "type": "verbform",
-            "value": "FIN"
-          },
-          {
-            "type": "voice",
-            "value": "ACT"
           }
         ],
         "translation": "was"
@@ -270,10 +246,6 @@
         "pos": "VERB",
         "features": [
           {
-            "type": "aspect",
-            "value": "PERF"
-          },
-          {
             "type": "gender",
             "value": "MASC"
           },
@@ -282,20 +254,8 @@
             "value": "SING"
           },
           {
-            "type": "stylevariant",
-            "value": "SHORT"
-          },
-          {
             "type": "tense",
             "value": "PAST"
-          },
-          {
-            "type": "verbform",
-            "value": "PART"
-          },
-          {
-            "type": "voice",
-            "value": "PASS"
           }
         ],
         "paradigm": {
@@ -405,10 +365,6 @@
           {
             "type": "case",
             "value": "LOC"
-          },
-          {
-            "type": "degree",
-            "value": "POS"
           },
           {
             "type": "gender",
@@ -600,10 +556,6 @@
         "lemma": "век",
         "pos": "NOUN",
         "features": [
-          {
-            "type": "animacy",
-            "value": "INAN"
-          },
           {
             "type": "case",
             "value": "LOC"
