@@ -3,11 +3,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Loader2, Search } from "lucide-react";
 import toast from "react-hot-toast";
+import { useDebounce } from "use-debounce";
 
 import { FlashcardListQuery } from "@/app/api/v1/flashcards/schema";
 import { useProfile } from "@/components/dashboard/profile-provider";
 import { DeckSelector } from "@/components/flashcard/deck-selector";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -37,6 +37,7 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
 
   const fetchDecks = useCallback(async () => {
     try {
@@ -54,7 +55,7 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     try {
       const query: FlashcardListQuery = {
         deckId: selectedDeck?.id,
-        search: searchQuery || undefined,
+        search: debouncedSearchQuery || undefined,
       };
 
       const data = await getFlashcards(query);
@@ -66,7 +67,7 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery, selectedDeck]);
+  }, [debouncedSearchQuery, selectedDeck]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this flashcard?")) {
@@ -125,54 +126,38 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
   // };
 
   // Fetch on mount and when filters change
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
     void fetchFlashcards();
-  };
+  }, [fetchFlashcards]);
 
   // Initial fetch on mount
   useEffect(() => {
     void fetchDecks();
   }, [fetchDecks]);
 
-  useEffect(() => {
-    if (initialFlashcards.length === 0) {
-      void fetchFlashcards();
-    }
-  }, [fetchFlashcards, initialFlashcards?.length]);
-
   return (
     <div className="space-y-6">
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          <form onSubmit={handleSearch} className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex flex-row gap-x-2 w-full">
-                <DeckSelector
-                  decks={decks}
-                  value={selectedDeck?.name}
-                  onChange={(deck) => setSelectedDeck(deck)}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-row gap-x-2 w-full">
+              <DeckSelector
+                decks={decks}
+                value={selectedDeck?.name}
+                onChange={(deck) => setSelectedDeck(deck)}
+              />
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search flashcards..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
                 />
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search flashcards..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9"
-                  />
-                </div>
               </div>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Search"
-                )}
-              </Button>
             </div>
-          </form>
+          </div>
         </CardContent>
       </Card>
 

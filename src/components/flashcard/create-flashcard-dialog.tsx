@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  AlertCircle,
-  ArrowLeftRight,
-  Layers,
-  Loader2,
-  Plus,
-} from "lucide-react";
+import { AlertCircle, Layers, Loader2, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
@@ -84,12 +78,6 @@ export function CreateFlashcardDialog({
     }
   };
 
-  const handleSwap = () => {
-    const temp = front;
-    setFront(translation);
-    setTranslation(temp);
-  };
-
   const defaultTrigger = (
     <Button variant="outline" size="sm" className="gap-1">
       <Layers className="h-4 w-4" />
@@ -114,34 +102,19 @@ export function CreateFlashcardDialog({
             <div className="space-y-2">
               <div className="flex flex-row gap-x-2">
                 <Label htmlFor="front">Front (Word/Phrase)</Label>
-                <Button
-                  type="button"
-                  className="h-4 w-4 p-2"
-                  variant="ghost"
-                  onClick={handleSwap}
-                >
-                  <ArrowLeftRight />
-                </Button>
               </div>
               <Input
                 id="front"
                 value={front}
                 onChange={(e) => setFront(e.target.value)}
                 placeholder="Enter word or phrase..."
+                readOnly={true}
                 disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
               <div className="flex flex-row gap-x-2">
                 <Label htmlFor="translation">Back (Translation)</Label>
-                <Button
-                  type="button"
-                  className="h-4 w-4 p-2"
-                  variant="ghost"
-                  onClick={handleSwap}
-                >
-                  <ArrowLeftRight />
-                </Button>
               </div>
               <TranslationInput
                 value={translation}

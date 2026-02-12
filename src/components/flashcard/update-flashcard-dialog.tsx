@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getParadigm, updateFlashcard } from "@/lib/flashcards";
-import { Flashcard, ParadigmFlashcardBack } from "@/types/flashcards";
+import { Flashcard } from "@/types/flashcards";
 
 interface UpdateFlashcardDialogProps {
   flashcard: Flashcard;
@@ -55,11 +55,7 @@ export function UpdateFlashcardDialog({
       // Reading response is not required, success can be derived from error or lack thereof
       await updateFlashcard(flashcard.id, {
         front,
-        back: {
-          translation,
-          paradigm,
-          type: flashcard.back.type,
-        } as ParadigmFlashcardBack,
+        back: { ...flashcard.back, translation: translation },
         notes,
       });
 
@@ -131,6 +127,7 @@ export function UpdateFlashcardDialog({
                 value={front}
                 onChange={(e) => setFront(e.target.value)}
                 placeholder="Enter word or phrase..."
+                readOnly={true}
                 disabled={isLoading}
               />
             </div>
