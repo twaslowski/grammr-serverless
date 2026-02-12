@@ -1,4 +1,4 @@
-from morphology import lambda_handler
+import lambda_handler
 
 
 def test_should_return_keep_warm_response():

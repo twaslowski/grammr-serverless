@@ -15,8 +15,7 @@ ARG SPACY_MODEL
 
 COPY --from=builder ${LAMBDA_TASK_ROOT}/ ${LAMBDA_TASK_ROOT}/
 
-COPY morphology/ ${LAMBDA_TASK_ROOT}/morphology/
-COPY morphology/lambda_handler.py ${LAMBDA_TASK_ROOT}/
+COPY . ${LAMBDA_TASK_ROOT}
 
 RUN python -m spacy download ${SPACY_MODEL}
 ENV SPACY_MODEL=${SPACY_MODEL}

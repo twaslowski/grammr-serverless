@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Morphological Analysis API
   description: |
-    AWS Lambda service for performing morphological analysis of Russian text.
+    AWS Lambda service for performing morphological analysis of arbitrary texts.
     Given a phrase, this API returns detailed morphological information for each
     token including lemmas, parts of speech, and grammatical features.
   version: 1.0.0
@@ -12,6 +12,8 @@ info:
 servers:
   - url: https://grammr.app/api
     description: Production server
+  - url: https://dev.grammr.app/api
+    description: Development server
 
 paths:
   /v1/morphology:
@@ -32,11 +34,7 @@ paths:
               simple:
                 summary: Simple phrase analysis
                 value:
-                  phrase: "Я люблю русский язык"
-              sentence:
-                summary: Sentence analysis
-                value:
-                  phrase: "Мама мыла раму"
+                  phrase: "Музей Москвы был открыт в девятнадцатом веке"
       responses:
         "200":
           description: Successful morphological analysis response
@@ -45,11 +43,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/MorphologicalAnalysis"
               example:
-                source_phrase: "Я люблю"
+                text: "Музей Москвы был открыт в девятнадцатом веке"
                 tokens:
-                  - text: "Я"
-                    lemma: "я"
-                    pos: "PRON"
+                  - text: "Музей"
+                    lemma: "Музей"
+                    pos: "NOUN"
                     features:
                       - type: "CASE"
                         value: "NOM"
@@ -57,16 +55,22 @@ paths:
                         value: "SING"
                       - type: "PERSON"
                         value: "FIRST"
-                  - text: "люблю"
-                    lemma: "любить"
-                    pos: "VERB"
+                  - text: "Москвы"
+                    lemma: "москва"
+                    pos: "PROPN"
                     features:
-                      - type: "PERSON"
-                        value: "FIRST"
+                      - type: "CASE"
+                        value: "GEN"
                       - type: "NUMBER"
                         value: "SING"
-                      - type: "TENSE"
-                        value: "PRES"
+                      - type: "GENDER"
+                        value: "FEM"
+        "400":
+          description: Bad request due to invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
           content:
@@ -84,18 +88,18 @@ components:
         phrase:
           type: string
           description: The Russian phrase to analyze
-          example: "Я люблю русский язык"
+          example: "Музей Москвы был открыт в девятнадцатом веке"
 
     MorphologicalAnalysis:
       type: object
       required:
-        - source_phrase
+        - text
         - tokens
       properties:
-        source_phrase:
+        text:
           type: string
-          description: The original phrase that was analyzed
-          example: "Я люблю русский язык"
+          description: The original text that was analyzed
+          example: "Музей Москвы был открыт в девятнадцатом веке"
         tokens:
           type: array
           items:
@@ -111,22 +115,22 @@ components:
       properties:
         text:
           type: string
-          description: The original token text as it appears in the phrase
-          example: "люблю"
+          description: The original token text
+          example: "Москвы"
         lemma:
           type: string
           description: The base form (dictionary form) of the token
-          example: "любить"
+          example: "москва"
         pos:
           type: string
           description: Part of speech tag (following Universal Dependencies)
-          example: "VERB"
+          example: "PROPN"
         features:
           type: array
           items:
             $ref: "#/components/schemas/Feature"
           description: List of grammatical features for this token
-          default: []
+          default: [ ]
 
     Feature:
       type: object

@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class MorphologicalAnalysis(BaseModel):
-    source_phrase: str
+    text: str
     tokens: list["TokenMorphology"]
 
 

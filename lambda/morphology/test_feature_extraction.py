@@ -1,6 +1,7 @@
 import spacy
 
-from morphology.service import feature_extraction
+import feature_extraction
+from domain import Feature
 
 nlp = spacy.load("de_core_news_sm")
 
@@ -22,10 +23,8 @@ def test_should_extract_features():
     assert find_feature_by_type("tense", features).value == "PRES"
 
 
-def find_feature_by_type(
-    type: str, features: list[feature_extraction.Feature]
-) -> str | None:
+def find_feature_by_type(feature_type: str, features: list[Feature]) -> Feature | None:
     for feature in features:
-        if feature.type.lower() == type.lower():
+        if feature.type.lower() == feature_type.lower():
             return feature
     return None

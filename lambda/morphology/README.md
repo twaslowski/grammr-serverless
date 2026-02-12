@@ -7,7 +7,7 @@ but reduced startup time. You can specify a model when building the Docker image
 `SPACY_MODEL` build argument. For example, to use the `en_core_web_sm` model, you can run:
 
 ```bash
-docker build --build-arg SPACY_MODEL=en_core_web_sm -t morphology-lambda:en_core_web_sm .
+docker build --build-arg SPACY_MODEL=de_core_news_sm -t morphology:de_core_news_sm .
 ```
 
 ## Dependencies
@@ -18,6 +18,13 @@ Dependencies are managed with [uv](https://docs.astral.sh/uv/) via `pyproject.to
 The Dockerfile uses uv to export dependencies and install them during the build process.
 
 ## Local Testing
+
+### pytest
+
+Run tests with `uv run pytest`.
+Note that you have to first download a model for testing purposes by running `uv run spacy download de_core_news_sm`.
+
+### Docker image
 
 You can test the Lambda image locally using Docker and the Lambda Runtime Interface Emulator (RIE), which is included in the AWS Lambda base images.
 
@@ -38,14 +45,14 @@ You can test the Lambda image locally using Docker and the Lambda Runtime Interf
    ```bash
    curl -X POST "http://localhost:9000/2015-03-31/functions/function/invocations" \
      -H "Content-Type: application/json" \
-     -d '{"body": "{\"phrase\": \"Hello world\"}"}'
+     -d '{"body": "{\"text\": \"Hello world\"}"}'
    ```
 
 4. Expected response format:
    ```json
    {
      "statusCode": 200,
-     "body": "{\"source_phrase\": \"Hello world\", \"tokens\": [...]}"
+     "body": "{\"text\": \"Hello world\", \"tokens\": [...]}"
    }
    ```
 
