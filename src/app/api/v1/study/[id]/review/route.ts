@@ -1,5 +1,8 @@
+import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { db } from "@/db/connect";
+import { flashcardStudy, reviewLogs } from "@/db/schemas";
 import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 import { processReview } from "@/lib/fsrs";
 import { Card as DbCard } from "@/types/fsrs";
@@ -13,104 +16,110 @@ export const POST = withApiHandler(
     paramsSchema: IdParamSchema,
     bodySchema: SubmitReviewRequestSchema,
   },
-  async ({ user, supabase, params, body }) => {
+  async ({ user, params, body }) => {
     const { rating } = body;
     const now = new Date();
 
     // Fetch the card
-    const { data: cardData, error: cardError } = await supabase
-      .from("card")
-      .select("*")
-      .eq("id", params.id)
-      .eq("user_id", user.id)
-      .single();
+    const cardResults = await db
+      .select()
+      .from(flashcardStudy)
+      .where(
+        and(
+          eq(flashcardStudy.id, params.id),
+          eq(flashcardStudy.userId, user.id),
+        ),
+      )
+      .limit(1);
 
-    if (cardError) {
-      console.error("Failed to fetch card:", cardError);
+    if (cardResults.length === 0) {
       return NextResponse.json({ error: "Card not found" }, { status: 404 });
     }
+
+    const cardData = cardResults[0];
 
     // Convert to DbCard format
     const dbCard: DbCard = {
       id: cardData.id,
-      flashcard_id: cardData.flashcard_id,
-      user_id: cardData.user_id,
-      due: new Date(cardData.due),
+      flashcard_id: cardData.flashcardId,
+      user_id: cardData.userId,
+      due: cardData.due,
       stability: cardData.stability,
       difficulty: cardData.difficulty,
-      elapsed_days: cardData.elapsed_days,
-      scheduled_days: cardData.scheduled_days,
-      learning_steps: cardData.learning_steps,
+      elapsed_days: cardData.elapsedDays,
+      scheduled_days: cardData.scheduledDays,
+      learning_steps: cardData.learningSteps,
       reps: cardData.reps,
       lapses: cardData.lapses,
       state: cardData.state,
-      last_review: cardData.last_review ? new Date(cardData.last_review) : null,
-      created_at: cardData.created_at,
-      updated_at: cardData.updated_at,
+      last_review: cardData.lastReview,
+      created_at: cardData.createdAt,
+      updated_at: cardData.updatedAt,
     };
 
     // Process the review using FSRS
     const { updatedCard, reviewLog } = processReview(dbCard, rating, now);
 
-    // Start a transaction-like operation: update card and create review log
-    // Update the card
-    const { data: updatedCardData, error: updateError } = await supabase
-      .from("card")
-      .update({
-        due: updatedCard.due.toISOString(),
-        stability: updatedCard.stability,
-        difficulty: updatedCard.difficulty,
-        elapsed_days: updatedCard.elapsed_days,
-        scheduled_days: updatedCard.scheduled_days,
-        learning_steps: updatedCard.learning_steps,
-        reps: updatedCard.reps,
-        lapses: updatedCard.lapses,
-        state: updatedCard.state,
-        last_review:
-          updatedCard.last_review?.toISOString() || now.toISOString(),
-      })
-      .eq("id", params.id)
-      .eq("user_id", user.id)
-      .select()
-      .single();
+    try {
+      // Update the card
+      const updatedCardData = await db
+        .update(flashcardStudy)
+        .set({
+          due: updatedCard.due,
+          stability: updatedCard.stability,
+          difficulty: updatedCard.difficulty,
+          elapsedDays: updatedCard.elapsed_days,
+          scheduledDays: updatedCard.scheduled_days,
+          learningSteps: updatedCard.learning_steps,
+          reps: updatedCard.reps,
+          lapses: updatedCard.lapses,
+          state: updatedCard.state,
+          lastReview: updatedCard.last_review || now,
+        })
+        .where(
+          and(
+            eq(flashcardStudy.id, params.id),
+            eq(flashcardStudy.userId, user.id),
+          ),
+        )
+        .returning();
 
-    if (updateError) {
-      console.error("Failed to update card:", updateError);
+      if (updatedCardData.length === 0) {
+        return NextResponse.json(
+          { error: "Failed to update card" },
+          { status: 500 },
+        );
+      }
+
+      // Create the review log
+      const reviewLogData = await db
+        .insert(reviewLogs)
+        .values({
+          cardId: params.id,
+          rating: reviewLog.rating,
+          state: reviewLog.state,
+          due: reviewLog.due,
+          stability: reviewLog.stability,
+          difficulty: reviewLog.difficulty,
+          elapsedDays: reviewLog.elapsed_days,
+          lastElapsedDays: reviewLog.last_elapsed_days,
+          scheduledDays: reviewLog.scheduled_days,
+          learningSteps: reviewLog.learning_steps,
+          review: reviewLog.review,
+        })
+        .returning();
+
+      return NextResponse.json({
+        success: true,
+        updatedCard: updatedCardData[0],
+        reviewLog: reviewLogData[0],
+      });
+    } catch (error) {
+      console.error("Failed to update card or create review log:", error);
       return NextResponse.json(
-        { error: "Failed to update card" },
+        { error: "Failed to process review" },
         { status: 500 },
       );
     }
-
-    // Create the review log
-    const { data: reviewLogData, error: logError } = await supabase
-      .from("review_log")
-      .insert({
-        card_id: params.id,
-        rating: reviewLog.rating,
-        state: reviewLog.state,
-        due: reviewLog.due.toISOString(),
-        stability: reviewLog.stability,
-        difficulty: reviewLog.difficulty,
-        elapsed_days: reviewLog.elapsed_days,
-        last_elapsed_days: reviewLog.last_elapsed_days,
-        scheduled_days: reviewLog.scheduled_days,
-        learning_steps: reviewLog.learning_steps,
-        review: reviewLog.review.toISOString(),
-      })
-      .select()
-      .single();
-
-    if (logError) {
-      console.error("Failed to create review log:", logError);
-      // Note: In production, we might want to rollback the card update
-      // For now, we'll just log the error but return success for the card update
-    }
-
-    return NextResponse.json({
-      success: true,
-      updatedCard: updatedCardData,
-      reviewLog: reviewLogData || reviewLog,
-    });
   },
 );

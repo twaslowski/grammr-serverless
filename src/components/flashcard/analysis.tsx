@@ -7,6 +7,7 @@ import { EnrichedMorphologicalAnalysis } from "@/types/morphology";
 
 interface AnalysisProps {
   analysis: EnrichedMorphologicalAnalysis;
+  showTTS?: boolean;
   textStyle?: string;
 }
 
@@ -35,6 +36,7 @@ export function Analysis({ analysis, textStyle }: AnalysisProps) {
             <WordDetailsDialog
               key={index}
               word={stripPunctuation(segment)}
+              language={analysis.language}
               morphology={matchingToken}
               paradigm={matchingToken.paradigm}
               translation={matchingToken.translation}

@@ -23,6 +23,8 @@ interface TranslationResultProps {
 export function TranslationResult({
   originalText,
   translatedText,
+  targetLanguage,
+  sourceLanguage,
   morphologicalAnalysis,
   isAnalysisMode = false,
 }: TranslationResultProps) {
@@ -52,7 +54,11 @@ export function TranslationResult({
                   </Button>
                 }
               />
-              <TTSButton variant="outline" text={translatedText} />
+              <TTSButton
+                variant="outline"
+                text={translatedText}
+                language={sourceLanguage}
+              />
               <CopyButton variant="outline" text={translatedText} />
             </div>
           </div>
@@ -91,7 +97,11 @@ export function TranslationResult({
                 </Button>
               }
             />
-            <TTSButton variant="outline" text={translatedText} />
+            <TTSButton
+              variant="outline"
+              text={translatedText}
+              language={targetLanguage}
+            />
             <CopyButton variant="outline" text={translatedText} />
           </div>
         </div>

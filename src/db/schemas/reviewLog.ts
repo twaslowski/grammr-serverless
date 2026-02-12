@@ -10,7 +10,7 @@ import { cardStateEnum, ratingEnum } from "@/db/schemas/enum";
 
 export const reviewLogs = pgTable("review_log", {
   id: serial("id").primaryKey(),
-  cardId: integer("card_id").notNull(),
+  cardId: integer("flashcard_study_id").notNull(),
   rating: ratingEnum("rating").notNull(),
   state: cardStateEnum("state").notNull(),
   due: timestamp("due").notNull(),

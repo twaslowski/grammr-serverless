@@ -18,6 +18,7 @@ import {
 interface InflectionsTableProps {
   paradigm: Paradigm;
   displayAddFlashcard?: boolean;
+  displayTTSButton?: boolean;
   displayHeader?: boolean;
 }
 
@@ -35,6 +36,7 @@ function findInflection(
 
 export function InflectionsTable({
   paradigm,
+  displayTTSButton = true,
   displayAddFlashcard = true,
   displayHeader = true,
 }: InflectionsTableProps) {
@@ -44,6 +46,7 @@ export function InflectionsTable({
     return (
       <NounLikeTable
         paradigm={paradigm}
+        displayTTSButton={displayTTSButton}
         displayAddFlashcard={displayAddFlashcard}
         displayHeader={displayHeader}
       />
@@ -54,6 +57,7 @@ export function InflectionsTable({
     return (
       <VerbLikeTable
         paradigm={paradigm}
+        displayTTSButton={displayTTSButton}
         displayAddFlashcard={displayAddFlashcard}
         displayHeader={displayHeader}
       />
@@ -80,6 +84,7 @@ export function InflectionsTable({
 
 function InflectionsTableHeader({
   paradigm,
+  displayTTSButton,
   displayAddFlashcard,
 }: InflectionsTableProps) {
   const { partOfSpeech, lemma } = paradigm;
@@ -93,7 +98,7 @@ function InflectionsTableHeader({
         </p>
       </div>
       <div className="flex gap-x-2">
-        <TTSButton text={lemma} />
+        {displayTTSButton && <TTSButton text={lemma} />}
         {displayAddFlashcard && (
           <CreateFlashcardDialog
             front={lemma}
@@ -111,6 +116,7 @@ function InflectionsTableHeader({
 
 function NounLikeTable({
   paradigm,
+  displayTTSButton,
   displayAddFlashcard,
   displayHeader,
 }: InflectionsTableProps) {
@@ -121,6 +127,7 @@ function NounLikeTable({
       {displayHeader && (
         <InflectionsTableHeader
           paradigm={paradigm}
+          displayTTSButton={displayTTSButton}
           displayAddFlashcard={displayAddFlashcard}
         />
       )}
@@ -166,6 +173,7 @@ function NounLikeTable({
 function VerbLikeTable({
   paradigm,
   displayAddFlashcard,
+  displayTTSButton,
   displayHeader,
 }: InflectionsTableProps) {
   const { inflections } = paradigm;
@@ -175,6 +183,7 @@ function VerbLikeTable({
       {displayHeader && (
         <InflectionsTableHeader
           paradigm={paradigm}
+          displayTTSButton={displayTTSButton}
           displayAddFlashcard={displayAddFlashcard}
         />
       )}

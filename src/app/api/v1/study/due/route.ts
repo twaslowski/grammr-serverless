@@ -1,5 +1,8 @@
+import { and, count, eq, lte, not } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { db } from "@/db/connect";
+import { flashcardStudy } from "@/db/schemas";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { DueCardsQuerySchema } from "../schema";
 
@@ -10,42 +13,35 @@ export const GET = withApiHandler(
   {
     querySchema: DueCardsQuerySchema,
   },
-  async ({ user, supabase, query }) => {
+  async ({ user, query }) => {
     const { include_new } = query;
-    const now = new Date().toISOString();
+    const now = new Date();
 
-    // Count new cards
-    const { count: newCount, error: newError } = await supabase
-      .from("card")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .eq("state", "New");
-
-    if (newError) {
-      console.error("Failed to count new cards:", newError);
-      return NextResponse.json(
-        { error: "Failed to count new cards" },
-        { status: 500 },
+    const [{ newCardCount: newCount }] = await db
+      .select({ newCardCount: count() })
+      .from(flashcardStudy)
+      .where(
+        and(
+          eq(flashcardStudy.userId, user.id),
+          eq(flashcardStudy.state, "New"),
+        ),
       );
-    }
+
+    console.log(newCount);
 
     // Count review cards (due <= now and not New)
-    const { count: reviewCount, error: reviewError } = await supabase
-      .from("card")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .neq("state", "New")
-      .lte("due", now);
 
-    if (reviewError) {
-      console.error("Failed to count review cards:", reviewError);
-      return NextResponse.json(
-        { error: "Failed to count review cards" },
-        { status: 500 },
+    const [{ dueCardCount: reviewCount }] = await db
+      .select({ dueCardCount: count() })
+      .from(flashcardStudy)
+      .where(
+        and(
+          eq(flashcardStudy.userId, user.id),
+          not(eq(flashcardStudy.state, "Review")),
+          lte(flashcardStudy.due, now),
+        ),
       );
-    }
 
-    // Calculate total due count
     const dueCount = (reviewCount || 0) + (include_new ? newCount || 0 : 0);
 
     return NextResponse.json({

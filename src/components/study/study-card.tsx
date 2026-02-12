@@ -5,6 +5,7 @@ import { RotateCcw } from "lucide-react";
 
 import { Analysis } from "@/components/flashcard/analysis";
 import { InflectionsDialog } from "@/components/inflection";
+import { TTSButton } from "@/components/tts/tts-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -106,7 +107,17 @@ export function StudyCard({
   return (
     <div className="w-full max-w-xl mx-auto">
       <Card className="min-h-[300px] flex flex-col">
-        <CardHeader className="flex-1 flex items-center justify-center text-center">
+        <CardHeader className="relative flex-1 flex items-center justify-center text-center">
+          {card.flashcard.back.type === "analysis" && (
+            <div className="absolute top-4 right-4">
+              <TTSButton
+                text={card.flashcard.back.text}
+                language={card.flashcard.back.language}
+                size="sm"
+                variant="ghost"
+              />
+            </div>
+          )}
           {!isFlipped ? (
             // Front of card - show the word/phrase
             <div className="space-y-4">

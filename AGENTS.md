@@ -12,7 +12,7 @@ architecture, conventions, patterns, and critical workflows to ensure consistenc
 **grammr** is a language learning platform focused on grammar practice through sentence translation, morphological
 analysis, and spaced repetition flashcards. The system is highly modular with:
 
-- **Frontend**: Next.js 15+ with React 19, TypeScript, Tailwind CSS
+- **Frontend**: Next.js 16+ with React 19, TypeScript, Tailwind CSS
 - **Database**: PostgreSQL with Drizzle ORM (transitioning from Supabase)
 - **Backend**: Next.js API routes + AWS Lambda functions for NLP operations
 - **Infrastructure**: Terraform-managed AWS resources (Lambda, API Gateway, ECR)

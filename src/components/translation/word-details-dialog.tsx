@@ -3,6 +3,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { InflectionsTable } from "@/components/inflection/inflections-table";
+import { TTSButton } from "@/components/tts/tts-button";
 import {
   Accordion,
   AccordionContent,
@@ -26,10 +27,12 @@ import {
   getFeatureDisplayValue,
 } from "@/types/feature";
 import { Paradigm } from "@/types/inflections";
+import { LanguageCode } from "@/types/languages";
 import { TokenMorphology } from "@/types/morphology";
 
 interface WordDetailsDialogProps {
   word: string;
+  language: LanguageCode;
   translation?: string;
   morphology: TokenMorphology;
   paradigm?: Paradigm;
@@ -39,6 +42,7 @@ interface WordDetailsDialogProps {
 export function WordDetailsDialog({
   word,
   translation: initialTranslation,
+  language,
   morphology,
   trigger,
   paradigm,
@@ -75,6 +79,9 @@ export function WordDetailsDialog({
         </DialogHeader>
       </VisuallyHidden>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <div className="absolute top-4 right-10">
+          <TTSButton text={word} language={language} />
+        </div>
         <div className="space-y-4">
           {/* Basic word info */}
           <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
@@ -149,6 +156,7 @@ export function WordDetailsDialog({
                 <AccordionContent>
                   <InflectionsTable
                     paradigm={paradigm}
+                    displayTTSButton={false}
                     displayAddFlashcard={false}
                   />
                 </AccordionContent>

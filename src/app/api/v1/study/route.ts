@@ -1,6 +1,9 @@
+import { and, eq, lte, ne } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { DueCardsQuerySchema } from "@/app/api/v1/study/schema";
+import { db } from "@/db/connect";
+import { flashcards, flashcardStudy } from "@/db/schemas";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { scheduleCard } from "@/lib/fsrs";
 import { Card as DbCard } from "@/types/fsrs";
@@ -12,39 +15,33 @@ export const GET = withApiHandler(
   {
     querySchema: DueCardsQuerySchema,
   },
-  async ({ user, supabase, query }) => {
+  async ({ user, query }) => {
     const limit = query.limit;
 
     const now = new Date();
-    const nowStr = now.toISOString();
 
     // Fetch due review cards (priority over new cards)
-    const { data: reviewCards, error: reviewError } = await supabase
-      .from("card")
-      .select(
-        `
-        *,
-        flashcard (
-          id,
-          front,
-          back,
-          notes
-        )
-      `,
+    const reviewCards = await db
+      .select({
+        flashcard_study: flashcardStudy,
+        flashcard: {
+          id: flashcards.id,
+          front: flashcards.front,
+          back: flashcards.back,
+          notes: flashcards.notes,
+        },
+      })
+      .from(flashcardStudy)
+      .innerJoin(flashcards, eq(flashcardStudy.flashcardId, flashcards.id))
+      .where(
+        and(
+          eq(flashcardStudy.userId, user.id),
+          ne(flashcardStudy.state, "New"),
+          lte(flashcardStudy.due, now),
+        ),
       )
-      .eq("user_id", user.id)
-      .neq("state", "New")
-      .lte("due", nowStr)
-      .order("due", { ascending: true })
+      .orderBy(flashcardStudy.due)
       .limit(limit);
-
-    if (reviewError) {
-      console.error("Failed to fetch review cards:", reviewError);
-      return NextResponse.json(
-        { error: "Failed to fetch cards" },
-        { status: 500 },
-      );
-    }
 
     // Calculate how many new cards we need to fill the batch
     const reviewCardCount = reviewCards?.length || 0;
@@ -52,32 +49,26 @@ export const GET = withApiHandler(
 
     let newCards: typeof reviewCards = [];
     if (remainingSlots > 0) {
-      const { data: fetchedNewCards, error: newError } = await supabase
-        .from("card")
-        .select(
-          `
-          *,
-          flashcard (
-            id,
-            front,
-            back,
-            notes
-          )
-        `,
+      newCards = await db
+        .select({
+          flashcard_study: flashcardStudy,
+          flashcard: {
+            id: flashcards.id,
+            front: flashcards.front,
+            back: flashcards.back,
+            notes: flashcards.notes,
+          },
+        })
+        .from(flashcardStudy)
+        .innerJoin(flashcards, eq(flashcardStudy.flashcardId, flashcards.id))
+        .where(
+          and(
+            eq(flashcardStudy.userId, user.id),
+            eq(flashcardStudy.state, "New"),
+          ),
         )
-        .eq("user_id", user.id)
-        .eq("state", "New")
-        .order("created_at", { ascending: true })
+        .orderBy(flashcardStudy.createdAt)
         .limit(remainingSlots);
-
-      if (newError) {
-        console.error("Failed to fetch new cards:", newError);
-        return NextResponse.json(
-          { error: "Failed to fetch cards" },
-          { status: 500 },
-        );
-      }
-      newCards = fetchedNewCards || [];
     }
 
     // Combine cards: review cards first, then new cards
@@ -96,41 +87,48 @@ export const GET = withApiHandler(
 
     // Get total counts for progress
     const [dueResult, newResult] = await Promise.all([
-      supabase
-        .from("card")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .neq("state", "New")
-        .lte("due", nowStr),
-      supabase
-        .from("card")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .eq("state", "New"),
+      db
+        .select()
+        .from(flashcardStudy)
+        .where(
+          and(
+            eq(flashcardStudy.userId, user.id),
+            ne(flashcardStudy.state, "New"),
+            lte(flashcardStudy.due, now),
+          ),
+        ),
+      db
+        .select()
+        .from(flashcardStudy)
+        .where(
+          and(
+            eq(flashcardStudy.userId, user.id),
+            eq(flashcardStudy.state, "New"),
+          ),
+        ),
     ]);
 
-    const remaining = (dueResult.count || 0) + (newResult.count || 0);
+    const remaining = (dueResult.length || 0) + (newResult.length || 0);
 
     // Convert all cards to the response format with scheduling options
-    const cardsWithScheduling = allCards.map((cardData) => {
+    const cardsWithScheduling = allCards.map((row) => {
+      const cardData = row.flashcard_study;
       const dbCard: DbCard = {
         id: cardData.id,
-        flashcard_id: cardData.flashcard_id,
-        user_id: cardData.user_id,
-        due: new Date(cardData.due),
+        flashcard_id: cardData.flashcardId,
+        user_id: cardData.userId,
+        due: cardData.due,
         stability: cardData.stability,
         difficulty: cardData.difficulty,
-        elapsed_days: cardData.elapsed_days,
-        scheduled_days: cardData.scheduled_days,
-        learning_steps: cardData.learning_steps,
+        elapsed_days: cardData.elapsedDays,
+        scheduled_days: cardData.scheduledDays,
+        learning_steps: cardData.learningSteps,
         reps: cardData.reps,
         lapses: cardData.lapses,
         state: cardData.state,
-        last_review: cardData.last_review
-          ? new Date(cardData.last_review)
-          : null,
-        created_at: cardData.created_at,
-        updated_at: cardData.updated_at,
+        last_review: cardData.lastReview,
+        created_at: cardData.createdAt,
+        updated_at: cardData.updatedAt,
       };
 
       // Generate scheduling options for this card
@@ -141,7 +139,7 @@ export const GET = withApiHandler(
           ...dbCard,
           due: dbCard.due.toISOString(),
           last_review: dbCard.last_review?.toISOString() || null,
-          flashcard: cardData.flashcard,
+          flashcard: row.flashcard,
         },
         schedulingOptions,
       };

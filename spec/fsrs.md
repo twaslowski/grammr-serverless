@@ -17,7 +17,7 @@ to the current date)
 
 ```typescript
 const {data: reviewCards, error: reviewError} = await supabase
-    .from("card")
+    .from("flashcard_study")
     .select(
         `
     *,
@@ -48,7 +48,7 @@ This would be a naive implementation with the given data model:
 
 ```typescript
 const {data: unstudiedCards, error: unstudiedError} = await supabase
-    .from("card")
+    .from("flashcard_study")
     .select(`
         *,
         flashcard!inner (
@@ -86,7 +86,7 @@ const deckIds = studyingDecks?.map(d => d.deck_id) || [];
 
 // Get due cards from those decks
 const {data: reviewCards, error: reviewError} = await supabase
-    .from("card")
+    .from("flashcard_study")
     .select(`
         *,
         flashcard (
