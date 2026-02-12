@@ -7,6 +7,7 @@ import { InflectionsRequestSchema } from "@/types/inflections";
 export const POST = withApiHandler(
   {
     bodySchema: InflectionsRequestSchema,
+    requireAuth: false,
   },
   async ({ body }) => {
     const apiGwConfig = getApiGatewayConfig();

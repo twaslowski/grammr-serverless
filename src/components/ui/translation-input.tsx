@@ -121,7 +121,7 @@ export function TranslationInput({
 
   return (
     <div
-      className={`flex items-center gap-2 p-2 border rounded-md cursor-pointer hover:bg-muted/50 transition-colors ${className} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+      className={`flex items-center gap-2 py-1 px-2 border rounded-md cursor-pointer hover:bg-muted/50 transition-colors ${className} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
       onClick={disabled ? undefined : handleReveal}
       role="button"
       tabIndex={disabled ? -1 : 0}
@@ -133,7 +133,7 @@ export function TranslationInput({
         }
       }}
     >
-      <div className="min-h-[1.25rem] justify-between">
+      <div className="min-h-[1rem] justify-between">
         {isTranslating ? (
           <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -150,7 +150,7 @@ export function TranslationInput({
           <div className="flex items-center gap-2">
             <div className="flex gap-1">
               {/* Redacted/spoiler blocks */}
-              <div className="h-8 w-24 bg-muted-foreground rounded"></div>
+              <div className="h-6 w-24 bg-muted-foreground rounded"></div>
             </div>
             <span className="text-xs text-muted-foreground ml-2">
               Click to reveal

@@ -43,6 +43,13 @@
       "when": 1707609605000,
       "tag": "0005_fsrs",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1770888190796,
+      "tag": "0006_flashcard_back",
+      "breakpoints": true
     }
   ]
 }

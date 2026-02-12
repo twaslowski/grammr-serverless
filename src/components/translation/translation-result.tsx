@@ -42,7 +42,6 @@ export function TranslationResult({
                 front={translatedText}
                 back={{
                   ...morphologicalAnalysis,
-                  text: morphologicalAnalysis.text,
                   type: "analysis",
                   translation: translatedText,
                 }}
@@ -57,7 +56,7 @@ export function TranslationResult({
               <CopyButton variant="outline" text={translatedText} />
             </div>
           </div>
-          <Analysis analysis={morphologicalAnalysis} />
+          <Analysis analysis={morphologicalAnalysis} textStyle="text-xl" />
         </div>
 
         {/* Translation in spoken language - smaller, secondary */}
@@ -82,7 +81,6 @@ export function TranslationResult({
               front={translatedText}
               back={{
                 ...morphologicalAnalysis,
-                text: morphologicalAnalysis.text,
                 type: "analysis",
                 translation: originalText,
               }}
@@ -99,7 +97,7 @@ export function TranslationResult({
         </div>
 
         <div className="flex flex-row gap-x-1 text-lg leading-relaxed">
-          <Analysis analysis={morphologicalAnalysis} textStyle="text-2xl" />
+          <Analysis analysis={morphologicalAnalysis} textStyle="text-xl" />
         </div>
       </div>
     </div>

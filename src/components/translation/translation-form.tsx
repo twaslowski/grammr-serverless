@@ -60,8 +60,8 @@ export function TranslationForm({ profile }: TranslationFormProps) {
 
       const morphologyResult = await analyzeMorphology(
         isAnalysisMode
-          ? { phrase: text.trim(), language: sourceLanguage }
-          : { phrase: result.translation, language: targetLanguage },
+          ? { text: text.trim(), language: sourceLanguage }
+          : { text: result.translation, language: targetLanguage },
       );
 
       const enrichedMorphologicalAnalysis = await enrichWithParadigms(

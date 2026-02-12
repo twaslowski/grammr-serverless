@@ -28,6 +28,7 @@ const responseSchema = MorphologicalAnalysisSchema.extend({
 export const POST = withApiHandler(
   {
     bodySchema: MorphologyRequestSchema,
+    requireAuth: false,
   },
   async ({ body }) => {
     const apiGwConfig = getApiGatewayConfig();
@@ -39,7 +40,7 @@ export const POST = withApiHandler(
       );
     }
 
-    const { phrase, language } = body;
+    const { text, language } = body;
 
     const fetchMorphology = createValidatedFetcher(responseSchema);
     const response = await fetchMorphology(
@@ -50,7 +51,7 @@ export const POST = withApiHandler(
           "Content-Type": "application/json",
           "x-api-key": apiGwConfig.apiKey,
         },
-        body: JSON.stringify({ phrase: phrase }),
+        body: JSON.stringify({ text: text }),
       },
     ).catch((error) => {
       console.error("Morphology API error:", error);

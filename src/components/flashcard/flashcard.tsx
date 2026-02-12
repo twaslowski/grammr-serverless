@@ -3,6 +3,7 @@
 import React from "react";
 import { EyeIcon, EyeOff, Table2, Trash2 } from "lucide-react";
 
+import { Analysis } from "@/components/flashcard/analysis";
 import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
 import { InflectionsDialog } from "@/components/inflection";
 import { Button } from "@/components/ui/button";
@@ -37,12 +38,19 @@ export function Flashcard({
     }
   };
 
+  const flashcardFront =
+    flashcard.back.type === "analysis" ? (
+      <Analysis textStyle="text-lg" analysis={flashcard.back} />
+    ) : (
+      flashcard.front
+    );
+
   return (
     <Card>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-lg">{flashcard.front}</CardTitle>
+            <CardTitle className="text-lg">{flashcardFront}</CardTitle>
             <p className="text-sm text-muted-foreground">
               {flashcard.back.translation}
             </p>

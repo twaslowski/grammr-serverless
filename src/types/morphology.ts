@@ -6,7 +6,7 @@ import { LanguageCodeSchema } from "@/types/languages";
 
 // Request schema
 export const MorphologyRequestSchema = z.object({
-  phrase: z.string().min(1),
+  text: z.string().min(1),
   language: LanguageCodeSchema,
 });
 

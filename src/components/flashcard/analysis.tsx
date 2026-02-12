@@ -12,7 +12,7 @@ interface AnalysisProps {
 
 export function Analysis({ analysis, textStyle }: AnalysisProps) {
   return (
-    <div className="flex flex-row flex-wrap px-2 gap-x-1">
+    <div className="flex flex-row flex-wrap gap-x-0.5">
       {analysis.text.split(/(\s+)/).map((segment, index) => {
         // If the segment is whitespace, just render it
         if (/^\s+$/.test(segment)) {
