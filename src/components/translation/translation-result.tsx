@@ -42,6 +42,7 @@ export function TranslationResult({
                 front={translatedText}
                 back={{
                   ...morphologicalAnalysis,
+                  text: morphologicalAnalysis.text,
                   type: "analysis",
                   translation: translatedText,
                 }}
@@ -81,6 +82,7 @@ export function TranslationResult({
               front={translatedText}
               back={{
                 ...morphologicalAnalysis,
+                text: morphologicalAnalysis.text,
                 type: "analysis",
                 translation: originalText,
               }}

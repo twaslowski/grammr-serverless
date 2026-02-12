@@ -3,9 +3,9 @@ import { z } from "zod";
 
 import { flashcards } from "@/db/schemas";
 import { DeckSchema } from "@/types/deck";
-import { FeatureSchema } from "@/types/feature";
 
-import { ParadigmSchema, PartOfSpeechEnum } from "./inflections";
+import { ParadigmSchema } from "./inflections";
+import { EnrichedMorphologicalAnalysisSchema } from "./morphology";
 
 // Separate schemas for each type
 export const ParadigmFlashcardBackSchema = z.object({
@@ -21,20 +21,11 @@ export const SimpleFlashcardBackSchema = z.object({
 });
 export type PhraseFlashcardBack = z.infer<typeof SimpleFlashcardBackSchema>;
 
-export const AnalysisFlashcardBackSchema = z.object({
-  type: z.literal("analysis"),
-  source_phrase: z.string(),
-  translation: z.string(),
-  tokens: z.array(
-    z.object({
-      text: z.string(),
-      lemma: z.string(),
-      pos: PartOfSpeechEnum,
-      features: z.array(FeatureSchema).default([]),
-      paradigm: ParadigmSchema.optional(),
-    }),
-  ),
-});
+export const AnalysisFlashcardBackSchema =
+  EnrichedMorphologicalAnalysisSchema.extend({
+    type: z.literal("analysis"),
+    translation: z.string(),
+  });
 export type AnalysisFlashcardBack = z.infer<typeof AnalysisFlashcardBackSchema>;
 
 export const FlashcardBackSchema = z.discriminatedUnion("type", [

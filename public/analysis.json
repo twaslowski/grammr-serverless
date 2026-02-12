@@ -3,7 +3,8 @@
   "notes": "",
   "back": {
     "type": "analysis",
-    "source_phrase": "Музей Москвы был открыт в девятнадцатом веке.",
+    "text": "Музей Москвы был открыт в девятнадцатом веке.",
+    "language": "ru",
     "translation": "The Moscow Museum opened in the nineteenth century.",
     "tokens": [
       {

@@ -21,7 +21,8 @@ export const TokenMorphologySchema = z.object({
 export type TokenMorphology = z.infer<typeof TokenMorphologySchema>;
 
 export const MorphologicalAnalysisSchema = z.object({
-  source_phrase: z.string(),
+  text: z.string(),
+  language: LanguageCodeSchema,
   tokens: z.array(TokenMorphologySchema),
 });
 export type MorphologicalAnalysis = z.infer<typeof MorphologicalAnalysisSchema>;
@@ -32,10 +33,11 @@ export const EnrichedTokenSchema = TokenMorphologySchema.extend({
 });
 export type EnrichedToken = z.infer<typeof EnrichedTokenSchema>;
 
-export const EnrichedMorphologicalAnalysisSchema = z.object({
-  source_phrase: z.string(),
-  tokens: z.array(EnrichedTokenSchema),
-});
+export const EnrichedMorphologicalAnalysisSchema =
+  MorphologicalAnalysisSchema.extend({
+    tokens: z.array(EnrichedTokenSchema),
+  });
+
 export type EnrichedMorphologicalAnalysis = z.infer<
   typeof EnrichedMorphologicalAnalysisSchema
 >;

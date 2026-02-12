@@ -1,2 +1,0 @@
-ALTER TABLE flashcard
-    DROP COLUMN IF EXISTS type;

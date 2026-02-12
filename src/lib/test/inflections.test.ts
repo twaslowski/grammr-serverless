@@ -204,7 +204,8 @@ describe("inflections", () => {
 
     it("should enrich tokens with paradigms for inflectable POS", async () => {
       const morphologicalAnalysis: MorphologicalAnalysis = {
-        source_phrase: "Кот идёт",
+        text: "Кот идёт",
+        language: "ru",
         tokens: [
           {
             text: "Кот",
@@ -247,7 +248,8 @@ describe("inflections", () => {
 
     it("should not add paradigm to non-inflectable POS", async () => {
       const morphologicalAnalysis: MorphologicalAnalysis = {
-        source_phrase: "Кот и собака",
+        text: "Кот и собака",
+        language: "ru",
         tokens: [
           {
             text: "Кот",
@@ -294,7 +296,8 @@ describe("inflections", () => {
 
     it("should handle empty tokens array", async () => {
       const morphologicalAnalysis: MorphologicalAnalysis = {
-        source_phrase: "",
+        text: "",
+        language: "ru",
         tokens: [],
       };
 
@@ -306,7 +309,8 @@ describe("inflections", () => {
 
     it("should handle analysis with no inflectable tokens", async () => {
       const morphologicalAnalysis: MorphologicalAnalysis = {
-        source_phrase: "и или",
+        text: "и или",
+        language: "ru",
         tokens: [
           {
             text: "и",
@@ -333,7 +337,8 @@ describe("inflections", () => {
 
     it("should continue enriching other tokens if one paradigm fetch fails", async () => {
       const morphologicalAnalysis: MorphologicalAnalysis = {
-        source_phrase: "Кот идёт",
+        text: "Кот идёт",
+        language: "ru",
         tokens: [
           {
             text: "Кот",
@@ -380,7 +385,8 @@ describe("inflections", () => {
 
     it("should handle all inflectable POS types", async () => {
       const morphologicalAnalysis: MorphologicalAnalysis = {
-        source_phrase: "Test",
+        text: "Test",
+        language: "en",
         tokens: [
           {
             text: "adjective",
@@ -425,7 +431,8 @@ describe("inflections", () => {
 
     it("should preserve original morphological analysis structure", async () => {
       const morphologicalAnalysis: MorphologicalAnalysis = {
-        source_phrase: "Test phrase",
+        text: "Test phrase",
+        language: "ru",
         tokens: [
           {
             text: "Test",
@@ -446,7 +453,7 @@ describe("inflections", () => {
 
       const result = await enrichWithParadigms(morphologicalAnalysis, "ru");
 
-      expect(result.source_phrase).toBe(morphologicalAnalysis.source_phrase);
+      expect(result.text).toBe(morphologicalAnalysis.text);
       expect(result.tokens[0].text).toBe(morphologicalAnalysis.tokens[0].text);
       expect(result.tokens[0].lemma).toBe(
         morphologicalAnalysis.tokens[0].lemma,
@@ -459,7 +466,8 @@ describe("inflections", () => {
 
     it("should handle network errors gracefully", async () => {
       const morphologicalAnalysis: MorphologicalAnalysis = {
-        source_phrase: "Кот",
+        text: "Кот",
+        language: "ru",
         tokens: [
           {
             text: "Кот",
@@ -485,7 +493,8 @@ describe("inflections", () => {
 
     it("should fetch paradigms in parallel for better performance", async () => {
       const morphologicalAnalysis: MorphologicalAnalysis = {
-        source_phrase: "Test",
+        text: "Test",
+        language: "en",
         tokens: [
           { text: "word1", lemma: "word1", pos: "NOUN", features: [] },
           { text: "word2", lemma: "word2", pos: "VERB", features: [] },

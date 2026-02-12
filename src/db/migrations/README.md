@@ -6,7 +6,7 @@ structure.
 ## Migration Files
 
 | File                      | Description                                                                                      |
-|---------------------------|--------------------------------------------------------------------------------------------------|
+| ------------------------- | ------------------------------------------------------------------------------------------------ |
 | `0000_cleanup_legacy.sql` | Drops all legacy triggers, functions, policies, and indexes; renames `card` to `flashcard_study` |
 | `0000_tables.sql`         | Deprecated placeholder (no longer used)                                                          |
 | `0001_profiles.sql`       | Profiles table with RLS                                                                          |
@@ -17,8 +17,8 @@ structure.
 
 ## Legacy Migrations Consolidated
 
-| Legacy Migration                                                   | Status         | Notes                                                                 |
-|--------------------------------------------------------------------|----------------|-----------------------------------------------------------------------|
+| Legacy Migration                                                   | Status          | Notes                                                                 |
+| ------------------------------------------------------------------ | --------------- | --------------------------------------------------------------------- |
 | `20260110100841_create_profile.sql`                                | ✅ Consolidated | Profile table moved to `0001_profiles.sql`                            |
 | `20260114100000_create_flashcards.sql`                             | ✅ Consolidated | Split across `0002_decks.sql`, `0003_flashcards.sql`, `0005_fsrs.sql` |
 | `20260119100000_add_not_null_constraints_to_profile_languages.sql` | ✅ Consolidated | NOT NULL constraints now in base table definition                     |
@@ -55,7 +55,7 @@ structure.
 ### Consolidated Triggers
 
 | Trigger                   | Table      | Purpose                                                          |
-|---------------------------|------------|------------------------------------------------------------------|
+| ------------------------- | ---------- | ---------------------------------------------------------------- |
 | `on_profile_created`      | profiles   | Creates default deck when profile is created                     |
 | `on_default_deck_created` | deck       | Creates deck_study entry for deck owner                          |
 | `on_flashcard_created`    | flashcard  | Creates flashcard_study entries for all users studying the deck  |
@@ -70,7 +70,7 @@ All tables now use consistent policy naming:
 - **`public entity read access`** - SELECT for public visibility entities
 
 | Table           | Policies                                           |
-|-----------------|----------------------------------------------------|
+| --------------- | -------------------------------------------------- |
 | profiles        | `owned entity access`                              |
 | deck            | `owned entity access`, `public entity read access` |
 | flashcard       | `owned entity access`, `public entity read access` |

@@ -20,16 +20,16 @@ import { relations } from "drizzle-orm";
 export * from "./deck";
 export * from "./deckStudy";
 export * from "./flashcard";
+export * from "./flashcardStudy";
 export * from "./profile";
 export * from "./reviewLog";
-export * from "./flashcardStudy";
 
 import { decks } from "./deck";
 import { deckStudy } from "./deckStudy";
 import { flashcards } from "./flashcard";
+import { flashcardStudy } from "./flashcardStudy";
 import { profile } from "./profile";
 import { reviewLogs } from "./reviewLog";
-import { flashcardStudy } from "./flashcardStudy";
 
 // Define all relations in one place to avoid circular dependencies
 

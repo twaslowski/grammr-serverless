@@ -1,8 +1,29 @@
 import { NextResponse } from "next/server";
 
 import { getApiGatewayConfig } from "@/lib/api/api-gateway";
+import { createValidatedFetcher } from "@/lib/api/validated-fetcher";
 import { withApiHandler } from "@/lib/api/with-api-handler";
-import { MorphologyRequestSchema } from "@/types/morphology";
+import { LanguageCodeSchema } from "@/types/languages";
+import {
+  MorphologicalAnalysis,
+  MorphologicalAnalysisSchema,
+  MorphologyRequestSchema,
+} from "@/types/morphology";
+
+/**
+ * POST /api/v1/morphology
+ * Body: MorphologyRequest { phrase: string, language: string }
+ * Response: MorphologicalAnalysis { sourcePhrase: string, tokens: TokenMorphology[] }
+ *
+ * This endpoint forwards the request to the morphology API Gateway endpoint and passes back the response.
+ * Called at src/lib/morphology.ts.
+ */
+
+// Do not require language code in response.
+// Instead, the response is enriched with the requested language code before returning to client.
+const responseSchema = MorphologicalAnalysisSchema.extend({
+  language: LanguageCodeSchema.optional(),
+});
 
 export const POST = withApiHandler(
   {
@@ -20,8 +41,8 @@ export const POST = withApiHandler(
 
     const { phrase, language } = body;
 
-    // Forward to Lambda via API Gateway
-    const response = await fetch(
+    const fetchMorphology = createValidatedFetcher(responseSchema);
+    const response = await fetchMorphology(
       `${apiGwConfig.endpoint}/morphology/${language}`,
       {
         method: "POST",
@@ -31,18 +52,16 @@ export const POST = withApiHandler(
         },
         body: JSON.stringify({ phrase: phrase }),
       },
-    );
+    ).catch((error) => {
+      console.error("Morphology API error:", error);
+      throw new Error("Morphology analysis failed");
+    });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Morphology API error:", response.status, errorText);
-      return NextResponse.json(
-        { error: "Morphology analysis failed" },
-        { status: response.status },
-      );
-    }
+    const enrichedResponse: MorphologicalAnalysis = {
+      ...response,
+      language: language,
+    };
 
-    const data = await response.json();
-    return NextResponse.json(data);
+    return NextResponse.json(enrichedResponse);
   },
 );
