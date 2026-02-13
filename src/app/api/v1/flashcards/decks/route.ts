@@ -62,12 +62,13 @@ export const POST = withApiHandler(
     bodySchema: CreateDeckRequestSchema,
   },
   async ({ user, supabase, body }) => {
-    const { name, description } = body;
+    const { name, description, language } = body;
 
     const { data: deck, error } = await supabase
       .from("deck")
       .insert({
         name,
+        language: language,
         description: description || null,
         user_id: user.id,
         is_default: false,

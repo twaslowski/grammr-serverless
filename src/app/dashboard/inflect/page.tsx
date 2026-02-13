@@ -8,10 +8,10 @@ import { getLanguageByCode } from "@/lib/languages";
 
 export default function InflectionsPage() {
   const profile = useProfile();
-  const languageInfo = getLanguageByCode(profile.target_language);
+  const languageInfo = getLanguageByCode(profile.targetLanguage);
 
   // Trigger Lambda warmup on page load
-  usePreflightWarmup(profile.target_language);
+  usePreflightWarmup(profile.targetLanguage);
 
   return (
     <PageLayout

@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { decks, deckStudy, flashcards as flashcardsTable } from "@/db/schemas";
+import { decks, flashcards as flashcardsTable } from "@/db/schemas";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { FlashcardImportRequestSchema } from "../schema";
 
@@ -13,7 +13,7 @@ export const POST = withApiHandler(
     bodySchema: FlashcardImportRequestSchema,
   },
   async ({ user, body }) => {
-    const { flashcards, deck_name, language, visibility } = body;
+    const { flashcards, deckId } = body;
 
     if (flashcards.length === 0) {
       return NextResponse.json(
@@ -22,55 +22,23 @@ export const POST = withApiHandler(
       );
     }
 
-    let targetDeckId: number;
+    // Verify the deck exists and belongs to the user
+    const [deck] = await db
+      .select({ id: decks.id })
+      .from(decks)
+      .where(and(eq(decks.id, deckId), eq(decks.userId, user.id)))
+      .limit(1);
 
-    if (deck_name) {
-      // Check if a deck with this name already exists for the user
-      const existingDeck = await db
-        .select()
-        .from(decks)
-        .where(and(eq(decks.name, deck_name), eq(decks.userId, user.id)))
-        .limit(1);
-
-      if (existingDeck.length > 0) {
-        // Use existing deck
-        targetDeckId = existingDeck[0].id;
-      } else {
-        // Create a new deck with the provided name and start studying it
-        const [{ id: newDeckId }] = await db
-          .insert(decks)
-          .values({
-            name: deck_name,
-            userId: user.id,
-            visibility: visibility || "private",
-            language,
-            isDefault: false,
-          })
-          .returning({ id: decks.id });
-        targetDeckId = newDeckId;
-
-        await db.insert(deckStudy).values({
-          deckId: newDeckId,
-          userId: user.id,
-          lastStudiedAt: null,
-          isActive: true,
-        });
-      }
-    } else {
-      // No deck name provided, use default deck
-      const defaultDeck = await db
-        .select()
-        .from(decks)
-        .where(and(eq(decks.userId, user.id), eq(decks.isDefault, true)))
-        .limit(1)
-        .then((res) => res[0]);
-
-      targetDeckId = defaultDeck.id;
+    if (!deck) {
+      return NextResponse.json(
+        { error: "Deck not found or not owned by user" },
+        { status: 404 },
+      );
     }
 
     // Prepare flashcards for insertion
     const flashcardsToInsert = flashcards.map((card) => ({
-      deckId: targetDeckId,
+      deckId: deckId,
       front: card.front,
       back: card.back,
       notes: card.notes || null,

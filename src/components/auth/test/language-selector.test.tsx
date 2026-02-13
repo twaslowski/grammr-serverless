@@ -80,9 +80,9 @@ describe("LanguageSelector", () => {
     it("should pre-select source language from profile if provided", () => {
       const profile = {
         id: "some-user-id",
-        source_language: "de" as const,
-        target_language: "ru" as const,
-        created_at: "2024-01-01T00:00:00Z",
+        sourceLanguage: "de" as const,
+        targetLanguage: "ru" as const,
+        createdAt: new Date(),
       };
 
       render(<LanguageSelector profile={profile} />);
@@ -166,9 +166,9 @@ describe("LanguageSelector", () => {
       const user = userEvent.setup();
       const profile = {
         id: "some-user-id",
-        source_language: "en" as const,
-        target_language: "ru" as const,
-        created_at: "2024-01-01T00:00:00Z",
+        sourceLanguage: "en" as const,
+        targetLanguage: "ru" as const,
+        createdAt: new Date(),
       };
 
       render(<LanguageSelector profile={profile} />);

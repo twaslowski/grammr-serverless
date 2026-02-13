@@ -23,9 +23,9 @@ const mockToast = toast as jest.Mocked<typeof toast>;
 // Mock profile for testing
 const mockProfile: Profile = {
   id: "test-user",
-  source_language: "en",
-  target_language: "es",
-  created_at: new Date().toISOString(),
+  sourceLanguage: "en",
+  targetLanguage: "es",
+  createdAt: new Date(),
 };
 
 // Test wrapper component

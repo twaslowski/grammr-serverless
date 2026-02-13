@@ -29,6 +29,7 @@ export type ApiHandlerConfig<
  * Context passed to the handler function
  */
 export type ApiHandlerContext<TBody, TParams, TQuery> = {
+  // todo: remove user eventually in favour of profile to reduce dependency on Supabase internals
   /** Authenticated user (undefined if requireAuth is false and not authenticated) */
   user: User;
   /** Supabase client */

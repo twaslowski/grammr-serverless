@@ -27,17 +27,14 @@ export const GET = withApiHandler(
         ),
       );
 
-    console.log(newCount);
-
     // Count review cards (due <= now and not New)
-
     const [{ dueCardCount: reviewCount }] = await db
       .select({ dueCardCount: count() })
       .from(flashcardStudy)
       .where(
         and(
           eq(flashcardStudy.userId, user.id),
-          not(eq(flashcardStudy.state, "Review")),
+          not(eq(flashcardStudy.state, "New")),
           lte(flashcardStudy.due, now),
         ),
       );

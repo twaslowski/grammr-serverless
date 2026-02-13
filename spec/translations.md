@@ -2,7 +2,7 @@
 The page will be laid out as follows:
 
 a) There is an input box where the user can enter text.
-b) By default, the translation mode is `profile.target_language` to `profile.source_language`.
+b) By default, the translation mode is `profile.targetLanguage` to `profile.sourceLanguage`.
 This can be reversed with a button.
 c) There is a button to submit the text for translation.
 d) Below the input box, there is an area where the translated text will be displayed.

@@ -1,12 +1,12 @@
+import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
+
+import { profile } from "@/db/schemas";
 
 import { LanguageCodeSchema } from "./languages";
 
-export const ProfileSchema = z.object({
-  id: z.string(),
-  source_language: LanguageCodeSchema,
-  target_language: LanguageCodeSchema,
-  created_at: z.string(),
+export const ProfileSchema = createSelectSchema(profile, {
+  sourceLanguage: LanguageCodeSchema,
+  targetLanguage: LanguageCodeSchema,
 });
-
 export type Profile = z.infer<typeof ProfileSchema>;

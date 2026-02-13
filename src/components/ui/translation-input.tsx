@@ -40,7 +40,7 @@ export function TranslationInput({
 }: TranslationInputProps) {
   const [isTranslating, setIsTranslating] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
-  const { source_language: spokenLanguage, target_language: learnedLanguage } =
+  const { sourceLanguage: spokenLanguage, targetLanguage: learnedLanguage } =
     useProfile();
 
   const handleFetchTranslation = async () => {

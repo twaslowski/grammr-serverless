@@ -6,6 +6,7 @@ import { LanguageCodeSchema } from "@/types/languages";
 
 export const CreateDeckRequestSchema = z.object({
   name: z.string().min(1, "Deck name is required"),
+  language: LanguageCodeSchema.optional(),
   description: z.string().optional(),
   visibility: DeckVisibilityEnum.optional(),
 });
@@ -69,8 +70,9 @@ export const ImportFlashcardSchema = z.object({
 
 export const FlashcardImportRequestSchema = z.object({
   version: z.string(),
-  deck_name: z.string().optional(),
-  language: LanguageCodeSchema,
-  visibility: DeckVisibilityEnum.optional(),
+  deckId: z.number(),
   flashcards: z.array(ImportFlashcardSchema),
 });
+export type FlashcardImportRequest = z.infer<
+  typeof FlashcardImportRequestSchema
+>;

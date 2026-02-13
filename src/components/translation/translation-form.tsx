@@ -35,11 +35,11 @@ export function TranslationForm({ profile }: TranslationFormProps) {
 
   // Determine source and target languages based on direction
   const sourceLanguage = isReversed
-    ? profile.source_language
-    : profile.target_language;
+    ? profile.sourceLanguage
+    : profile.targetLanguage;
   const targetLanguage = isReversed
-    ? profile.target_language
-    : profile.source_language;
+    ? profile.targetLanguage
+    : profile.sourceLanguage;
 
   const sourceLanguageInfo = getLanguageByCode(sourceLanguage);
   const targetLanguageInfo = getLanguageByCode(targetLanguage);

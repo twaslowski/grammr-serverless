@@ -1,12 +1,14 @@
 import { z } from "zod";
 
 import {
+  CreateDeckRequest,
   CreateFlashcardRequest,
+  FlashcardImportRequest,
   FlashcardListQuery,
   UpdateFlashcardRequest,
 } from "@/app/api/v1/flashcards/schema";
 import { createValidatedFetcher } from "@/lib/api/validated-fetcher";
-import { Deck, DeckSchema, DeckVisibility } from "@/types/deck";
+import { Deck, DeckSchema } from "@/types/deck";
 import {
   Flashcard,
   FlashcardBack,
@@ -24,6 +26,26 @@ export async function getDecks(): Promise<Deck[]> {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
+}
+
+export async function createDeck({
+  name,
+  description,
+  visibility,
+  language,
+}: CreateDeckRequest): Promise<Deck> {
+  const response = await fetch(`${BASE_URL}/decks`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, description, visibility, language }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to create deck");
+  }
+
+  return response.json();
 }
 
 export async function updateDeck(
@@ -173,18 +195,9 @@ export async function exportFlashcards(): Promise<Blob> {
   return response.blob();
 }
 
-export async function importFlashcards(data: {
-  version: number;
-  language: string;
-  deck_name?: string;
-  visibility?: DeckVisibility;
-  flashcards: Array<{
-    front: string;
-    type: string;
-    back: { translation: string; paradigm?: unknown };
-    notes?: string | null;
-  }>;
-}): Promise<{ message: string; imported_count: number }> {
+export async function importFlashcards(
+  data: FlashcardImportRequest,
+): Promise<{ message: string; imported_count: number }> {
   const response = await fetch(`${BASE_URL}/import`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

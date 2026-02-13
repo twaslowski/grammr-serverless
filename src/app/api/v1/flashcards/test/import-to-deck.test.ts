@@ -1,22 +1,17 @@
 /**
  * Import to Deck Tests
  *
- * Tests to verify that flashcards can be imported to:
- * 1. An existing deck (by name)
- * 2. A new deck (created with the provided name)
- * 3. The default deck (when no deck name is provided)
+ * Tests to verify that flashcards can be imported to a specific deck by ID.
  */
 
 import { FlashcardImportRequestSchema } from "../schema";
 
 describe("Import flashcards to specific deck", () => {
-  describe("Import with deck_name", () => {
-    it("should accept import request with deck_name", () => {
+  describe("Import with deckId", () => {
+    it("should accept import request with deckId", () => {
       const importRequest = {
         version: "1.0",
-        deck_name: "Spanish Vocabulary",
-        language: "es",
-        visibility: "private",
+        deckId: 1,
         flashcards: [
           {
             front: "hola",
@@ -32,14 +27,13 @@ describe("Import flashcards to specific deck", () => {
       const result = FlashcardImportRequestSchema.safeParse(importRequest);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.deck_name).toBe("Spanish Vocabulary");
+        expect(result.data.deckId).toBe(1);
       }
     });
 
-    it("should accept import request without deck_name (use default deck)", () => {
+    it("should reject import request without deckId", () => {
       const importRequest = {
         version: "1.0",
-        language: "ru",
         flashcards: [
           {
             front: "привет",
@@ -53,18 +47,13 @@ describe("Import flashcards to specific deck", () => {
       };
 
       const result = FlashcardImportRequestSchema.safeParse(importRequest);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data.deck_name).toBeUndefined();
-      }
+      expect(result.success).toBe(false);
     });
 
-    it("should accept visibility field", () => {
+    it("should accept import request with multiple flashcards", () => {
       const importRequest = {
         version: "1.0",
-        deck_name: "Public Phrases",
-        language: "fr",
-        visibility: "public",
+        deckId: 2,
         flashcards: [
           {
             front: "bonjour",
@@ -74,13 +63,22 @@ describe("Import flashcards to specific deck", () => {
             },
             notes: "Common greeting",
           },
+          {
+            front: "merci",
+            back: {
+              type: "phrase",
+              translation: "thank you",
+            },
+            notes: null,
+          },
         ],
       };
 
       const result = FlashcardImportRequestSchema.safeParse(importRequest);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.visibility).toBe("public");
+        expect(result.data.deckId).toBe(2);
+        expect(result.data.flashcards).toHaveLength(2);
       }
     });
   });

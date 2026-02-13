@@ -61,10 +61,10 @@ describe("Export/Import Schema Validation", () => {
       expect(result.success).toBe(true);
     });
 
-    it("should NOT include deck_id in the export schema", () => {
-      // Verify that deck_id is not part of the schema shape
+    it("should NOT include deckId in the export schema", () => {
+      // Verify that deckId is not part of the schema shape
       const schemaKeys = Object.keys(ExportedFlashcardSchema.shape);
-      expect(schemaKeys).not.toContain("deck_id");
+      expect(schemaKeys).not.toContain("deckId");
       expect(schemaKeys).toContain("deck_name"); // Should have deck_name instead
     });
 
@@ -138,9 +138,9 @@ describe("Export/Import Schema Validation", () => {
       expect(result.success).toBe(true);
     });
 
-    it("should NOT require or include deck_id", () => {
+    it("should NOT require or include deckId", () => {
       const schemaKeys = Object.keys(ImportFlashcardSchema.shape);
-      expect(schemaKeys).not.toContain("deck_id");
+      expect(schemaKeys).not.toContain("deckId");
     });
 
     it("should allow null notes", () => {
@@ -185,6 +185,7 @@ describe("Export/Import Schema Validation", () => {
       const validRequest = {
         version: "1.0",
         language: "de",
+        deckId: 1,
         flashcards: [
           {
             front: "слово",
@@ -203,6 +204,7 @@ describe("Export/Import Schema Validation", () => {
       const request = {
         version: "2.0",
         language: "de",
+        deckId: 1,
         flashcards: [],
       };
 
@@ -214,11 +216,11 @@ describe("Export/Import Schema Validation", () => {
 
 describe("Deck ID Independence", () => {
   describe("Export format excludes deck IDs", () => {
-    it("should export flashcards without deck_id, only deck_name", () => {
+    it("should export flashcards without deckId, only deck_name", () => {
       // Simulate what the export route produces
       const userAFlashcard = {
         id: 101,
-        deck_id: 2, // User A's deck ID
+        deckId: 2, // User A's deck ID
         front: "кошка",
         back: { translation: "cat", type: "phrase" },
         notes: "Animal",
@@ -233,8 +235,8 @@ describe("Deck ID Independence", () => {
         deck_name: userAFlashcard.deck.name,
       };
 
-      // Verify the exported format doesn't include deck_id
-      expect(exported).not.toHaveProperty("deck_id");
+      // Verify the exported format doesn't include deckId
+      expect(exported).not.toHaveProperty("deckId");
       expect(exported).not.toHaveProperty("id");
       expect(exported).toHaveProperty("deck_name", "Animals");
 
@@ -246,7 +248,7 @@ describe("Deck ID Independence", () => {
 
   describe("Import creates flashcards with new deck ID", () => {
     it("should transform exported data to import format", () => {
-      // Exported data from User A (deck_id: 2)
+      // Exported data from User A (deckId: 2)
       const exportedData = {
         version: "1.0",
         exported_at: "2026-01-22T10:00:00.000Z",
@@ -276,12 +278,13 @@ describe("Deck ID Independence", () => {
       const importData = {
         version: exportedData.version,
         language: "de",
+        deckId: 1,
         flashcards: exportedData.flashcards.map((card) => ({
           front: card.front,
           type: card.type,
           back: card.back,
           notes: card.notes,
-          // Note: deck_name is ignored during import, deck_id comes from user's default deck
+          // Note: deck_name is ignored during import, deckId comes from user's default deck
         })),
       };
 
@@ -296,7 +299,7 @@ describe("Deck ID Independence", () => {
       const userAFlashcards = [
         {
           id: 101,
-          deck_id: userADeckId,
+          deckId: userADeckId,
           front: "яблоко",
           type: "word" as const,
           back: { translation: "apple", type: "phrase" },
@@ -307,7 +310,7 @@ describe("Deck ID Independence", () => {
         },
         {
           id: 102,
-          deck_id: userADeckId,
+          deckId: userADeckId,
           front: "груша",
           type: "word" as const,
           back: { translation: "pear", type: "phrase" },
@@ -337,9 +340,9 @@ describe("Deck ID Independence", () => {
       // Verify export is valid
       expect(FlashcardExportSchema.safeParse(exportPayload).success).toBe(true);
 
-      // Verify no deck_id in export
+      // Verify no deckId in export
       exportPayload.flashcards.forEach((card) => {
-        expect(card).not.toHaveProperty("deck_id");
+        expect(card).not.toHaveProperty("deckId");
         expect(card).not.toHaveProperty("id");
       });
 
@@ -350,6 +353,7 @@ describe("Deck ID Independence", () => {
       const importRequest = {
         version: exportPayload.version,
         language: "de",
+        deckId: userADeckId,
         flashcards: exportPayload.flashcards.map((card) => ({
           front: card.front,
           type: card.type,
@@ -366,7 +370,7 @@ describe("Deck ID Independence", () => {
       // Step 3: Simulate what the import route creates (with User B's deck ID)
       const flashcardsToInsert = importValidation.data!.flashcards.map(
         (card) => ({
-          deck_id: userBDefaultDeckId, // User B's deck ID, NOT User A's
+          deckId: userBDefaultDeckId, // User B's deck ID, NOT User A's
           front: card.front,
           back: card.back,
           notes: card.notes || null,
@@ -375,8 +379,8 @@ describe("Deck ID Independence", () => {
 
       // Verify all inserted flashcards have User B's deck ID
       flashcardsToInsert.forEach((card) => {
-        expect(card.deck_id).toBe(userBDefaultDeckId);
-        expect(card.deck_id).not.toBe(userADeckId);
+        expect(card.deckId).toBe(userBDefaultDeckId);
+        expect(card.deckId).not.toBe(userADeckId);
       });
 
       // Verify the content is preserved

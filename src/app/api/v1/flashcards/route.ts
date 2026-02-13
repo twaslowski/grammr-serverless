@@ -1,5 +1,5 @@
 import { User } from "@supabase/supabase-js";
-import { and, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
@@ -25,7 +25,7 @@ export const GET = withApiHandler(
 
     // Build and execute query
     const result = await db
-      .selectDistinctOn([flashcards.id], {
+      .select({
         flashcard: flashcards,
         deck: {
           id: decks.id,
@@ -44,7 +44,7 @@ export const GET = withApiHandler(
         ),
       )
       .where(and(...conditions))
-      .orderBy(flashcards.id, flashcards.updatedAt);
+      .orderBy(desc(flashcards.updatedAt));
 
     // Transform to match expected format
     const flashcardsWithDeck: FlashcardWithDeck[] = result.map((row) => ({

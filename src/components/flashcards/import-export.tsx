@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { Download, FileJson, Loader2, Upload } from "lucide-react";
 import toast from "react-hot-toast";
 
+import { FlashcardImportRequest } from "@/app/api/v1/flashcards/schema";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,7 +13,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { exportFlashcards, importFlashcards } from "@/lib/flashcards";
+import { exportFlashcards, getDecks, importFlashcards } from "@/lib/flashcards";
+import { Deck } from "@/types/deck";
+import { LanguageCode } from "@/types/languages";
+
+import { ImportDeckDialog } from "./import-deck-dialog";
+
+interface ParsedImportFile {
+  version: string;
+  language: LanguageCode;
+  flashcards: FlashcardImportRequest["flashcards"];
+}
 
 interface FlashcardImportExportProps {
   onImportComplete: () => Promise<void>;
@@ -23,6 +34,11 @@ export function FlashcardImportExport({
 }: FlashcardImportExportProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [decks, setDecks] = useState<Deck[]>([]);
+  const [parsedFileData, setParsedFileData] = useState<ParsedImportFile | null>(
+    null,
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = async () => {
@@ -53,7 +69,6 @@ export function FlashcardImportExport({
 
   function handleError() {
     toast.error("Failed to import flashcards");
-    setIsImporting(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -65,7 +80,6 @@ export function FlashcardImportExport({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    setIsImporting(true);
     try {
       const text = await file.text();
       let data;
@@ -81,18 +95,39 @@ export function FlashcardImportExport({
         return;
       }
 
-      // Map export format to import format
-      const importData = {
+      // Store parsed data and fetch decks
+      setParsedFileData({
         version: data.version,
         language: data.language,
-        deck_name: data.deck_name,
-        visibility:
-          data.public !== undefined
-            ? data.public
-              ? ("public" as const)
-              : ("private" as const)
-            : data.visibility,
         flashcards: data.flashcards,
+      });
+
+      // Fetch user's decks for the dialog
+      const userDecks = await getDecks();
+      setDecks(userDecks.filter((d) => d.userId)); // Only show owned decks
+      setShowImportDialog(true);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to read file";
+      toast.error(message);
+    } finally {
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleImportConfirm = async (deckId: number) => {
+    if (!parsedFileData) return;
+
+    setIsImporting(true);
+    try {
+      const importData = {
+        version: parsedFileData.version,
+        deckId: deckId,
+        language: parsedFileData.language,
+        flashcards: parsedFileData.flashcards,
       };
 
       const result = await importFlashcards(importData);
@@ -100,6 +135,8 @@ export function FlashcardImportExport({
         `Successfully imported ${result.imported_count} flashcards!`,
       );
 
+      setShowImportDialog(false);
+      setParsedFileData(null);
       await onImportComplete();
     } catch (error) {
       const message =
@@ -107,10 +144,6 @@ export function FlashcardImportExport({
       toast.error(message);
     } finally {
       setIsImporting(false);
-      // Reset the file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
     }
   };
 
@@ -168,6 +201,21 @@ export function FlashcardImportExport({
           />
         </CardContent>
       </Card>
+
+      <ImportDeckDialog
+        open={showImportDialog}
+        onOpenChange={(open) => {
+          setShowImportDialog(open);
+          if (!open) {
+            setParsedFileData(null);
+          }
+        }}
+        language={parsedFileData?.language}
+        decks={decks}
+        flashcardCount={parsedFileData?.flashcards.length ?? 0}
+        onConfirm={handleImportConfirm}
+        isLoading={isImporting}
+      />
     </section>
   );
 }

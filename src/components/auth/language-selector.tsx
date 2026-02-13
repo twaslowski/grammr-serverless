@@ -34,10 +34,10 @@ export function LanguageSelector({ profile, mode }: LanguageSelectorProps) {
   const [step, setStep] = useState<Step>("source");
   const [selectedSourceLanguage, setSelectedSourceLanguage] = useState<
     LanguageCode | undefined
-  >(profile?.source_language);
+  >(profile?.sourceLanguage);
   const [selectedTargetLanguage, setSelectedTargetLanguage] = useState<
     LanguageCode | undefined
-  >(profile?.target_language);
+  >(profile?.targetLanguage);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();

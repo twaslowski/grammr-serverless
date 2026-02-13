@@ -9,7 +9,7 @@ export default function TranslationPage() {
   const profile = useProfile();
 
   // Trigger Lambda warmup on page load
-  usePreflightWarmup(profile.target_language);
+  usePreflightWarmup(profile.targetLanguage);
 
   return (
     <PageLayout
