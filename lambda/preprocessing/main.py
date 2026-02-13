@@ -27,8 +27,6 @@ def main(language: str, max_lines: int | None):
         "version": "1.0",
         "exported_at": datetime.datetime.now().isoformat(),
         "language": language,
-        "deck_name": f"{language} flashcards",
-        "public": True,
         "flashcards": [],
     }
     with open(f"data/in/{language}.csv", "r", encoding="utf-8") as f:
@@ -45,7 +43,7 @@ def main(language: str, max_lines: int | None):
                 continue
 
             # General flashcard data
-            flashcard = _init_flashcard(phrase, translation)
+            flashcard = _init_flashcard(phrase, translation, language)
 
             try:
                 flashcard["back"].update(retrieve_morphology(phrase, language))
@@ -87,13 +85,14 @@ def main(language: str, max_lines: int | None):
         out.write(json.dumps(import_file_data, ensure_ascii=False))
 
 
-def _init_flashcard(phrase: str, translation: str) -> dict[str, Any]:
+def _init_flashcard(phrase: str, translation: str, language: str) -> dict[str, Any]:
     flashcard = {
         "front": phrase,
         "notes": "",
         "back": {
             "type": "analysis",
-            "source_phrase": phrase,
+            "language": language,
+            "text": phrase,
             "translation": translation,
         },
     }
@@ -103,7 +102,7 @@ def _init_flashcard(phrase: str, translation: str) -> dict[str, Any]:
 def retrieve_morphology(phrase: str, language: str) -> dict:
     response = requests.post(
         f"{api_gw_base_url}/morphology/{language}",
-        json={"phrase": phrase},
+        json={"text": phrase},
         headers={"Content-Type": "application/json"},
     )
     _logger.debug(

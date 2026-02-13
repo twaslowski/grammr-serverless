@@ -27,8 +27,8 @@ locals {
   inflections_ru_version = "0.1.7"
 
   inflections_latin = {
-    languages = toset(["es", "it", "pt"])
-    version   = "0.3.0"
+    languages = toset(["es", "it", "pt", "fr"])
+    version   = "0.3.1"
   }
 
   lambda_allowed_triggers = {

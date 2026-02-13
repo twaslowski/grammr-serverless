@@ -7,7 +7,7 @@ logger.setLevel(logging.INFO)
 
 def ok(res: dict | list, context: dict) -> dict:
     context.update({"success": True, "status": 200})
-    logger.info(json.dumps(context))
+    logger.info(json.dumps(context, ensure_ascii=False))
 
     return {
         "statusCode": 200,
@@ -18,7 +18,7 @@ def ok(res: dict | list, context: dict) -> dict:
 
 def fail(status: int, error: str, context: dict) -> dict:
     context.update({"success": False, "status": status, "error": error})
-    logger.error(json.dumps(context))
+    logger.error(json.dumps(context, ensure_ascii=False))
 
     return {
         "statusCode": status,

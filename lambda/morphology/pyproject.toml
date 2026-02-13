@@ -1,6 +1,6 @@
 [project]
 name = "morphology"
-version = "0.2.0"
+version = "0.2.1"
 description = "Provider for the morphology API for grammr-serverless"
 readme = "README.md"
 requires-python = ">=3.12"

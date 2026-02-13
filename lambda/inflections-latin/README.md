@@ -11,8 +11,8 @@ Most notably, only conjugations are supported.
 export AWS_ACCOUNT_ID=<AWS_ACCOUNT_ID>
 export AWS_REGION=<AWS_REGION>
 
-docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-latin:0.1.0
-docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-latin:0.1.0
+docker build --build-arg LANGUAGE_CODE=es -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-latin:0.1.0-es .
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/grammr/inflections-latin:0.1.0-es
 ```
 
 ## Local Testing
@@ -23,7 +23,7 @@ which is included in the AWS Lambda base images.
 1. Run the container:
 
    ```bash
-   docker run -p 9000:8080 grammr/inflections-latin:0.2.0
+   docker run -p 9000:8080 grammr/inflections-latin:0.2.0-es
    ```
 
 2. Send a test request:
