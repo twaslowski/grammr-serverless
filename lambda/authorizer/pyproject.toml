@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Custom authorizer for the grammr API Gateway"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "cryptography>=46.0.5",
+    "pyjwt>=2.11.0",
+]
 
 [dependency-groups]
 dev = [

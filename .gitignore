@@ -63,6 +63,8 @@ __pycache__
 builds/
 
 test.json
+test.txt
+
 *.log
 *.zip
 

@@ -1,37 +1,88 @@
 import json
 import os
 import logging
+from typing import Protocol
 
-logger = logging.getLogger("root")
+import jwt
+from jwt import PyJWKClient, PyJWK
+
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-valid_key = os.getenv("VALID_API_KEY")
+
+# ---------------------------------------------------------------------------
+# Key provider abstraction
+# ---------------------------------------------------------------------------
+
+class KeyProvider(Protocol):
+    """Retrieves a signing key for a given JWT."""
+
+    def get_signing_key_from_jwt(self, token: str) -> PyJWK:
+        ...
 
 
-def authorize(api_key: str, expected_api_key: str) -> dict:
-    if api_key == expected_api_key:
-        return {"isAuthorized": True}
-    return { "isAuthorized": False }
+class JWKSKeyProvider:
+    """Production key provider backed by a remote JWKS endpoint."""
+
+    def __init__(self, jwks_url: str) -> None:
+        self._client = PyJWKClient(jwks_url, cache_keys=True)
+
+    def get_signing_key_from_jwt(self, token: str) -> PyJWK:
+        return self._client.get_signing_key_from_jwt(token)
 
 
-def lambda_handler(event, _):
-    # Normalize header keys to lowercase for case-insensitive lookup
-    headers = {k.lower(): v for k, v in event.get("headers", {}).items()}
-    api_key = headers.get("x-api-key", "")
+def _default_key_provider() -> KeyProvider:
+    jwks_url = os.environ["SUPABASE_JWK_URL"]
+    return JWKSKeyProvider(jwks_url)
 
-    result = authorize(api_key, valid_key)
 
-    logger.info(json.dumps({
-        "result": result,
-        "reason": None,
-        "error": False
-    }))
+# ---------------------------------------------------------------------------
+# Core validation logic
+# ---------------------------------------------------------------------------
 
-    return result
+def validate(token: str, key_provider: KeyProvider) -> bool:
+    """Return True if the token is a valid, unexpired Supabase JWT."""
+    if not token:
+        return False
+    try:
+        signing_key = key_provider.get_signing_key_from_jwt(token)
+        jwt.decode(
+            token,
+            signing_key.key,
+            algorithms=["ES256"],
+            audience="authenticated",
+        )
+        return True
+    except Exception as exc:
+        logger.info(token)
+        logger.warning(json.dumps({
+            "message": "Token validation failed",
+            "error": str(exc),
+        }))
+        return False
 
+
+# ---------------------------------------------------------------------------
+# Lambda entry point
+# ---------------------------------------------------------------------------
+
+def lambda_handler(event: dict, context, key_provider: KeyProvider | None = None) -> dict:
+    key_provider = _default_key_provider()
+
+    auth_header = event.get("headers", {}).get("authorization", "")
+    parts = auth_header.split()
+    token = parts[1] if len(parts) == 2 and parts[0].lower() == "bearer" else ""
+
+    result = validate(token, key_provider)
+    return {"isAuthorized": result}
+
+
+# ---------------------------------------------------------------------------
+# Local smoke test
+# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    with open("event.json") as f:
-        e = json.load(f)
-    result = lambda_handler(e, None)
-    print(json.dumps(result, indent=2))
+    with open("test.txt") as f:
+        contents = f.read().strip()
+    event = {"headers": {"authorization": f"Bearer {contents}"}}
+    print(lambda_handler(event, None))
