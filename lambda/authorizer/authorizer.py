@@ -14,11 +14,11 @@ logger.setLevel(logging.INFO)
 # Key provider abstraction
 # ---------------------------------------------------------------------------
 
+
 class KeyProvider(Protocol):
     """Retrieves a signing key for a given JWT."""
 
-    def get_signing_key_from_jwt(self, token: str) -> PyJWK:
-        ...
+    def get_signing_key_from_jwt(self, token: str) -> PyJWK: ...
 
 
 class JWKSKeyProvider:
@@ -40,6 +40,7 @@ def _default_key_provider() -> KeyProvider:
 # Core validation logic
 # ---------------------------------------------------------------------------
 
+
 def validate(token: str, key_provider: KeyProvider) -> bool:
     """Return True if the token is a valid, unexpired Supabase JWT."""
     if not token:
@@ -55,10 +56,14 @@ def validate(token: str, key_provider: KeyProvider) -> bool:
         return True
     except Exception as exc:
         logger.info(token)
-        logger.warning(json.dumps({
-            "message": "Token validation failed",
-            "error": str(exc),
-        }))
+        logger.warning(
+            json.dumps(
+                {
+                    "message": "Token validation failed",
+                    "error": str(exc),
+                }
+            )
+        )
         return False
 
 
@@ -66,8 +71,12 @@ def validate(token: str, key_provider: KeyProvider) -> bool:
 # Lambda entry point
 # ---------------------------------------------------------------------------
 
-def lambda_handler(event: dict, context, key_provider: KeyProvider | None = None) -> dict:
-    key_provider = _default_key_provider()
+
+def lambda_handler(
+    event: dict, context, key_provider: KeyProvider | None = None
+) -> dict:
+    if not key_provider:
+        key_provider = _default_key_provider()
 
     auth_header = event.get("headers", {}).get("authorization", "")
     parts = auth_header.split()

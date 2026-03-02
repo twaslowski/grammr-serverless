@@ -21,10 +21,10 @@ import time
 import jwt
 import pytest
 from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from jwt import PyJWK, PyJWKClientError
 
 from authorizer import lambda_handler, validate
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -50,6 +50,9 @@ def _make_token(
 ) -> str:
     """Sign and return a JWT. kid is always embedded in the JOSE header."""
     now = int(time.time())
+    print(
+        f"{private_key.public_key().public_bytes(encoding=Encoding.PEM, format=PublicFormat.SubjectPublicKeyInfo).decode()}"
+    )
     payload = {
         "sub": subject,
         "aud": audience,
@@ -111,6 +114,7 @@ class StaticKeyProvider:
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def key_pair():
     return _generate_ec_key_pair()
@@ -135,6 +139,7 @@ def key_provider(public_key):
 # validate() unit tests
 # ---------------------------------------------------------------------------
 
+
 class TestValidate:
     def test_valid_token_returns_true(self, private_key, key_provider):
         token = _make_token(private_key)
@@ -154,8 +159,8 @@ class TestValidate:
     def test_tampered_signature_returns_false(self, private_key, key_provider):
         token = _make_token(private_key)
         header, payload, signature = token.rsplit(".", 2)
-        bad_char = "A" if signature[-1] != "A" else "B"
-        tampered = f"{header}.{payload}.{signature[:-1]}{bad_char}"
+        bad_chars = "TAMPER"
+        tampered = f"{header}.{payload}.{signature[:-6]}{bad_chars}"
         assert validate(tampered, key_provider) is False
 
     def test_token_signed_with_different_key_returns_false(self, key_provider):
@@ -177,6 +182,7 @@ class TestValidate:
 # ---------------------------------------------------------------------------
 # lambda_handler() integration tests
 # ---------------------------------------------------------------------------
+
 
 class TestLambdaHandler:
     def _event(self, token: str) -> dict:
@@ -200,7 +206,9 @@ class TestLambdaHandler:
         result = lambda_handler({}, None, key_provider=key_provider)
         assert result == {"isAuthorized": False}
 
-    def test_authorization_header_without_bearer_prefix(self, private_key, key_provider):
+    def test_authorization_header_without_bearer_prefix(
+        self, private_key, key_provider
+    ):
         token = _make_token(private_key)
         event = {"headers": {"authorization": token}}
         result = lambda_handler(event, None, key_provider=key_provider)
@@ -221,8 +229,8 @@ class TestLambdaHandler:
     def test_unauthorized_with_tampered_token(self, private_key, key_provider):
         token = _make_token(private_key)
         header, payload, sig = token.rsplit(".", 2)
-        bad_char = "A" if sig[-1] != "A" else "B"
-        tampered = f"{header}.{payload}.{sig[:-1]}{bad_char}"
+        bad_chars = "TAMPER"
+        tampered = f"{header}.{payload}.{sig[:-6]}{bad_chars}"
         result = lambda_handler(self._event(tampered), None, key_provider=key_provider)
         assert result == {"isAuthorized": False}
 
