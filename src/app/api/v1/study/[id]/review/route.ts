@@ -53,8 +53,8 @@ export const POST = withApiHandler(
       lapses: cardData.lapses,
       state: cardData.state,
       last_review: cardData.lastReview,
-      created_at: cardData.createdAt,
-      updated_at: cardData.updatedAt,
+      created_at: cardData.createdAt.toISOString(),
+      updated_at: cardData.updatedAt.toISOString(),
     };
 
     // Process the review using FSRS
@@ -95,7 +95,7 @@ export const POST = withApiHandler(
       const reviewLogData = await db
         .insert(reviewLogs)
         .values({
-          cardId: params.id,
+          flashcardStudyId: params.id,
           rating: reviewLog.rating,
           state: reviewLog.state,
           due: reviewLog.due,

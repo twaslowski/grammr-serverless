@@ -1,13 +1,13 @@
 import "./globals.css";
 
 import type { Metadata, Viewport } from "next";
+import Script from "next/dist/client/script";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
 
 import { Header } from "@/components/header";
 import { ConfirmationProvider } from "@/components/ui/confirmation-provider";
-import Script from "next/dist/client/script";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

@@ -1,11 +1,11 @@
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { profile } from "@/db/schemas";
+import { profiles } from "@/db/schemas";
 
 import { LanguageCodeSchema } from "./languages";
 
-export const ProfileSchema = createSelectSchema(profile, {
+export const ProfileSchema = createSelectSchema(profiles, {
   sourceLanguage: LanguageCodeSchema,
   targetLanguage: LanguageCodeSchema,
 });

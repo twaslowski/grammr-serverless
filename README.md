@@ -162,7 +162,7 @@ To run with all NLP capabilities:
 4. **Configure frontend**:
    Create `.env.local`:
    ```bash
-   DATABASE_URL=postgresql://...
+   DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
    API_GW_URL=https://your-api-gateway.execute-api.us-east-1.amazonaws.com
    API_GW_API_KEY=your-api-key
    NEXT_PUBLIC_SUPABASE_URL=...
@@ -354,9 +354,6 @@ pnpm db:push
 # Apply to production (via migration files)
 pnpm db:migrate
 ```
-
-**Note:** Legacy migrations in `supabase/migrations/` are still the current source of truth. New migrations are managed
-via Drizzle.
 
 ## API Documentation
 

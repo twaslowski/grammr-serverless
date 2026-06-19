@@ -67,3 +67,4 @@ test.json
 *.zip
 
 models/
+drizzle-prod.config.ts

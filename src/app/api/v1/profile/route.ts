@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { db } from "@/db/connect";
-import { decks, deckStudy, profile } from "@/db/schemas";
+import { decks, deckStudy, profiles } from "@/db/schemas";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { LanguageCode, LanguageCodeSchema } from "@/types/languages";
 
@@ -22,14 +22,14 @@ export const POST = withApiHandler(
     const { sourceLanguage, targetLanguage } = body;
 
     await db
-      .insert(profile)
+      .insert(profiles)
       .values({
         id: user.id,
         sourceLanguage: sourceLanguage,
         targetLanguage: targetLanguage,
       })
       .onConflictDoUpdate({
-        target: profile.id,
+        target: profiles.id,
         set: {
           sourceLanguage: sourceLanguage,
           targetLanguage: targetLanguage,

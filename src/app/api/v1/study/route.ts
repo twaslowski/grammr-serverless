@@ -127,8 +127,8 @@ export const GET = withApiHandler(
         lapses: cardData.lapses,
         state: cardData.state,
         last_review: cardData.lastReview,
-        created_at: cardData.createdAt,
-        updated_at: cardData.updatedAt,
+        created_at: cardData.createdAt.toISOString(),
+        updated_at: cardData.updatedAt.toISOString(),
       };
 
       // Generate scheduling options for this card

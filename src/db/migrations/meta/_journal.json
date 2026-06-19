@@ -5,50 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1707609600000,
-      "tag": "0000_cleanup_legacy",
+      "when": 1781868232999,
+      "tag": "0000_baseline",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1707609601000,
-      "tag": "0001_profiles",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1707609602000,
-      "tag": "0002_decks",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1707609603000,
-      "tag": "0003_flashcards",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1707609604000,
-      "tag": "0004_deck_study",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1707609605000,
-      "tag": "0005_fsrs",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1770888190796,
-      "tag": "0006_flashcard_back",
+      "when": 1781871710270,
+      "tag": "0001_parallel_nova",
       "breakpoints": true
     }
   ]

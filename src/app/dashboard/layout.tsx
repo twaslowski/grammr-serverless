@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { ProfileProvider } from "@/components/dashboard/profile-provider";
 import { db } from "@/db/connect";
-import { profile } from "@/db/schemas";
+import { profiles } from "@/db/schemas";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileSchema } from "@/types/profile";
 
@@ -28,8 +28,8 @@ export default async function ProtectedLayout({
   // Check if user has a profile with language preferences
   const userProfile = await db
     .select()
-    .from(profile)
-    .where(eq(profile.id, user.id))
+    .from(profiles)
+    .where(eq(profiles.id, user.id))
     .limit(1)
     .then((res) => ProfileSchema.parse(res[0]))
     .catch((err) => {

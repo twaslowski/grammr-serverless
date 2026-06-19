@@ -1,6 +1,6 @@
 {
-  "id": "042c1e55-45b8-4884-8e18-b810cf00aa24",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "21d37aaa-09f9-4845-bc85-0cdd06fe9561",
+  "prevId": "042c1e55-45b8-4884-8e18-b810cf00aa24",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -446,8 +446,7 @@
               "expression": "deck_id",
               "isExpression": false,
               "asc": true,
-              "nulls": "last",
-              "opclass": "int4_ops"
+              "nulls": "last"
             }
           ],
           "isUnique": false,
@@ -462,15 +461,13 @@
               "expression": "user_id",
               "isExpression": false,
               "asc": true,
-              "nulls": "last",
-              "opclass": "timestamp_ops"
+              "nulls": "last"
             },
             {
               "expression": "due",
               "isExpression": false,
               "asc": true,
-              "nulls": "last",
-              "opclass": "uuid_ops"
+              "nulls": "last"
             }
           ],
           "isUnique": false,
@@ -486,15 +483,13 @@
               "expression": "user_id",
               "isExpression": false,
               "asc": true,
-              "nulls": "last",
-              "opclass": "enum_ops"
+              "nulls": "last"
             },
             {
               "expression": "state",
               "isExpression": false,
               "asc": true,
-              "nulls": "last",
-              "opclass": "enum_ops"
+              "nulls": "last"
             }
           ],
           "isUnique": false,
@@ -604,7 +599,7 @@
           "as": "PERMISSIVE",
           "for": "ALL",
           "to": ["public"],
-          "using": " (select auth.uid()) = \"profiles\".\"id\""
+          "using": "(( SELECT auth.uid() AS uid) = id)"
         }
       },
       "checkConstraints": {},
