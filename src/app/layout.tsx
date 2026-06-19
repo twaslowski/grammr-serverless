@@ -55,7 +55,9 @@ export default function RootLayout({
                 <Header />
               </div>
               <Toaster />
-              <main className="flex-1 overflow-auto">{children}</main>
+              <main className="min-h-screen flex flex-col flex-1 items-center p-6 overflow-auto">
+                {children}
+              </main>
             </div>
           </ConfirmationProvider>
         </ThemeProvider>

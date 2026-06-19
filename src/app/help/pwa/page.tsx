@@ -1,9 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { CheckCircle2, ImageIcon, Share, SquarePlus } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { CheckCircle2, Download, Share, SquarePlus } from "lucide-react";
 
 import { PageLayout } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+
+  readonly userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
 
 const STEPS = [
   {
@@ -26,6 +33,9 @@ const STEPS = [
 function InstallPrompt() {
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
+  const [installed, setInstalled] = useState(false);
+  const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     setIsIOS(
@@ -34,7 +44,35 @@ function InstallPrompt() {
         !(window as Window & { MSStream?: unknown }).MSStream,
     );
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      deferredPrompt.current = e as BeforeInstallPromptEvent;
+      setCanInstall(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+
+    window.addEventListener("appinstalled", () => {
+      setInstalled(true);
+      setCanInstall(false);
+      deferredPrompt.current = null;
+    });
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
   }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt.current) return;
+    await deferredPrompt.current.prompt();
+    const { outcome } = await deferredPrompt.current.userChoice;
+    if (outcome === "accepted") {
+      deferredPrompt.current = null;
+      setCanInstall(false);
+    }
+  };
 
   if (isStandalone) {
     return null; // Don't show install button if already installed
@@ -50,6 +88,25 @@ function InstallPrompt() {
         backLabel: "Back home",
       }}
     >
+      {canInstall && (
+        <div className="flex flex-col items-start gap-3 rounded-xl border border-border bg-card p-6">
+          <p className="text-sm text-muted-foreground">
+            Your browser supports one-click installation.
+          </p>
+          {installed ? (
+            <p className="flex items-center gap-2 text-sm font-medium text-green-600">
+              <CheckCircle2 className="h-4 w-4" />
+              Grammr has been installed!
+            </p>
+          ) : (
+            <Button onClick={handleInstallClick}>
+              <Download className="mr-2 h-4 w-4" />
+              Install Grammr
+            </Button>
+          )}
+        </div>
+      )}
+
       {isIOS && (
         <div className="grid gap-8 md:grid-cols-2 md:items-start">
           {/* Steps */}
@@ -77,16 +134,16 @@ function InstallPrompt() {
               );
             })}
           </ol>
+        </div>
+      )}
 
-          {/* Screenshot placeholder */}
-          <div className="flex aspect-[9/16] max-h-[480px] w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-muted/30 text-muted-foreground md:mx-auto md:max-w-xs">
-            <ImageIcon className="h-8 w-8" />
-            <p className="text-sm">Add a screenshot here</p>
-            <p className="px-6 text-center text-xs">
-              e.g. the iOS share sheet with &quot;Add to Home Screen&quot;
-              highlighted
-            </p>
-          </div>
+      {!isIOS && !canInstall && (
+        <div className="rounded-xl border border-border bg-card p-6">
+          <p className="text-sm text-muted-foreground">
+            Your browser does not support PWA installation or you have already
+            installed it. Please check your browser settings or try a different
+            browser.
+          </p>
         </div>
       )}
     </PageLayout>

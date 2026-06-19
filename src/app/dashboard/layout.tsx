@@ -39,9 +39,7 @@ export default async function ProtectedLayout({
 
   return (
     <ProfileProvider profile={userProfile}>
-      <main className="min-h-screen flex flex-col items-center p-6">
-        {children}
-      </main>
+      <main>{children}</main>
     </ProfileProvider>
   );
 }
