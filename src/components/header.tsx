@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AuthButton } from "@/components/auth/auth-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
+import { InstallPrompt } from "@/components/pwa/install";
 
 export const Header = () => {
   return (
@@ -15,6 +16,7 @@ export const Header = () => {
       </Link>
 
       <div className="flex items-center gap-4">
+        <InstallPrompt />
         <AuthButton />
         <ThemeSwitcher />
       </div>

@@ -23,8 +23,8 @@ import { getPosLabel } from "@/lib/feature-labels";
 import { createFlashcardBack } from "@/lib/flashcards";
 import {
   FALLBACK_FEATURE_TYPE,
-  getFeatureDisplayType,
   getFeatureDisplayValue,
+  getOrderedFeatures,
 } from "@/types/feature";
 import { Paradigm } from "@/types/inflections";
 import { LanguageCode } from "@/types/languages";
@@ -129,20 +129,18 @@ export function WordDetailsDialog({
                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                     Grammatical Features
                   </p>
-                  <div className="space-y-1">
-                    {morphology.features
-                      .filter((f) => f.type !== FALLBACK_FEATURE_TYPE)
-                      .map((feature, index) => (
-                        <div
-                          key={index}
-                          className="text-sm flex items-center gap-2"
-                        >
-                          <span className="font-medium text-muted-foreground">
-                            {getFeatureDisplayType(feature)}:
-                          </span>
-                          <span>{getFeatureDisplayValue(feature)}</span>
-                        </div>
-                      ))}
+                  <div className="flex items-center gap-2 text-sm flex-wrap">
+                    {getOrderedFeatures(
+                      morphology.features,
+                      morphology.pos,
+                    ).map((feature, index, arr) => (
+                      <React.Fragment key={index}>
+                        <span>{getFeatureDisplayValue(feature)}</span>
+                        {index < arr.length - 1 && (
+                          <span className="text-muted-foreground">·</span>
+                        )}
+                      </React.Fragment>
+                    ))}
                   </div>
                 </div>
               )}

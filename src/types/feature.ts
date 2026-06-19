@@ -4,6 +4,7 @@ import {
   getFeatureTypeLabel,
   getFeatureValueLabel,
 } from "@/lib/feature-labels";
+import { isNounLike, isVerbLike } from "@/types/inflections";
 
 export const FALLBACK_FEATURE_TYPE = "OTHER";
 
@@ -28,6 +29,9 @@ export const FeatureSchema = z.object({
 });
 export type Feature = z.infer<typeof FeatureSchema>;
 
+const NOUN_FEATURE_ORDER = ["CASE", "NUMBER", "GENDER"];
+const VERB_FEATURE_ORDER = ["PERSON", "NUMBER", "TENSE"];
+
 /**
  * Get the human-readable display name for a feature value.
  */
@@ -40,4 +44,29 @@ export function getFeatureDisplayValue(feature: Feature): string {
  */
 export function getFeatureDisplayType(feature: Feature): string {
   return getFeatureTypeLabel(feature.type);
+}
+
+export function getOrderedFeatures(
+  features: Feature[],
+  pos: string,
+): Feature[] {
+  const filtered = features.filter((f) => f.type !== FALLBACK_FEATURE_TYPE);
+  const order = isNounLike(pos)
+    ? NOUN_FEATURE_ORDER
+    : isVerbLike(pos)
+      ? VERB_FEATURE_ORDER
+      : [];
+
+  if (order.length === 0) return filtered;
+
+  const ordered: Feature[] = [];
+  for (const type of order) {
+    const f = filtered.find((f) => f.type === type);
+    if (f) ordered.push(f);
+  }
+  // Append any remaining features not in the order
+  for (const f of filtered) {
+    if (!order.includes(f.type)) ordered.push(f);
+  }
+  return ordered;
 }

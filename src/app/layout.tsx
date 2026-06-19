@@ -1,6 +1,6 @@
 import "./globals.css";
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
@@ -23,6 +23,10 @@ export const metadata: Metadata = {
   manifest: `/favicon/site.webmanifest`,
   description:
     "Understand grammar with context. Analyze sentences, build flashcard decks, and learn languages systematically.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
 };
 
 const geistSans = Geist({
