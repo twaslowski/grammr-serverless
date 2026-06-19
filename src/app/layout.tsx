@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 
 import { Header } from "@/components/header";
 import { ConfirmationProvider } from "@/components/ui/confirmation-provider";
+import Script from "next/dist/client/script";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -43,6 +44,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.className} antialiased`}>
+        <Script
+          defer
+          src="https://tracking.twaslowski.com/script.js"
+          data-website-id="2ec9d61e-79f4-4a59-a12c-075bd04c54ae"
+          strategy="afterInteractive"
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
