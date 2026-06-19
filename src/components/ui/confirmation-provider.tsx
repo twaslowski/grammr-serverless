@@ -61,6 +61,8 @@ export function ConfirmationProvider({ children }: ConfirmationProviderProps) {
       setState((prev) => ({ ...prev, isLoading: false }));
       throw error; // Re-throw so consumer can handle it
     }
+    // todo: fix react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.onConfirm]);
 
   return (

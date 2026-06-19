@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { DownloadIcon } from "lucide-react";
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 
 export function InstallPrompt() {
   const [isIOS, setIsIOS] = useState(false);
@@ -11,7 +12,8 @@ export function InstallPrompt() {
 
   useEffect(() => {
     setIsIOS(
-      /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream,
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+        !(window as Window & { MSStream?: unknown }).MSStream,
     );
 
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { CheckCircle2, ImageIcon, Share, SquarePlus } from "lucide-react";
+
 import { PageLayout } from "@/components/page-header";
-import { Share, SquarePlus, CheckCircle2, ImageIcon } from "lucide-react";
 
 const STEPS = [
   {
@@ -28,7 +29,9 @@ function InstallPrompt() {
 
   useEffect(() => {
     setIsIOS(
-      /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream,
+      /* eslint */
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+        !(window as Window & { MSStream?: unknown }).MSStream,
     );
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
   }, []);
@@ -80,7 +83,8 @@ function InstallPrompt() {
             <ImageIcon className="h-8 w-8" />
             <p className="text-sm">Add a screenshot here</p>
             <p className="px-6 text-center text-xs">
-              e.g. the iOS share sheet with "Add to Home Screen" highlighted
+              e.g. the iOS share sheet with &quot;Add to Home Screen&quot;
+              highlighted
             </p>
           </div>
         </div>

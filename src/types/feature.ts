@@ -4,6 +4,7 @@ import {
   getFeatureTypeLabel,
   getFeatureValueLabel,
 } from "@/lib/feature-labels";
+// todo: this results in a circular import. fix.
 import { isNounLike, isVerbLike } from "@/types/inflections";
 
 export const FALLBACK_FEATURE_TYPE = "OTHER";
