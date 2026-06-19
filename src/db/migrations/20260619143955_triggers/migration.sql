@@ -1,4 +1,18 @@
 -- Custom SQL migration file, put your code below! --
+DROP TRIGGER IF EXISTS on_profile_created ON profiles;
+DROP FUNCTION IF EXISTS public.handle_new_profile();
+
+DROP TRIGGER IF EXISTS on_default_deck_created ON deck;
+DROP FUNCTION IF EXISTS public.handle_deck_created();
+
+DROP TRIGGER IF EXISTS on_flashcard_created ON flashcard;
+DROP FUNCTION IF EXISTS public.handle_new_flashcard();
+
+DROP TRIGGER IF EXISTS on_deck_study_created ON deck_study;
+DROP FUNCTION IF EXISTS public.handle_new_deck_study();
+
+DROP TRIGGER IF EXISTS on_deck_study_deleted ON deck_study;
+DROP FUNCTION IF EXISTS public.handle_deck_study_deletion();
 
 -- Create a default deck when a new profile is created
 CREATE OR REPLACE FUNCTION public.handle_new_profile()

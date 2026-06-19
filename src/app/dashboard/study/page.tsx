@@ -1,7 +1,9 @@
+import { Metadata } from "next";
+
 import { PageLayout } from "@/components/page-header";
 import { StudySession } from "@/components/study";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Study | Grammr",
   description: "Review your flashcards with spaced repetition",
 };

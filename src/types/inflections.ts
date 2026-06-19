@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { FeatureSchema } from "@/types/feature";
+import { FeatureSchema, isNounLike, isVerbLike } from "@/types/feature";
 import { LanguageCodeSchema } from "@/types/languages";
 
 // Part of Speech enum, defaults to X for unknown values
@@ -68,14 +68,7 @@ export const ParadigmSchema = z.object({
 export type Paradigm = z.infer<typeof ParadigmSchema>;
 
 // Helper to check if POS is noun-like (NOUN, ADJ)
-export function isNounLike(pos: string): boolean {
-  return pos === "NOUN" || pos === "ADJ";
-}
-
-// Helper to check if POS is verb-like (VERB, AUX)
-export function isVerbLike(pos: string): boolean {
-  return pos === "VERB" || pos === "AUX";
-}
+export { isNounLike, isVerbLike };
 
 // Case display order for noun-like words
 export const CASE_ORDER = ["NOM", "GEN", "DAT", "ACC", "ABL", "LOC"] as const;
