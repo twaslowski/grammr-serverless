@@ -3,7 +3,12 @@ import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { decks, deckStudy, flashcards, flashcardStudy } from "@/db/schemas";
+import {
+  decks,
+  deckStudy,
+  flashcards,
+  flashcardStudy,
+} from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { FlashcardBack, FlashcardWithDeck } from "@/types/flashcards";
 

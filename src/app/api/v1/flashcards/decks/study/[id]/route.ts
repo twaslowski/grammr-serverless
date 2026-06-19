@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { decks, deckStudy } from "@/db/schemas";
+import { decks, deckStudy } from "@/db/schemas/schema";
 import { takeUniqueOrThrow } from "@/db/util";
 import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 

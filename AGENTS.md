@@ -695,7 +695,7 @@ pnpm e2e -- --project=chromium-ru  # Run specific project
    ```typescript
    // NEW: Drizzle
    import { db } from "@/db/connect";
-   import { flashcards } from "@/db/schemas";
+   import { flashcards } from "@/db/schemas/schema";
    import { eq } from "drizzle-orm";
    
    const data = await db.query.flashcards.findMany({
@@ -785,7 +785,7 @@ Known limitations, potential improvements.
 import {decks} from "@/db/schemas/deck";
 
 // ✅ GOOD
-import {decks} from "@/db/schemas";
+import {decks} from "@/db/schemas/schema";
 ```
 
 ### 2. Client/Server Boundary Confusion

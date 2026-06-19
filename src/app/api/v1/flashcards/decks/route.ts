@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { CreateDeckRequestSchema } from "@/app/api/v1/flashcards/schema";
 import { db } from "@/db/connect";
-import { decks, deckStudy } from "@/db/schemas";
+import { decks, deckStudy } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 
 // GET /api/v1/flashcards/decks - List all decks the user owns or studies, via a deck_study subquery

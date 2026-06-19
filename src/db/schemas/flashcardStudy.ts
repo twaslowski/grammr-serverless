@@ -14,7 +14,7 @@ import {
 import { authUsers } from "drizzle-orm/supabase";
 
 import { flashcards } from "@/db/schemas/flashcard";
-import { cardState } from "@/db/schemas/index";
+import { cardState } from "@/db/schemas/schema";
 
 import { decks } from "./deck";
 

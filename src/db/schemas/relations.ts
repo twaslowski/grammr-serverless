@@ -1,80 +1,65 @@
-import { relations } from "drizzle-orm/relations";
+import { defineRelations } from "drizzle-orm/relations";
 import { authUsers } from "drizzle-orm/supabase";
 
-import {
-  decks,
-  deckStudy,
-  flashcards,
-  flashcardStudy,
-  profiles,
-  reviewLogs,
-} from "./index";
+import * as schema from "./schema";
 
-export const profilesRelations = relations(profiles, ({ one }) => ({
-  usersInAuth: one(authUsers, {
-    fields: [profiles.id],
-    references: [authUsers.id],
-  }),
-}));
-
-export const usersInAuthRelations = relations(authUsers, ({ many }) => ({
-  profiles: many(profiles),
-  deckStudies: many(deckStudy),
-  flashcardStudies: many(flashcardStudy),
-  decks: many(decks),
-}));
-
-export const deckStudyRelations = relations(deckStudy, ({ one }) => ({
-  deck: one(decks, {
-    fields: [deckStudy.deckId],
-    references: [decks.id],
-  }),
-  usersInAuth: one(authUsers, {
-    fields: [deckStudy.userId],
-    references: [authUsers.id],
-  }),
-}));
-
-export const deckRelations = relations(decks, ({ one, many }) => ({
-  deckStudies: many(deckStudy),
-  flashcardStudies: many(flashcardStudy),
-  usersInAuth: one(authUsers, {
-    fields: [decks.userId],
-    references: [authUsers.id],
-  }),
-  flashcards: many(flashcards),
-}));
-
-export const flashcardStudyRelations = relations(
-  flashcardStudy,
-  ({ one, many }) => ({
-    flashcard: one(flashcards, {
-      fields: [flashcardStudy.flashcardId],
-      references: [flashcards.id],
+export const relations = defineRelations({ ...schema, authUsers }, (r) => ({
+  decks: {
+    deckStudies: r.many.deckStudy(),
+    flashcardStudies: r.many.flashcardStudy(),
+    usersInAuth: r.one.authUsers({
+      from: r.decks.userId,
+      to: r.authUsers.id,
     }),
-    usersInAuth: one(authUsers, {
-      fields: [flashcardStudy.userId],
-      references: [authUsers.id],
-    }),
-    deck: one(decks, {
-      fields: [flashcardStudy.deckId],
-      references: [decks.id],
-    }),
-    reviewLogs: many(reviewLogs),
-  }),
-);
+    flashcards: r.many.flashcards(),
+  },
 
-export const flashcardRelations = relations(flashcards, ({ one, many }) => ({
-  flashcardStudies: many(flashcardStudy),
-  deck: one(decks, {
-    fields: [flashcards.deckId],
-    references: [decks.id],
-  }),
-}));
+  profiles: {
+    user: r.one.authUsers({
+      from: r.profiles.id,
+      to: r.authUsers.id,
+    }),
+  },
 
-export const reviewLogRelations = relations(reviewLogs, ({ one }) => ({
-  flashcardStudy: one(flashcardStudy, {
-    fields: [reviewLogs.flashcardStudyId],
-    references: [flashcardStudy.id],
-  }),
+  deckStudy: {
+    deck: r.one.decks({
+      from: r.deckStudy.deckId,
+      to: r.decks.id,
+    }),
+    usersInAuth: r.one.authUsers({
+      from: r.deckStudy.userId,
+      to: r.authUsers.id,
+    }),
+  },
+
+  flashcardStudy: {
+    flashcard: r.one.flashcards({
+      from: r.flashcardStudy.flashcardId,
+      to: r.flashcards.id,
+    }),
+    usersInAuth: r.one.authUsers({
+      from: r.flashcardStudy.userId,
+      to: r.authUsers.id,
+    }),
+    deck: r.one.decks({
+      from: r.flashcardStudy.deckId,
+      to: r.decks.id,
+    }),
+    reviewLogs: r.many.reviewLogs(),
+  },
+
+  flashcards: {
+    deck: r.one.decks({
+      from: r.flashcards.deckId,
+      to: r.decks.id,
+    }),
+    flashcardStudies: r.many.flashcardStudy(),
+  },
+
+  reviewLogs: {
+    flashcardStudy: r.one.flashcardStudy({
+      from: r.reviewLogs.flashcardStudyId,
+      to: r.flashcardStudy.id,
+    }),
+  },
 }));

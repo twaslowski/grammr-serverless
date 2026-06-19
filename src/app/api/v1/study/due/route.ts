@@ -2,7 +2,7 @@ import { and, count, eq, lte, not } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { flashcardStudy } from "@/db/schemas";
+import { flashcardStudy } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { DueCardsQuerySchema } from "../schema";
 

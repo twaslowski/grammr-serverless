@@ -33,7 +33,7 @@
     "clsx": "^2.1.1",
     "cyrillic-to-translit-js": "^3.2.1",
     "dotenv": "^17.4.2",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "^1.0.0-rc.3",
     "drizzle-zod": "^0.8.3",
     "jest": "^30.4.2",
     "lucide-react": "^0.511.0",

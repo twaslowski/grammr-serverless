@@ -337,7 +337,7 @@ export const users = pgTable("users", {
 
 // Use in application
 import {db} from "@/db/connect";
-import {users} from "@/db/schemas";
+import {users} from "@/db/schemas/schema";
 
 const allUsers = await db.select().from(users);
 ```

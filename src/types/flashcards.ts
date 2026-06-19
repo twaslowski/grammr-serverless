@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { flashcards } from "@/db/schemas";
+import { flashcards } from "@/db/schemas/schema";
 import { DeckSchema } from "@/types/deck";
 
 import { ParadigmSchema } from "./inflections";

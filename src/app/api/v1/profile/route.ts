@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { db } from "@/db/connect";
-import { decks, deckStudy, profiles } from "@/db/schemas";
+import { decks, deckStudy, profiles } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { LanguageCode, LanguageCodeSchema } from "@/types/languages";
 

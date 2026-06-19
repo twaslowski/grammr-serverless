@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { flashcardStudy } from "@/db/schemas";
+import { flashcardStudy } from "@/db/schemas/schema";
 import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 
 // GET /api/v1/flashcards/[id]/study - Get study card for a flashcard

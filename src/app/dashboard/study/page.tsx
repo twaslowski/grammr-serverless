@@ -6,6 +6,7 @@ export const metadata = {
   description: "Review your flashcards with spaced repetition",
 };
 
+// todo: there is a ui regression where the study session page is not as wide as it should be. fix.
 export default function StudyPage() {
   return (
     <PageLayout

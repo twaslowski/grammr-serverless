@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { flashcardStudy, reviewLogs } from "@/db/schemas";
+import { flashcardStudy, reviewLogs } from "@/db/schemas/schema";
 import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 import { processReview } from "@/lib/fsrs";
 import { Card as DbCard } from "@/types/fsrs";

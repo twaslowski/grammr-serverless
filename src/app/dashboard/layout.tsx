@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { ProfileProvider } from "@/components/dashboard/profile-provider";
 import { db } from "@/db/connect";
-import { profiles } from "@/db/schemas";
+import { profiles } from "@/db/schemas/schema";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileSchema } from "@/types/profile";
 

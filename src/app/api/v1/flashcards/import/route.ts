@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { decks, flashcards as flashcardsTable } from "@/db/schemas";
+import { decks, flashcards as flashcardsTable } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { FlashcardImportRequestSchema } from "../schema";
 
