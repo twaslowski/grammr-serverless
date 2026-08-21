@@ -33,18 +33,28 @@ analysis, and spaced repetition flashcards. The system is highly modular with:
 
 ### Database & ORM
 
-- **Current State**: Drizzle ORM is the preferred solution
-- **Legacy**: Supabase client still exists but is being phased out
-- **Rule**: When writing new queries, **always use Drizzle**
-- **Rule**: If you find Supabase queries in active code paths, refactor to Drizzle
-- **Connection**: Direct PostgreSQL connection via `drizzle-orm/postgres-js`
+- **Data access**: Drizzle ORM, exclusively. There are no Supabase `.from()`
+  queries left in the codebase; do not reintroduce any.
+- **Auth**: Supabase (`@supabase/ssr`) handles sessions and nothing else.
+- **Connection**: `drizzle-orm/postgres-js` against the Supabase transaction
+  pooler. `src/db/connect.ts` sets `prepare: false` because prepared statements
+  are unsupported in that pool mode — do not remove it.
+- **Authorization**: the connection uses a role that **bypasses RLS**. The
+  `pgPolicy` definitions on the tables are therefore *not* enforced for
+  application queries. Every query that touches user data must filter on
+  `userId` explicitly. See "Authorization" below.
 
 ### Testing
 
 - **Unit Tests**: Jest (`pnpm test`)
+- **Type checking**: `pnpm typecheck` (`tsc --noEmit`). Jest does **not** type
+  check: `next/jest` installs the SWC transform, so a `ts-jest` preset would be
+  silently ignored. Type errors only surface here and in CI.
 - **E2E Tests**: Playwright (`pnpm e2e`)
 - **E2E Location**: `e2e/` directory
 - **Test Config**: `jest.config.js` and `playwright.config.ts`
+- **CI**: `.github/workflows/ci.yml` runs lint → typecheck → test → build, plus
+  `pytest` per Lambda service.
 
 ### Python Backend
 
@@ -73,10 +83,9 @@ analysis, and spaced repetition flashcards. The system is highly modular with:
 │   │   ├── translation/  # Translation UI components
 │   │   └── ...           # Feature-specific components
 │   ├── db/               # Database layer (Drizzle)
-│   │   ├── connect.ts    # Database connection
-│   │   ├── schemas/      # Drizzle table schemas
-│   │   ├── migrations/   # Generated Drizzle migrations
-│   │   └── util.ts       # Database utilities
+│   │   ├── connect.ts    # Lazy singleton database handle
+│   │   ├── schemas/      # Drizzle table schemas + relations.ts
+│   │   └── migrations/   # Generated Drizzle migrations (source of truth)
 │   ├── lib/              # Business logic & API clients
 │   │   ├── api/          # API utilities (validated-fetcher, with-api-handler)
 │   │   ├── flashcards.ts # Flashcard operations
@@ -93,13 +102,16 @@ analysis, and spaced repetition flashcards. The system is highly modular with:
 │   ├── application/      # Main application infrastructure (Lambdas, API Gateway)
 │   ├── bootstrap/        # Initial setup (S3, DynamoDB for state)
 │   └── shared/           # Shared resources (ECR, IAM)
-├── supabase/
-│   └── migrations/       # Legacy migrations (still source of truth for schema)
+├── supabase/             # Local Supabase CLI config only (no migrations)
 ├── e2e/                  # Playwright E2E tests
-├── docs/                 # Documentation
+├── spec/                 # Feature specs
+├── docs/
 │   ├── agent/            # Agent summaries for major changes
-│   └── ...               # Feature specs
-└── .github/skills/       # Reusable coding patterns & best practices
+│   ├── legacy-migrations/ # Pre-Drizzle SQL, kept for reference only
+│   └── samples/          # Example API payloads
+└── .github/
+    ├── workflows/        # CI and release automation
+    └── skills/           # Reusable coding patterns & best practices
 ```
 
 ---
@@ -110,36 +122,38 @@ analysis, and spaced repetition flashcards. The system is highly modular with:
 
 **Connection Setup:**
 
-```typescript
-// src/db/connect.ts
-import {drizzle} from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+`src/db/connect.ts` exports a lazily-resolved singleton `db`. It is lazy so that
+importing a module which touches the database does not require `DATABASE_URL`
+at build time, and it passes `prepare: false` for the transaction pooler.
 
-const client = postgres(process.env.DATABASE_URL!, {prepare: false});
-export const db = drizzle(client);
+```typescript
+import {db} from "@/db/connect";
 ```
 
 **Schema Organization:**
 
-- Individual schemas defined in `src/db/schemas/*.ts`
-- All schemas exported via `src/db/schemas/index.ts`
-- **Relations defined centrally** in `index.ts` to avoid circular dependencies
-- Always import schemas from `@/db/schemas` (the index), never individual files
+- Individual tables defined in `src/db/schemas/*.ts`
+- All tables re-exported from `src/db/schemas/schema.ts`
+- **Relations defined centrally** in `src/db/schemas/relations.ts`, which
+  `connect.ts` passes to `drizzle()`
+- Always import tables from `@/db/schemas/schema`, never individual files
 
 **Example Schema Pattern:**
 
 ```typescript
 // src/db/schemas/deck.ts
 export const decks = pgTable("deck", {
-    id: serial("id").primaryKey(),
-    name: varchar("name", {length: 255}).notNull(),
+    id: serial().primaryKey().notNull(),
+    name: varchar({length: 255}).notNull(),
     // ...
 });
 
-// src/db/schemas/index.ts
+// src/db/schemas/schema.ts
 export * from "./deck";
-export const decksRelations = relations(decks, ({one, many}) => ({
-    // relations here
+
+// src/db/schemas/relations.ts
+export const relations = defineRelations({...schema, authUsers}, (r) => ({
+    decks: {flashcards: r.many.flashcards()},
 }));
 ```
 
@@ -151,8 +165,10 @@ pnpm db:push       # Push schema changes directly (dev)
 pnpm db:migrate    # Apply migrations
 ```
 
-**Legacy Note:** `supabase/migrations/` still contains the source of truth for the current schema. New migrations should
-be managed via Drizzle.
+**Migrations:** `src/db/migrations/` is the source of truth. `drizzle.config.ts`
+reads `DATABASE_URL` (falling back to the local Supabase instance), so
+`pnpm db:*` targets whichever environment that points at.
+`docs/legacy-migrations/` holds the pre-Drizzle SQL for reference only.
 
 ---
 
@@ -164,7 +180,7 @@ Located at `src/lib/api/with-api-handler.ts`
 
 **Purpose:** Standardized wrapper for Next.js API routes that handles:
 
-- Authentication validation (via Supabase - to be migrated)
+- Authentication validation (via Supabase auth)
 - Request body validation (Zod)
 - Query parameter validation (Zod)
 - Route parameter validation (Zod)
@@ -220,47 +236,51 @@ export const POST = withApiHandler(
 
 Located at `src/lib/api/validated-fetcher.ts`
 
-**Purpose:** Type-safe, validated API client for frontend code
+**Purpose:** Type-safe API client for frontend code. Every call from
+`src/lib/*` to this app's own API routes must go through one of these — do not
+hand-roll `fetch` with an `if (!response.ok)` block.
 
-**Usage Example:**
+| Helper | Use when |
+|---|---|
+| `createValidatedFetcher(schema)` | A response schema exists. Preferred. |
+| `apiFetch(url, init, fallback)` | JSON response with no schema yet. |
+| `apiFetchVoid(url, init, fallback)` | No meaningful response body. |
+| `apiFetchBlob(url, init, fallback)` | Binary response (e.g. export download). |
 
 ```typescript
 // src/lib/flashcards.ts
-import {createValidatedFetcher} from "@/lib/api/validated-fetcher";
-import {z} from "zod";
-
 const fetchDecks = createValidatedFetcher(z.array(DeckSchema));
 
 export async function getDecks(): Promise<Deck[]> {
-    return fetchDecks("/api/v1/flashcards/decks", {
-        method: "GET",
-        headers: {"Content-Type": "application/json"},
-    });
+    return fetchDecks("/api/v1/flashcards/decks", {method: "GET"});
 }
 ```
 
-**Benefits:**
-
-- Runtime validation of API responses
-- Type safety end-to-end
-- Consistent error handling
-- Automatic JSON parsing
+All of them send `Content-Type: application/json` by default and surface the
+API's `{ error }` body as the thrown Error's message.
 
 ### 3. API Gateway Integration (`api-gateway`)
 
 Located at `src/lib/api/api-gateway.ts`
 
-**Purpose:** Connect to AWS API Gateway for Lambda-backed NLP services
+**Purpose:** Connect to AWS API Gateway for Lambda-backed NLP services.
 
-**Configuration:**
+Use `callApiGateway(path, body)` — it owns the config lookup, the `x-api-key`
+header and JSON encoding. It throws `ApiGatewayNotConfiguredError` when the env
+vars are absent; hand that to `apiGatewayNotConfiguredResponse(error)` for the
+standard 503.
 
 ```typescript
-export function getApiGatewayConfig(): ApiGatewayConfig | undefined {
-    const endpoint = process.env.API_GW_URL;
-    const apiKey = process.env.API_GW_API_KEY;
-    // Returns config if both are set
+let response: Response;
+try {
+    response = await callApiGateway(`/morphology/${language}`, {text});
+} catch (error) {
+    return apiGatewayNotConfiguredResponse(error);
 }
 ```
+
+Callers own the success path, because the Lambdas differ in what they return
+(JSON vs. binary audio) and in how their failures should surface.
 
 **Lambda Services Available:**
 
@@ -448,15 +468,19 @@ python -m <service>.lambda_handler  # Local invocation
 
 ### Environment Variables
 
-**Frontend (.env.local):**
+**Frontend (.env.local):** see `.env.example` for the authoritative list.
 
 ```bash
-DATABASE_URL=postgresql://...          # PostgreSQL connection string
-NEXT_PUBLIC_SUPABASE_URL=...          # Legacy Supabase URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...     # Legacy Supabase anon key
-API_GW_URL=https://...                # API Gateway endpoint
-API_GW_API_KEY=...                    # API Gateway API key
+DATABASE_URL=postgresql://...            # PostgreSQL connection string
+NEXT_PUBLIC_SUPABASE_URL=...             # Supabase project URL (auth)
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=... # Supabase publishable key (auth)
+NEXT_PUBLIC_APPLICATION_URL=...          # Public base URL
+API_GW_URL=https://...                   # API Gateway endpoint
+API_GW_API_KEY=...                       # API Gateway API key
 ```
+
+`pnpm build` requires all of these; page-data collection constructs the
+database and Supabase clients.
 
 **Lambda (via Terraform):**
 
@@ -545,17 +569,20 @@ pnpm e2e -- --project=chromium-ru  # Run specific project
    });
    ```
 
-3. **Export in index:**
+3. **Export from the barrel, then declare relations:**
    ```typescript
-   // src/db/schemas/index.ts
+   // src/db/schemas/schema.ts
    export * from "./myTable";
-   
-   // Add relations if needed
-   import { myTable } from "./myTable";
-   export const myTableRelations = relations(myTable, ({ one, many }) => ({
-     // ...
-   }));
+
+   // src/db/schemas/relations.ts — add to the defineRelations() call
+   myTable: {
+     deck: r.one.decks({from: r.myTable.deckId, to: r.decks.id}),
+   },
    ```
+
+   If the table holds user data, also add a wire schema under `src/types/` and
+   extend `src/types/test/schema-parity.test.ts`. Do not import the table into
+   `src/types/`.
 
 4. **Generate migration:**
    ```bash
@@ -678,48 +705,37 @@ pnpm e2e -- --project=chromium-ru  # Run specific project
    terraform apply -var-file=config/dev.tfvars
    ```
 
-### Refactoring Supabase to Drizzle
+### Authorization
 
-**When you find Supabase queries:**
+The Drizzle connection bypasses RLS, so the `pgPolicy` definitions on the tables
+do **not** protect application queries. Authorization is entirely the route's
+job.
 
-1. **Identify the query:**
+1. **Reads** must be scoped to the caller:
    ```typescript
-   // OLD: Supabase
-   const { data } = await supabase
-     .from("flashcards")
-     .select("*")
-     .eq("user_id", userId);
+   .where(eq(flashcardStudy.userId, user.id))
    ```
 
-2. **Convert to Drizzle:**
+2. **Writes and deletes** must verify ownership before acting, and 404 when it
+   fails. Several routes have a local `findOwned*` helper for this — follow that
+   pattern:
    ```typescript
-   // NEW: Drizzle
-   import { db } from "@/db/connect";
-   import { flashcards } from "@/db/schemas/schema";
-   import { eq } from "drizzle-orm";
-   
-   const data = await db.query.flashcards.findMany({
-     where: eq(flashcards.userId, userId),
-   });
+   async function findOwnedDeck(deckId: number, userId: string) {
+     const [deck] = await db.select().from(decks)
+       .where(and(eq(decks.id, deckId), eq(decks.userId, userId))).limit(1);
+     return deck;
+   }
    ```
 
-3. **Update imports:**
-    - Remove `@supabase/supabase-js` imports
-    - Add Drizzle imports
+3. **Indirect ownership** (a flashcard belongs to a deck which belongs to a
+   user) must be joined through, not assumed — see
+   `src/app/api/v1/flashcards/[id]/route.ts`.
 
-4. **Test thoroughly:**
-    - Run unit tests
-    - Run E2E tests
-    - Verify in browser
+4. **Public resources** need an explicit visibility check rather than no check
+   at all — see `src/app/api/v1/flashcards/decks/study/[id]/route.ts`.
 
-5. **Document in commit:**
-   ```
-   refactor: migrate [feature] from Supabase to Drizzle
-   
-   - Replaced supabase.from() queries with Drizzle
-   - Updated types to use Drizzle schemas
-   - All tests passing
-   ```
+A missing filter is a data leak, not just a bug. When adding a route that reads
+or writes user data, state which of the four cases applies.
 
 ---
 
@@ -776,9 +792,11 @@ Known limitations, potential improvements.
 
 ### 1. Circular Dependencies in Schemas
 
-**Problem:** Importing schemas directly from individual files causes circular dependency issues.
+**Problem:** Importing tables directly from individual files causes circular
+dependency issues.
 
-**Solution:** Always import from `@/db/schemas` (the index file), never from individual schema files.
+**Solution:** Always import from `@/db/schemas/schema` (the barrel), never from
+an individual schema file.
 
 ```typescript
 // ❌ BAD
@@ -787,6 +805,16 @@ import {decks} from "@/db/schemas/deck";
 // ✅ GOOD
 import {decks} from "@/db/schemas/schema";
 ```
+
+### 1b. Never import `@/db/schemas/*` from `src/types/*`
+
+**Problem:** Client components import `src/types/*`. Deriving those schemas with
+`drizzle-zod` drags the whole `drizzle-orm/pg-core` table definition — RLS policy
+SQL included — into the browser bundle.
+
+**Solution:** The wire-format schemas in `src/types/*` are hand-written Zod and
+must stay free of database imports. `src/types/test/schema-parity.test.ts`
+compares them against the Drizzle tables and fails if they drift.
 
 ### 2. Client/Server Boundary Confusion
 
@@ -843,7 +871,8 @@ Never create new connections in individual files.
 
 ## Key Principles for Agents
 
-1. **Prefer Drizzle over Supabase** - Always. Refactor Supabase queries when found.
+1. **Drizzle for data, Supabase for auth only** - There are no Supabase
+   `.from()` queries left. Do not add any.
 
 2. **Use established patterns** - Don't reinvent. Follow `withApiHandler`, `validated-fetcher`, etc.
 
@@ -851,7 +880,8 @@ Never create new connections in individual files.
 
 4. **Server Components first** - Only use `"use client"` when necessary.
 
-5. **Test everything** - Unit tests for logic, E2E tests for flows.
+5. **Test everything** - Unit tests for logic, E2E tests for flows. Run
+   `pnpm typecheck`; Jest does not type check.
 
 6. **Document major changes** - Create agent summaries in `docs/agent/`.
 
@@ -861,7 +891,11 @@ Never create new connections in individual files.
 
 9. **Keep it modular** - NLP services are independent Lambda functions.
 
-10. **Async/await consistently** - No callbacks, no Promises without await.
+10. **Async/await consistently** - No callbacks, no floating promises. In a
+    serverless function a `void somePromise()` can be killed before it settles.
+
+11. **Authorization is manual** - RLS is not enforced on the app connection.
+    See "Authorization" above.
 
 ---
 
@@ -885,6 +919,7 @@ pnpm db:studio              # Open Drizzle Studio
 pnpm test                   # Run Jest tests
 pnpm e2e                    # Run Playwright tests
 pnpm lint                   # Run ESLint
+pnpm typecheck              # Run tsc --noEmit (Jest does NOT type check)
 pnpm fmt                    # Format with Prettier
 
 # Infrastructure
@@ -899,13 +934,17 @@ supabase stop               # Stop local Supabase
 ### Key Files
 
 ```
-src/db/connect.ts                    # Database connection
-src/db/schemas/index.ts              # Schema definitions & relations
+src/db/connect.ts                    # Lazy singleton database handle
+src/db/schemas/schema.ts             # Table barrel
+src/db/schemas/relations.ts          # Drizzle relations
 src/lib/api/with-api-handler.ts      # API route wrapper
-src/lib/api/validated-fetcher.ts     # Client-side API client
-src/lib/api/api-gateway.ts           # AWS API Gateway config
+src/lib/api/validated-fetcher.ts     # Client-side API helpers
+src/lib/api/api-gateway.ts           # callApiGateway + config
+src/lib/client-only.ts               # useIsClient / useIsStandalone / useIsIOS
+src/types/*                          # Wire schemas (no DB imports!)
 drizzle.config.ts                    # Drizzle configuration
 next.config.ts                       # Next.js configuration
+.github/workflows/ci.yml             # CI pipeline
 terraform/application/               # Main infrastructure
 .github/skills/                      # Reusable patterns
 docs/agent/                          # Agent documentation
@@ -939,7 +978,7 @@ Reference these when:
 
 ---
 
-**Last Updated:** February 2026  
+**Last Updated:** August 2026  
 **Maintained by:** Tobias Waslowski  
 **License:** GPL-3.0
 
