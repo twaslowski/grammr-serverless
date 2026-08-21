@@ -5,6 +5,7 @@ import { CheckCircle2, Download, Share, SquarePlus } from "lucide-react";
 
 import { PageLayout } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { useIsIOS, useIsStandalone } from "@/lib/client-only";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -31,36 +32,31 @@ const STEPS = [
 ];
 
 function InstallPrompt() {
-  const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const isIOS = useIsIOS();
+  const isStandalone = useIsStandalone();
   const [canInstall, setCanInstall] = useState(false);
   const [installed, setInstalled] = useState(false);
   const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
-    setIsIOS(
-      /* eslint */
-      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-        !(window as Window & { MSStream?: unknown }).MSStream,
-    );
-    setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
-
-    const handler = (e: Event) => {
+    const onBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       deferredPrompt.current = e as BeforeInstallPromptEvent;
       setCanInstall(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handler);
-
-    window.addEventListener("appinstalled", () => {
+    const onAppInstalled = () => {
       setInstalled(true);
       setCanInstall(false);
       deferredPrompt.current = null;
-    });
+    };
+
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    window.addEventListener("appinstalled", onAppInstalled);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", onAppInstalled);
     };
   }, []);
 
