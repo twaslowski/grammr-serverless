@@ -1,19 +1,18 @@
 import { defineConfig, devices } from "@playwright/test";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-// Import test target languages to create projects
-const testTargetLanguages = ["ru", "it", "fr", "es", "pt"];
+import { languageTestData, testTargetLanguages } from "./e2e/test-data";
 
 /**
  * See https://playwright.dev/docs/test-configuration.
+ *
+ * The target languages and their display names come from `e2e/test-data.ts`,
+ * which is the same source the specs use.
  */
+
+/** Specs are titled "... - Russian"; match the ones for this project's language. */
+const grepForLanguage = (language: keyof typeof languageTestData) =>
+  new RegExp(`- ${languageTestData[language].name}`);
+
 export default defineConfig({
   testDir: "./e2e",
   /* Run tests in files in parallel */
@@ -25,7 +24,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "html",
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -44,29 +43,19 @@ export default defineConfig({
       grep: new RegExp(`authenticate-${lang}`),
     })),
 
-    // Test projects for each language in Chromium
-    ...testTargetLanguages.map((lang) => ({
-      name: `chromium-${lang}`,
-      use: {
-        ...devices["Desktop Chrome"],
-        storageState: `e2e/.auth/user-${lang}.json`,
-      },
-      dependencies: [`setup-${lang}`],
-      testDir: "./e2e/tests",
-      grep: new RegExp(`- ${lang === "ru" ? "Russian" : lang === "it" ? "Italian" : lang === "fr" ? "French" : lang === "es" ? "Spanish" : "Portuguese"}`),
-    })),
-
-    // Optional: Firefox projects for each language
-    ...testTargetLanguages.map((lang) => ({
-      name: `firefox-${lang}`,
-      use: {
-        ...devices["Desktop Firefox"],
-        storageState: `e2e/.auth/user-${lang}.json`,
-      },
-      dependencies: [`setup-${lang}`],
-      testDir: "./e2e/tests",
-      grep: new RegExp(`- ${lang === "ru" ? "Russian" : lang === "it" ? "Italian" : lang === "fr" ? "French" : lang === "es" ? "Spanish" : "Portuguese"}`),
-    })),
+    // One project per browser/language pair.
+    ...(["chromium", "firefox"] as const).flatMap((browser) =>
+      testTargetLanguages.map((lang) => ({
+        name: `${browser}-${lang}`,
+        use: {
+          ...devices[browser === "chromium" ? "Desktop Chrome" : "Desktop Firefox"],
+          storageState: `e2e/.auth/user-${lang}.json`,
+        },
+        dependencies: [`setup-${lang}`],
+        testDir: "./e2e/tests",
+        grep: grepForLanguage(lang),
+      })),
+    ),
   ],
 
   /* Run your local dev server before starting the tests */
