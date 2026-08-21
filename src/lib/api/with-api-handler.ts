@@ -1,4 +1,5 @@
 import { SupabaseClient, User } from "@supabase/supabase-js";
+import { unstable_rethrow } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { z, ZodSchema } from "zod";
 
@@ -203,6 +204,11 @@ export function withApiHandler<
         request,
       });
     } catch (error) {
+      // Next signals control flow (redirect, notFound, and the dynamic-usage
+      // bailout that reading cookies triggers during a prerender) by throwing.
+      // Those must propagate rather than be reported as a 500.
+      unstable_rethrow(error);
+
       console.error("API handler error:", error);
       return NextResponse.json(
         { error: "Internal server error" },
