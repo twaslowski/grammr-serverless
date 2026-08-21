@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Laptop, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -12,17 +11,16 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useIsClient } from "@/lib/client-only";
 
 const ThemeSwitcher = () => {
-  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
-  // useEffect only runs on the client, so now we can safely show the UI
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // The resolved theme is only known on the client, so render nothing until
+  // after hydration to avoid a server/client mismatch.
+  const isClient = useIsClient();
 
-  if (!mounted) {
+  if (!isClient) {
     return null;
   }
 

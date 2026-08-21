@@ -1,30 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { DownloadIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { useIsIOS, useIsStandalone } from "@/lib/client-only";
 
 export function InstallPrompt() {
-  const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const isIOS = useIsIOS();
+  const isStandalone = useIsStandalone();
 
-  useEffect(() => {
-    setIsIOS(
-      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-        !(window as Window & { MSStream?: unknown }).MSStream,
-    );
-
-    setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
-  }, []);
-
+  // Already installed, nothing to prompt for.
   if (isStandalone) {
-    return null; // Don't show install button if already installed
+    return null;
   }
 
+  // Other platforms get the native `beforeinstallprompt` flow; iOS has no
+  // equivalent and needs the manual walkthrough at /help/pwa.
   if (!isIOS) {
-    return null; // Show install button only for iOS devices
+    return null;
   }
 
   return (
