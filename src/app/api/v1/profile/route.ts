@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -49,9 +48,8 @@ export const syncDeckStudies = async (
   language: LanguageCode,
 ) => {
   const publicDecks = await getPublicDecks(language);
-  if (!publicDecks || publicDecks.length === 0) return;
 
-  void studyDeck(userId, publicDecks[0].id);
+  await Promise.all(publicDecks.map((deck) => studyDeck(userId, deck.id)));
 };
 
 export const getPublicDecks = async (language: LanguageCode) => {
@@ -65,7 +63,6 @@ export const studyDeck = async (userId: string, deckId: number) => {
   await db
     .insert(deckStudy)
     .values({
-      id: crypto.randomUUID(),
       userId,
       deckId,
       isActive: true,
