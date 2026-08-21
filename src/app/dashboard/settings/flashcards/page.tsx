@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import { DeckManagement } from "@/components/flashcards/deck-management";
@@ -11,14 +11,10 @@ import { Deck } from "@/types/deck";
 
 export default function FlashcardImportExportPage() {
   const [decks, setDecks] = useState<Deck[]>([]);
+  // Starts true: the initial load is kicked off on mount, below.
   const [isLoadingDecks, setIsLoadingDecks] = useState(true);
 
-  useEffect(() => {
-    void fetchDecks();
-  }, []);
-
-  const fetchDecks = async () => {
-    setIsLoadingDecks(true);
+  const loadDecks = useCallback(async () => {
     try {
       const data = await getDecks();
       setDecks(data);
@@ -29,7 +25,20 @@ export default function FlashcardImportExportPage() {
     } finally {
       setIsLoadingDecks(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+  // Effect-driven data fetching: loading/result state is set after an await.
+  // The real fix is to fetch on the server and pass the data in as props.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadDecks();
+  }, [loadDecks]);
+
+  // Refreshes triggered by the user should show the spinner again.
+  const refreshDecks = useCallback(async () => {
+    setIsLoadingDecks(true);
+    await loadDecks();
+  }, [loadDecks]);
 
   return (
     <PageLayout
@@ -44,9 +53,9 @@ export default function FlashcardImportExportPage() {
       <DeckManagement
         decks={decks}
         isLoadingDecks={isLoadingDecks}
-        onRefresh={fetchDecks}
+        onRefresh={refreshDecks}
       />
-      <FlashcardImportExport onImportComplete={fetchDecks} />
+      <FlashcardImportExport onImportComplete={refreshDecks} />
     </PageLayout>
   );
 }
