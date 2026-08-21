@@ -56,3 +56,13 @@ variable "morphology_lambda_version" {
   description = "Version of the morphology lambda"
   type        = string
 }
+
+variable "inflections_ru_lambda_version" {
+  description = "Version of the Russian inflections lambda"
+  type        = string
+}
+
+variable "inflections_latin_lambda_version" {
+  description = "Version of the Romance-language inflections lambda"
+  type        = string
+}

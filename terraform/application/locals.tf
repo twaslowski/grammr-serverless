@@ -24,11 +24,11 @@ locals {
     version = var.morphology_lambda_version
   }
 
-  inflections_ru_version = "0.1.7"
+  inflections_ru_version = var.inflections_ru_lambda_version
 
   inflections_latin = {
     languages = toset(["es", "it", "pt", "fr"])
-    version   = "0.3.1"
+    version   = var.inflections_latin_lambda_version
   }
 
   lambda_allowed_triggers = {
