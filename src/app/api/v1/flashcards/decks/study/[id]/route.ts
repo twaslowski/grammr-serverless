@@ -1,9 +1,8 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
 import { decks, deckStudy } from "@/db/schemas/schema";
-import { takeUniqueOrThrow } from "@/db/util";
 import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 
 // POST /api/v1/flashcards/decks/study/[id] - Start studying a deck
@@ -12,12 +11,22 @@ export const POST = withApiHandler(
     paramsSchema: IdParamSchema,
   },
   async ({ user, params }) => {
-    // First, verify the deck exists and is visible to the user
-    const deck = await db
-      .select()
+    // A deck may only be studied if the user owns it or it is publicly shared.
+    // RLS is not enforced on this connection, so the check has to happen here.
+    const [deck] = await db
+      .select({ id: decks.id })
       .from(decks)
-      .where(eq(decks.id, params.id))
-      .then(takeUniqueOrThrow);
+      .where(
+        and(
+          eq(decks.id, params.id),
+          or(eq(decks.userId, user.id), eq(decks.visibility, "public")),
+        ),
+      )
+      .limit(1);
+
+    if (!deck) {
+      return NextResponse.json({ error: "Deck not found" }, { status: 404 });
+    }
 
     await db
       .insert(deckStudy)
