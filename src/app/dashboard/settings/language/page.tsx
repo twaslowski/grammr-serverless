@@ -1,32 +1,22 @@
+import { eq } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import { LanguageSelector } from "@/components/auth/language-selector";
-import { createClient } from "@/lib/supabase/server";
+import { db } from "@/db/connect";
+import { profiles } from "@/db/schemas/schema";
+import { requireUser } from "@/lib/supabase/server";
 import { ProfileSchema } from "@/types/profile";
 
 export default async function LanguageSettingsPage() {
-  const supabase = await createClient();
+  const user = await requireUser();
 
-  // Check if user is authenticated
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const [profileData] = await db
+    .select()
+    .from(profiles)
+    .where(eq(profiles.id, user.id))
+    .limit(1);
 
-  if (authError || !user) {
-    redirect("/auth/login");
-  }
-
-  // Fetch the user's profile
-  const { data: profileData } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  // Parse the profile if it exists
   const parsed = ProfileSchema.safeParse(profileData);
   const profile = parsed.success ? parsed.data : null;
 

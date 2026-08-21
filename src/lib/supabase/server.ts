@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 /**
  * Especially important if using Fluid compute: Don't put this client in a
@@ -31,4 +32,24 @@ export async function createClient() {
       },
     },
   );
+}
+
+/**
+ * Returns the authenticated user, redirecting to the login page if there
+ * isn't one. For use in Server Components; API routes get the same guarantee
+ * from `withApiHandler`.
+ */
+export async function requireUser() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    redirect("/auth/login");
+  }
+
+  return user;
 }

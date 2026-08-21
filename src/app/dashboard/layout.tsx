@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { ProfileProvider } from "@/components/dashboard/profile-provider";
 import { db } from "@/db/connect";
 import { profiles } from "@/db/schemas/schema";
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/supabase/server";
 import { ProfileSchema } from "@/types/profile";
 
 export default async function ProtectedLayout({
@@ -13,17 +13,7 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-
-  // Check if user is authenticated
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    redirect("/auth/login");
-  }
+  const user = await requireUser();
 
   // Check if user has a profile with language preferences
   const userProfile = await db
