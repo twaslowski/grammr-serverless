@@ -1,39 +1,47 @@
+import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { UpdateDeckRequestSchema } from "@/app/api/v1/flashcards/schema";
+import { db } from "@/db/connect";
+import { decks, flashcards } from "@/db/schemas/schema";
 import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
+
+/** Loads a deck only if the requesting user owns it. */
+async function findOwnedDeck(deckId: number, userId: string) {
+  const [deck] = await db
+    .select()
+    .from(decks)
+    .where(and(eq(decks.id, deckId), eq(decks.userId, userId)))
+    .limit(1);
+
+  return deck;
+}
 
 // GET /api/v1/flashcards/decks/[id] - Get a single deck with its flashcards
 export const GET = withApiHandler(
   {
     paramsSchema: IdParamSchema,
   },
-  async ({ user, supabase, params }) => {
-    const { data: deck, error } = await supabase
-      .from("deck")
-      .select(
-        `
-        *,
-        flashcard (
-          id,
-          front,
-          type,
-          back,
-          notes,
-          created_at,
-          updated_at
-        )
-      `,
-      )
-      .eq("id", params.id)
-      .eq("user_id", user.id)
-      .single();
+  async ({ user, params }) => {
+    const deck = await findOwnedDeck(params.id, user.id);
 
-    if (error || !deck) {
+    if (!deck) {
       return NextResponse.json({ error: "Deck not found" }, { status: 404 });
     }
 
-    return NextResponse.json(deck);
+    const deckFlashcards = await db
+      .select({
+        id: flashcards.id,
+        front: flashcards.front,
+        back: flashcards.back,
+        notes: flashcards.notes,
+        createdAt: flashcards.createdAt,
+        updatedAt: flashcards.updatedAt,
+      })
+      .from(flashcards)
+      .where(eq(flashcards.deckId, deck.id));
+
+    return NextResponse.json({ ...deck, flashcards: deckFlashcards });
   },
 );
 
@@ -43,33 +51,16 @@ export const PATCH = withApiHandler(
     paramsSchema: IdParamSchema,
     bodySchema: UpdateDeckRequestSchema,
   },
-  async ({ user, supabase, params, body }) => {
-    // Verify ownership first
-    const { data: existing, error: existingError } = await supabase
-      .from("deck")
-      .select("id")
-      .eq("id", params.id)
-      .eq("user_id", user.id)
-      .single();
-
-    if (existingError || !existing) {
+  async ({ user, params, body }) => {
+    if (!(await findOwnedDeck(params.id, user.id))) {
       return NextResponse.json({ error: "Deck not found" }, { status: 404 });
     }
 
-    const { data: deck, error } = await supabase
-      .from("deck")
-      .update(body)
-      .eq("id", params.id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Failed to update deck:", error);
-      return NextResponse.json(
-        { error: "Failed to update deck" },
-        { status: 500 },
-      );
-    }
+    const [deck] = await db
+      .update(decks)
+      .set(body)
+      .where(eq(decks.id, params.id))
+      .returning();
 
     return NextResponse.json(deck);
   },
@@ -80,35 +71,21 @@ export const DELETE = withApiHandler(
   {
     paramsSchema: IdParamSchema,
   },
-  async ({ user, supabase, params }) => {
-    // Verify ownership and check if it's the default deck
-    const { data: existing, error: existingError } = await supabase
-      .from("deck")
-      .select("id, is_default")
-      .eq("id", params.id)
-      .eq("user_id", user.id)
-      .single();
+  async ({ user, params }) => {
+    const existing = await findOwnedDeck(params.id, user.id);
 
-    if (existingError || !existing) {
+    if (!existing) {
       return NextResponse.json({ error: "Deck not found" }, { status: 404 });
     }
 
-    if (existing.is_default) {
+    if (existing.isDefault) {
       return NextResponse.json(
         { error: "Cannot delete the default deck" },
         { status: 400 },
       );
     }
 
-    const { error } = await supabase.from("deck").delete().eq("id", params.id);
-
-    if (error) {
-      console.error("Failed to delete deck:", error);
-      return NextResponse.json(
-        { error: "Failed to delete deck" },
-        { status: 500 },
-      );
-    }
+    await db.delete(decks).where(eq(decks.id, params.id));
 
     return new NextResponse(null, { status: 204 });
   },

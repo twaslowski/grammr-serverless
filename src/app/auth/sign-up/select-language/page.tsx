@@ -1,30 +1,26 @@
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 import { LanguageSelector } from "@/components/auth/language-selector";
-import { createClient } from "@/lib/supabase/server";
+import { db } from "@/db/connect";
+import { profiles } from "@/db/schemas/schema";
+import { requireUser } from "@/lib/supabase/server";
 
 export default async function SelectLanguagePage() {
-  const supabase = await createClient();
-
-  // Check if user is authenticated
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    redirect("/auth/login");
-  }
+  const user = await requireUser();
 
   // Check if user already has language preferences set
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("source_language, target_language")
-    .eq("id", user.id)
-    .single();
+  const [profile] = await db
+    .select({
+      sourceLanguage: profiles.sourceLanguage,
+      targetLanguage: profiles.targetLanguage,
+    })
+    .from(profiles)
+    .where(eq(profiles.id, user.id))
+    .limit(1);
 
   // If languages are already set, redirect to protected area
-  if (profile?.source_language && profile?.target_language) {
+  if (profile?.sourceLanguage && profile?.targetLanguage) {
     redirect("/dashboard");
   }
 
