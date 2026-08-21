@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import * as Select from "@radix-ui/react-select";
 import { ChevronDownIcon, Loader2, Plus } from "lucide-react";
 import toast from "react-hot-toast";
@@ -52,8 +52,12 @@ export function ImportDeckDialog({
 
   const isCreatingNew = selectedOption === CREATE_NEW_DECK_VALUE;
 
-  // Reset state when dialog opens
-  useEffect(() => {
+  // Reset the form whenever the dialog transitions to open. Adjusting state
+  // during render (rather than in an effect) avoids rendering the previous
+  // session's values for one frame.
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) {
       // Default to the user's default deck if available
       const defaultDeck = decks.find((d) => d.isDefault);
@@ -62,7 +66,7 @@ export function ImportDeckDialog({
       setNewDeckDescription("");
       setSelectedLanguage(language);
     }
-  }, [open, decks, language]);
+  }
 
   const handleConfirm = async () => {
     if (isCreatingNew) {
