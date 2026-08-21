@@ -7,7 +7,12 @@ import {
   FlashcardListQuery,
   UpdateFlashcardRequest,
 } from "@/app/api/v1/flashcards/schema";
-import { createValidatedFetcher } from "@/lib/api/validated-fetcher";
+import {
+  apiFetch,
+  apiFetchBlob,
+  apiFetchVoid,
+  createValidatedFetcher,
+} from "@/lib/api/validated-fetcher";
 import { Deck, DeckSchema } from "@/types/deck";
 import {
   Flashcard,
@@ -19,13 +24,14 @@ import { Paradigm } from "@/types/inflections";
 
 const BASE_URL = "/api/v1/flashcards";
 
-export async function getDecks(): Promise<Deck[]> {
-  const fetchDecks = createValidatedFetcher(z.array(DeckSchema));
+const fetchDecks = createValidatedFetcher(z.array(DeckSchema));
+const fetchDeck = createValidatedFetcher(DeckSchema);
+const fetchFlashcards = createValidatedFetcher(
+  z.array(FlashcardWithDeckSchema),
+);
 
-  return fetchDecks(`${BASE_URL}/decks`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+export async function getDecks(): Promise<Deck[]> {
+  return fetchDecks(`${BASE_URL}/decks`, { method: "GET" });
 }
 
 export async function createDeck({
@@ -34,72 +40,44 @@ export async function createDeck({
   visibility,
   language,
 }: CreateDeckRequest): Promise<Deck> {
-  const response = await fetch(`${BASE_URL}/decks`, {
+  return fetchDeck(`${BASE_URL}/decks`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, description, visibility, language }),
   });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to create deck");
-  }
-
-  return response.json();
 }
 
 export async function updateDeck(
   id: number,
   data: { name?: string; description?: string },
 ): Promise<Deck> {
-  const response = await fetch(`${BASE_URL}/decks/${id}`, {
+  return fetchDeck(`${BASE_URL}/decks/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to update deck");
-  }
-
-  return response.json();
 }
 
 export async function deleteDeck(id: number): Promise<void> {
-  const response = await fetch(`${BASE_URL}/decks/${id}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to delete deck");
-  }
+  return apiFetchVoid(
+    `${BASE_URL}/decks/${id}`,
+    { method: "DELETE" },
+    "Failed to delete deck",
+  );
 }
 
 export async function studyDeck(id: number): Promise<void> {
-  const response = await fetch(`${BASE_URL}/decks/study/${id}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to start studying deck");
-  }
+  return apiFetchVoid(
+    `${BASE_URL}/decks/study/${id}`,
+    { method: "POST" },
+    "Failed to start studying deck",
+  );
 }
 
 export async function stopStudyingDeck(id: number): Promise<void> {
-  const response = await fetch(`${BASE_URL}/decks/study/${id}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to stop studying deck");
-  }
+  return apiFetchVoid(
+    `${BASE_URL}/decks/study/${id}`,
+    { method: "DELETE" },
+    "Failed to stop studying deck",
+  );
 }
 
 // --- Flashcard operations ---
@@ -112,104 +90,64 @@ export async function getFlashcards(
 
   const url = params.toString() ? `${BASE_URL}?${params}` : BASE_URL;
 
-  const fetchFlashcards = createValidatedFetcher(
-    z.array(FlashcardWithDeckSchema),
-  );
-  return fetchFlashcards(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+  return fetchFlashcards(url, { method: "GET" });
 }
 
 export async function createFlashcard(
   request: CreateFlashcardRequest,
 ): Promise<Flashcard> {
-  const response = await fetch(BASE_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to create flashcard");
-  }
-
-  return response.json();
+  return apiFetch(
+    BASE_URL,
+    { method: "POST", body: JSON.stringify(request) },
+    "Failed to create flashcard",
+  );
 }
 
 export async function updateFlashcard(
   id: number,
   request: UpdateFlashcardRequest,
 ): Promise<Flashcard> {
-  const response = await fetch(`${BASE_URL}/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to update flashcard");
-  }
-
-  return response.json();
+  return apiFetch(
+    `${BASE_URL}/${id}`,
+    { method: "PATCH", body: JSON.stringify(request) },
+    "Failed to update flashcard",
+  );
 }
 
 export async function deleteFlashcard(id: number): Promise<void> {
-  const response = await fetch(`${BASE_URL}/${id}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to delete flashcard");
-  }
+  return apiFetchVoid(
+    `${BASE_URL}/${id}`,
+    { method: "DELETE" },
+    "Failed to delete flashcard",
+  );
 }
 
 export async function deleteCardStudy(id: number): Promise<void> {
-  const response = await fetch(`${BASE_URL}/${id}/study`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-  });
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to study flashcard");
-  }
+  return apiFetchVoid(
+    `${BASE_URL}/${id}/study`,
+    { method: "DELETE" },
+    "Failed to suspend flashcard",
+  );
 }
 
 // --- Export/Import operations ---
 
 export async function exportFlashcards(): Promise<Blob> {
-  const response = await fetch(`${BASE_URL}/export`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to export flashcards");
-  }
-
-  return response.blob();
+  return apiFetchBlob(
+    `${BASE_URL}/export`,
+    { method: "GET" },
+    "Failed to export flashcards",
+  );
 }
 
 export async function importFlashcards(
   data: FlashcardImportRequest,
 ): Promise<{ message: string; imported_count: number }> {
-  const response = await fetch(`${BASE_URL}/import`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to import flashcards");
-  }
-
-  return response.json();
+  return apiFetch(
+    `${BASE_URL}/import`,
+    { method: "POST", body: JSON.stringify(data) },
+    "Failed to import flashcards",
+  );
 }
 
 // --- Additional operations can be added here as needed ---

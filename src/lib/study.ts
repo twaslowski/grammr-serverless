@@ -1,5 +1,10 @@
 import {
+  apiFetch,
+  createValidatedFetcher,
+} from "@/lib/api/validated-fetcher";
+import {
   DueCardsCount,
+  DueCardsCountSchema,
   Rating,
   StudySession,
   StudySessionSchema,
@@ -7,6 +12,9 @@ import {
 } from "@/types/fsrs";
 
 const BASE_URL = "/api/v1/study";
+
+const fetchDueCardsCount = createValidatedFetcher(DueCardsCountSchema);
+const fetchSession = createValidatedFetcher(StudySessionSchema);
 
 /**
  * Fetch the count of due cards for study
@@ -17,17 +25,7 @@ export async function getDueCardsCount(
   const params = new URLSearchParams();
   params.set("include_new", String(includeNew));
 
-  const response = await fetch(`${BASE_URL}/due?${params}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to fetch due cards count");
-  }
-
-  return response.json();
+  return fetchDueCardsCount(`${BASE_URL}/due?${params}`, { method: "GET" });
 }
 
 /**
@@ -39,24 +37,7 @@ export async function loadSession(limit?: number): Promise<StudySession> {
 
   const url = params.toString() ? `${BASE_URL}?${params}` : BASE_URL;
 
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to fetch study card");
-  }
-
-  const parsed = StudySessionSchema.safeParse(await response.json());
-
-  if (parsed.error) {
-    console.error(parsed.error);
-    throw new Error(parsed.error.message);
-  }
-
-  return parsed.data;
+  return fetchSession(url, { method: "GET" });
 }
 
 /**
@@ -66,16 +47,9 @@ export async function submitReview(
   cardId: number,
   rating: Rating,
 ): Promise<SubmitReviewResponse> {
-  const response = await fetch(`${BASE_URL}/${cardId}/review`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ rating }),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to submit review");
-  }
-
-  return response.json();
+  return apiFetch(
+    `${BASE_URL}/${cardId}/review`,
+    { method: "POST", body: JSON.stringify({ rating }) },
+    "Failed to submit review",
+  );
 }
