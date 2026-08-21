@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getApiGatewayConfig } from "@/lib/api/api-gateway";
+import { callApiGateway, getApiGatewayConfig } from "@/lib/api/api-gateway";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 
 const PreflightQuerySchema = z.object({
   language: z.string().min(1, "Language is required"),
 });
+
+const KEEP_WARM_BODY = { "keep-warm": "true" };
 
 /**
  * Pre-flight endpoint to warm up image-based Lambda functions.
@@ -19,9 +21,10 @@ export const POST = withApiHandler(
   async ({ query }) => {
     const { language } = query;
 
-    const apiGwConfig = getApiGatewayConfig();
-    if (!apiGwConfig) {
-      console.error("API_GW_URL not configured");
+    // Checked up front: allSettled below would otherwise swallow the
+    // not-configured error along with the warm-up failures we do want ignored.
+    if (!getApiGatewayConfig()) {
+      console.error("API_GW_URL or API_GW_API_KEY not configured");
       return NextResponse.json(
         { error: "Service not configured" },
         { status: 503 },
@@ -29,28 +32,10 @@ export const POST = withApiHandler(
     }
 
     // Fire warm-up requests in parallel and ignore any errors
-    const warmupPromises = [
-      // Warm up Russian inflections Lambda
-      fetch(`${apiGwConfig.endpoint}/inflections/${language}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiGwConfig.apiKey,
-        },
-        body: JSON.stringify({ "keep-warm": "true" }),
-      }).catch(() => null),
-      // Warm up morphology Lambda
-      fetch(`${apiGwConfig.endpoint}/morphology/${language}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiGwConfig.apiKey,
-        },
-        body: JSON.stringify({ "keep-warm": "true" }),
-      }).catch(() => null),
-    ];
-
-    await Promise.allSettled(warmupPromises);
+    await Promise.allSettled([
+      callApiGateway(`/inflections/${language}`, KEEP_WARM_BODY),
+      callApiGateway(`/morphology/${language}`, KEEP_WARM_BODY),
+    ]);
 
     return NextResponse.json({ status: "ok" });
   },
