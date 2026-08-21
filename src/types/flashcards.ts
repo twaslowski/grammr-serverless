@@ -1,7 +1,5 @@
-import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { flashcards } from "@/db/schemas/schema";
 import { DeckSchema } from "@/types/deck";
 
 import { ParadigmSchema } from "./inflections";
@@ -35,9 +33,20 @@ export const FlashcardBackSchema = z.discriminatedUnion("type", [
 ]);
 export type FlashcardBack = z.infer<typeof FlashcardBackSchema>;
 
-// Create base schema from Drizzle table and refine the 'back' field
-export const FlashcardSchema = createSelectSchema(flashcards, {
+/**
+ * Wire-format schema for a flashcard. Hand-written so client components do not
+ * pull the Drizzle table definition into the browser bundle; kept honest by
+ * `src/types/test/schema-parity.test.ts`.
+ */
+export const FlashcardSchema = z.object({
+  id: z.number().int(),
+  deckId: z.number().int().nullable(),
+  front: z.string(),
   back: FlashcardBackSchema,
+  notes: z.string().nullable(),
+  version: z.number().int().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 export type Flashcard = z.infer<typeof FlashcardSchema>;
 
