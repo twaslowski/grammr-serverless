@@ -1,12 +1,13 @@
 import "./globals.css";
 
 import type { Metadata, Viewport } from "next";
-import Script from "next/dist/client/script";
 import { Geist } from "next/font/google";
+import Script from "next/script";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
 
 import { Header } from "@/components/header";
+import { ServiceWorkerRegistration } from "@/components/pwa/service-worker-registration";
 import { ConfirmationProvider } from "@/components/ui/confirmation-provider";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
     shortcut: "/favicon/android-chrome-192x192.png",
     apple: "/favicon/apple-touch-icon.png",
   },
-  manifest: `/favicon/site.webmanifest`,
+  manifest: "/manifest.webmanifest",
   description:
     "Understand grammar with context. Analyze sentences, build flashcard decks, and learn languages systematically.",
 };
@@ -50,6 +51,7 @@ export default function RootLayout({
           data-website-id="2ec9d61e-79f4-4a59-a12c-075bd04c54ae"
           strategy="afterInteractive"
         />
+        <ServiceWorkerRegistration />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
