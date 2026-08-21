@@ -4,4 +4,6 @@ zone_id                  = "fe0c8417e8c4c53f1806fca1bc09017c"
 supabase_project_id      = "wgngrrmngatubjsilhbj"
 supabase_publishable_key = "sb_publishable_lpFzYUt6e8OxbLQNPG4SIw_rf2MYDFq"
 
-morphology_lambda_version = "0.2.1"
+morphology_lambda_version        = "0.2.1"
+inflections_ru_lambda_version    = "0.1.7"
+inflections_latin_lambda_version = "0.3.1"
