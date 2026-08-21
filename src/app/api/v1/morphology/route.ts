@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { getApiGatewayConfig } from "@/lib/api/api-gateway";
-import { createValidatedFetcher } from "@/lib/api/validated-fetcher";
+import {
+  apiGatewayNotConfiguredResponse,
+  callApiGateway,
+} from "@/lib/api/api-gateway";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { LanguageCodeSchema } from "@/types/languages";
 import {
@@ -31,36 +33,36 @@ export const POST = withApiHandler(
     requireAuth: false,
   },
   async ({ body }) => {
-    const apiGwConfig = getApiGatewayConfig();
-    if (!apiGwConfig) {
-      console.error("API_GW_URL not configured");
+    const { text, language } = body;
+
+    let response: Response;
+    try {
+      response = await callApiGateway(`/morphology/${language}`, { text });
+    } catch (error) {
+      return apiGatewayNotConfiguredResponse(error);
+    }
+
+    if (!response.ok) {
+      console.error("Morphology API error:", await response.text());
       return NextResponse.json(
-        { error: "Service not configured" },
-        { status: 503 },
+        { error: "Morphology analysis failed" },
+        { status: 502 },
       );
     }
 
-    const { text, language } = body;
+    const parsed = responseSchema.safeParse(await response.json());
 
-    const fetchMorphology = createValidatedFetcher(responseSchema);
-    const response = await fetchMorphology(
-      `${apiGwConfig.endpoint}/morphology/${language}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiGwConfig.apiKey,
-        },
-        body: JSON.stringify({ text: text }),
-      },
-    ).catch((error) => {
-      console.error("Morphology API error:", error);
-      throw new Error("Morphology analysis failed");
-    });
+    if (!parsed.success) {
+      console.error("Invalid response from morphology service:", parsed.error);
+      return NextResponse.json(
+        { error: "Invalid response from morphology service" },
+        { status: 502 },
+      );
+    }
 
     const enrichedResponse: MorphologicalAnalysis = {
-      ...response,
-      language: language,
+      ...parsed.data,
+      language,
     };
 
     return NextResponse.json(enrichedResponse);

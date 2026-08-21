@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { getApiGatewayConfig } from "@/lib/api/api-gateway";
+import {
+  apiGatewayNotConfiguredResponse,
+  callApiGateway,
+} from "@/lib/api/api-gateway";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import {
   TranslationRequestSchema,
@@ -12,24 +15,12 @@ export const POST = withApiHandler(
     bodySchema: TranslationRequestSchema,
   },
   async ({ body }) => {
-    const apiGwConfig = getApiGatewayConfig();
-    if (!apiGwConfig) {
-      console.error("API_GW_URL not configured");
-      return NextResponse.json(
-        { error: "Service not configured" },
-        { status: 503 },
-      );
+    let response: Response;
+    try {
+      response = await callApiGateway("/translate", body);
+    } catch (error) {
+      return apiGatewayNotConfiguredResponse(error);
     }
-
-    // Forward to Lambda via API Gateway
-    const response = await fetch(`${apiGwConfig.endpoint}/translate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiGwConfig.apiKey,
-      },
-      body: JSON.stringify(body),
-    });
 
     if (!response.ok) {
       console.error("API Gateway response error:", await response.text());
