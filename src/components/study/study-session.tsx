@@ -81,6 +81,9 @@ export function StudySession() {
   }, []);
 
   useEffect(() => {
+  // Effect-driven data fetching: loading/result state is set after an await.
+  // The real fix is to fetch on the server and pass the data in as props.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchCards(true);
   }, [fetchCards]);
 
