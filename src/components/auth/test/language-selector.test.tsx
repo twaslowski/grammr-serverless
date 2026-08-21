@@ -82,7 +82,7 @@ describe("LanguageSelector", () => {
         id: "some-user-id",
         sourceLanguage: "de" as const,
         targetLanguage: "ru" as const,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       };
 
       render(<LanguageSelector profile={profile} />);
@@ -168,7 +168,7 @@ describe("LanguageSelector", () => {
         id: "some-user-id",
         sourceLanguage: "en" as const,
         targetLanguage: "ru" as const,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       };
 
       render(<LanguageSelector profile={profile} />);

@@ -25,7 +25,7 @@ const mockProfile: Profile = {
   id: "test-user",
   sourceLanguage: "en",
   targetLanguage: "es",
-  createdAt: new Date(),
+  createdAt: new Date().toISOString(),
 };
 
 // Test wrapper component
