@@ -11,7 +11,8 @@ const config = {
   // Add more setup options before each test is run
   // setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   testEnvironment: "jest-environment-jsdom",
-  preset: "ts-jest",
+  // No `preset` here on purpose: next/jest installs the SWC transform, which
+  // overrides any preset. Type errors are caught by `pnpm typecheck` instead.
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },

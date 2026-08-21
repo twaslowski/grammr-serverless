@@ -1,22 +1,20 @@
-import { FlatCompat } from "@eslint/eslintrc";
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
+import jestDom from "eslint-plugin-jest-dom";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import testingLibrary from "eslint-plugin-testing-library";
 
 const eslintConfig = [
-  ...compat.extends(
-      "next/core-web-vitals",
-      "next/typescript",
-      "plugin:testing-library/react",
-      "plugin:jest-dom/recommended",
-  ),
+  ...nextCoreWebVitals,
+  ...nextTypescript,
+  {
+    files: ["**/*.test.ts", "**/*.test.tsx"],
+    ...testingLibrary.configs["flat/react"],
+  },
+  {
+    files: ["**/*.test.ts", "**/*.test.tsx"],
+    ...jestDom.configs["flat/recommended"],
+  },
   {
     plugins: {
       "simple-import-sort": simpleImportSort,
@@ -46,7 +44,14 @@ const eslintConfig = [
     },
   },
   {
-    ignores: ["node_modules/", "dist/", "build/", ".next/", "src/.next", ".venv"],
+    ignores: [
+      "node_modules/",
+      "dist/",
+      "build/",
+      ".next/",
+      "src/.next",
+      ".venv",
+    ],
   },
 ];
 
