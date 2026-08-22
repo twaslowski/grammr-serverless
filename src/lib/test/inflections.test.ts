@@ -40,6 +40,7 @@ describe("inflections", () => {
     const validParadigm: Paradigm = {
       partOfSpeech: "NOUN",
       lemma: "кот",
+      lemmaFeatures: [{ type: "GENDER", value: "MASC" }],
       inflections: [
         {
           lemma: "кот",
@@ -82,6 +83,42 @@ describe("inflections", () => {
         }),
       });
       expect(result).toEqual(validParadigm);
+    });
+
+    it("should carry inherent lemma features through", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => validParadigm,
+      });
+
+      const result = await getParadigm({
+        lemma: "кот",
+        pos: "NOUN",
+        language: "ru",
+      });
+
+      expect(result.lemmaFeatures).toEqual([{ type: "GENDER", value: "MASC" }]);
+    });
+
+    it("should default lemma features for paradigms that predate the field", async () => {
+      const legacyParadigm = {
+        partOfSpeech: validParadigm.partOfSpeech,
+        lemma: validParadigm.lemma,
+        inflections: validParadigm.inflections,
+      };
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => legacyParadigm,
+      });
+
+      const result = await getParadigm({
+        lemma: "кот",
+        pos: "NOUN",
+        language: "ru",
+      });
+
+      expect(result.lemmaFeatures).toEqual([]);
+      expect(result.inflections).toEqual(validParadigm.inflections);
     });
 
     it("should throw user error for 400 status with custom message", async () => {
@@ -175,6 +212,7 @@ describe("inflections", () => {
     const mockNounParadigm: Paradigm = {
       partOfSpeech: "NOUN",
       lemma: "кот",
+      lemmaFeatures: [{ type: "GENDER", value: "MASC" }],
       inflections: [
         {
           lemma: "кот",
@@ -190,6 +228,7 @@ describe("inflections", () => {
     const mockVerbParadigm: Paradigm = {
       partOfSpeech: "VERB",
       lemma: "идти",
+      lemmaFeatures: [],
       inflections: [
         {
           lemma: "идти",

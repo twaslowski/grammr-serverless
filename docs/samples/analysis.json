@@ -32,6 +32,12 @@
         "paradigm": {
           "partOfSpeech": "NOUN",
           "lemma": "музей",
+          "lemmaFeatures": [
+            {
+              "type": "GENDER",
+              "value": "MASC"
+            }
+          ],
           "inflections": [
             {
               "lemma": "музей",
@@ -80,12 +86,12 @@
               "inflected": "музей",
               "features": [
                 {
-                  "type": "NUMBER",
-                  "value": "SING"
-                },
-                {
                   "type": "CASE",
                   "value": "ACC"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
                 }
               ]
             },
@@ -136,12 +142,12 @@
               "inflected": "музеев",
               "features": [
                 {
-                  "type": "CASE",
-                  "value": "GEN"
-                },
-                {
                   "type": "NUMBER",
                   "value": "PLUR"
+                },
+                {
+                  "type": "CASE",
+                  "value": "GEN"
                 }
               ]
             },
@@ -164,12 +170,12 @@
               "inflected": "музеи",
               "features": [
                 {
-                  "type": "NUMBER",
-                  "value": "PLUR"
-                },
-                {
                   "type": "CASE",
                   "value": "ACC"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
                 }
               ]
             },
@@ -178,12 +184,12 @@
               "inflected": "музеями",
               "features": [
                 {
-                  "type": "CASE",
-                  "value": "ABL"
-                },
-                {
                   "type": "NUMBER",
                   "value": "PLUR"
+                },
+                {
+                  "type": "CASE",
+                  "value": "ABL"
                 }
               ]
             },
@@ -384,7 +390,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "lemmaFeatures": []
         }
       },
       {
@@ -418,6 +425,7 @@
         "paradigm": {
           "partOfSpeech": "ADJ",
           "lemma": "девятнадцатый",
+          "lemmaFeatures": [],
           "inflections": [
             {
               "lemma": "девятнадцатый",
@@ -426,6 +434,46 @@
                 {
                   "type": "CASE",
                   "value": "NOM"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "MASC"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатая",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "NOM"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "FEM"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатое",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "NOM"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "NEUT"
                 },
                 {
                   "type": "NUMBER",
@@ -442,6 +490,46 @@
                   "value": "GEN"
                 },
                 {
+                  "type": "GENDER",
+                  "value": "MASC"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатой",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "GEN"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "FEM"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатого",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "GEN"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "NEUT"
+                },
+                {
                   "type": "NUMBER",
                   "value": "SING"
                 }
@@ -451,6 +539,46 @@
               "lemma": "девятнадцатый",
               "inflected": "девятнадцатому",
               "features": [
+                {
+                  "type": "GENDER",
+                  "value": "MASC"
+                },
+                {
+                  "type": "CASE",
+                  "value": "DAT"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатой",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "DAT"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "FEM"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатому",
+              "features": [
+                {
+                  "type": "GENDER",
+                  "value": "NEUT"
+                },
                 {
                   "type": "CASE",
                   "value": "DAT"
@@ -466,12 +594,52 @@
               "inflected": "девятнадцатый",
               "features": [
                 {
+                  "type": "CASE",
+                  "value": "ACC"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "MASC"
+                },
+                {
                   "type": "NUMBER",
                   "value": "SING"
-                },
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатую",
+              "features": [
                 {
                   "type": "CASE",
                   "value": "ACC"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "FEM"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатое",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "ACC"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "NEUT"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
                 }
               ]
             },
@@ -479,6 +647,46 @@
               "lemma": "девятнадцатый",
               "inflected": "девятнадцатым",
               "features": [
+                {
+                  "type": "GENDER",
+                  "value": "MASC"
+                },
+                {
+                  "type": "CASE",
+                  "value": "ABL"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатой",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "ABL"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "FEM"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатым",
+              "features": [
+                {
+                  "type": "GENDER",
+                  "value": "NEUT"
+                },
                 {
                   "type": "CASE",
                   "value": "ABL"
@@ -493,6 +701,46 @@
               "lemma": "девятнадцатый",
               "inflected": "девятнадцатом",
               "features": [
+                {
+                  "type": "GENDER",
+                  "value": "MASC"
+                },
+                {
+                  "type": "CASE",
+                  "value": "LOC"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатой",
+              "features": [
+                {
+                  "type": "CASE",
+                  "value": "LOC"
+                },
+                {
+                  "type": "GENDER",
+                  "value": "FEM"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "SING"
+                }
+              ]
+            },
+            {
+              "lemma": "девятнадцатый",
+              "inflected": "девятнадцатом",
+              "features": [
+                {
+                  "type": "GENDER",
+                  "value": "NEUT"
+                },
                 {
                   "type": "CASE",
                   "value": "LOC"
@@ -522,12 +770,12 @@
               "inflected": "девятнадцатых",
               "features": [
                 {
-                  "type": "CASE",
-                  "value": "GEN"
-                },
-                {
                   "type": "NUMBER",
                   "value": "PLUR"
+                },
+                {
+                  "type": "CASE",
+                  "value": "GEN"
                 }
               ]
             },
@@ -550,12 +798,12 @@
               "inflected": "девятнадцатые",
               "features": [
                 {
-                  "type": "NUMBER",
-                  "value": "PLUR"
-                },
-                {
                   "type": "CASE",
                   "value": "ACC"
+                },
+                {
+                  "type": "NUMBER",
+                  "value": "PLUR"
                 }
               ]
             },
@@ -564,12 +812,12 @@
               "inflected": "девятнадцатыми",
               "features": [
                 {
-                  "type": "CASE",
-                  "value": "ABL"
-                },
-                {
                   "type": "NUMBER",
                   "value": "PLUR"
+                },
+                {
+                  "type": "CASE",
+                  "value": "ABL"
                 }
               ]
             },

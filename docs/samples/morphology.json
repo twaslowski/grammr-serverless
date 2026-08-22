@@ -50,6 +50,12 @@
       "paradigm": {
         "partOfSpeech": "NOUN",
         "lemma": "язык",
+        "lemmaFeatures": [
+          {
+            "type": "GENDER",
+            "value": "MASC"
+          }
+        ],
         "inflections": [
           {
             "lemma": "язык",
@@ -70,12 +76,12 @@
             "inflected": "языка",
             "features": [
               {
-                "type": "NUMBER",
-                "value": "SING"
-              },
-              {
                 "type": "CASE",
                 "value": "GEN"
+              },
+              {
+                "type": "NUMBER",
+                "value": "SING"
               }
             ]
           },
@@ -112,12 +118,12 @@
             "inflected": "языком",
             "features": [
               {
-                "type": "NUMBER",
-                "value": "SING"
-              },
-              {
                 "type": "CASE",
                 "value": "ABL"
+              },
+              {
+                "type": "NUMBER",
+                "value": "SING"
               }
             ]
           },
@@ -126,12 +132,12 @@
             "inflected": "языке",
             "features": [
               {
-                "type": "NUMBER",
-                "value": "SING"
-              },
-              {
                 "type": "CASE",
                 "value": "LOC"
+              },
+              {
+                "type": "NUMBER",
+                "value": "SING"
               }
             ]
           },
@@ -140,12 +146,12 @@
             "inflected": "языки",
             "features": [
               {
-                "type": "NUMBER",
-                "value": "PLUR"
-              },
-              {
                 "type": "CASE",
                 "value": "NOM"
+              },
+              {
+                "type": "NUMBER",
+                "value": "PLUR"
               }
             ]
           },
@@ -168,12 +174,12 @@
             "inflected": "языкам",
             "features": [
               {
-                "type": "NUMBER",
-                "value": "PLUR"
-              },
-              {
                 "type": "CASE",
                 "value": "DAT"
+              },
+              {
+                "type": "NUMBER",
+                "value": "PLUR"
               }
             ]
           },
@@ -182,12 +188,12 @@
             "inflected": "языки",
             "features": [
               {
-                "type": "NUMBER",
-                "value": "PLUR"
-              },
-              {
                 "type": "CASE",
                 "value": "ACC"
+              },
+              {
+                "type": "NUMBER",
+                "value": "PLUR"
               }
             ]
           },
@@ -210,12 +216,12 @@
             "inflected": "языках",
             "features": [
               {
-                "type": "NUMBER",
-                "value": "PLUR"
-              },
-              {
                 "type": "CASE",
                 "value": "LOC"
+              },
+              {
+                "type": "NUMBER",
+                "value": "PLUR"
               }
             ]
           }

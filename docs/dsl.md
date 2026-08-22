@@ -51,6 +51,22 @@ this code. Anytime an external library (such as `pymorphy3` or `verbecc`) is use
 in it are expected to be mapped back to universal features before returning to the core application to keep the
 domain code clean.
 
+#### Inherent vs. inflectional features
+
+Not every feature varies across a paradigm. Gender is the clearest example, and it cuts both ways depending on the
+part of speech:
+
+- For a **noun**, gender is *inherent* to the lexeme. Russian СЛОВО is neuter in all twelve of its cells; the feature
+  classifies the paradigm rather than picking out a cell within it. Such features live on the paradigm itself
+  (`lemmaFeatures`), so they are stated once instead of repeated on every form.
+- For an **adjective**, gender is *inflectional*. It is a dimension of the paradigm alongside case and number, so it
+  belongs on the individual inflections. A full Russian adjective paradigm therefore has 6 cases × 3 genders in the
+  singular plus 6 genderless plural cases, for 24 cells rather than 12.
+
+The same distinction applies to other features that a paradigm could grow: animacy and declension class are inherent
+to a noun, while verb aspect is inherent to a verb. `lemmaFeatures` is a feature list rather than a dedicated gender
+field so those fit without a schema change.
+
 ### Parts of Speech
 
 Quoting Wikipedia: "In grammar, a part of speech or part-of-speech (abbreviated as POS or PoS, also known as word

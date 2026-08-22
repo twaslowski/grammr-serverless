@@ -32,13 +32,38 @@ class TestDeriveFeatures:
         assert {"sing", "loct"} in features
 
     def test_derive_features_for_adjective(self):
-        """Test that adjective features match noun features."""
+        """Test that adjective features expand the singular across genders."""
         features = derive_features(PartOfSpeech.ADJ)
 
-        # Same as nouns: 6 cases × 2 numbers = 12 combinations
-        assert len(features) == 12
-        assert {"sing", "nomn"} in features
+        # 6 cases × 3 genders in the singular, plus 6 genderless plural cases
+        assert len(features) == 24
+        assert {"sing", "nomn", "masc"} in features
+        assert {"sing", "nomn", "femn"} in features
+        assert {"sing", "nomn", "neut"} in features
         assert {"plur", "accs"} in features
+
+    def test_adjective_singular_always_carries_a_gender(self):
+        """Test that no singular adjective cell is left gender-underspecified."""
+        genders = {"masc", "femn", "neut"}
+        singular = [f for f in derive_features(PartOfSpeech.ADJ) if "sing" in f]
+
+        assert len(singular) == 18
+        assert all(len(f & genders) == 1 for f in singular)
+
+    def test_adjective_plural_carries_no_gender(self):
+        """Test that plural adjectives are not split by gender."""
+        genders = {"masc", "femn", "neut"}
+        plural = [f for f in derive_features(PartOfSpeech.ADJ) if "plur" in f]
+
+        assert len(plural) == 6
+        assert all(not (f & genders) for f in plural)
+
+    def test_noun_features_carry_no_gender(self):
+        """Test that noun gender is not treated as a paradigm dimension."""
+        genders = {"masc", "femn", "neut"}
+        features = derive_features(PartOfSpeech.NOUN)
+
+        assert all(not (f & genders) for f in features)
 
     def test_derive_features_for_verb(self):
         """Test that verb features include all person/number combinations."""

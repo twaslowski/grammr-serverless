@@ -63,6 +63,12 @@ export type Inflection = z.infer<typeof InflectionSchema>;
 export const ParadigmSchema = z.object({
   partOfSpeech: PartOfSpeechEnum,
   lemma: z.string(),
+  // Inherent features of the lexeme itself, such as noun gender. Unlike the
+  // features on an Inflection these classify the whole paradigm rather than a
+  // single cell, so they are held here instead of repeated on every form.
+  // Defaulted rather than required: paradigms persisted before this field
+  // existed are still parsed out of `flashcard.back`.
+  lemmaFeatures: z.array(FeatureSchema).default([]),
   inflections: z.array(InflectionSchema),
 });
 export type Paradigm = z.infer<typeof ParadigmSchema>;
@@ -81,6 +87,16 @@ export const CASE_LABELS: Record<string, string> = {
   ACC: "Accusative",
   ABL: "Instrumental",
   LOC: "Prepositional",
+};
+
+// Gender column order for adjectives, whose gender is inflectional
+export const GENDER_ORDER = ["MASC", "FEM", "NEUT"] as const;
+
+// Gender labels
+export const GENDER_LABELS: Record<string, string> = {
+  MASC: "Masculine",
+  FEM: "Feminine",
+  NEUT: "Neuter",
 };
 
 // Person display order for verb-like words

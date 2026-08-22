@@ -17,7 +17,14 @@ def derive_features(part_of_speech: PartOfSpeech) -> list[set[str]]:
     """
     Generate all possible feature combinations for a given part of speech.
 
-    For nouns and adjectives, generates all combinations of case and number.
+    For nouns, generates all combinations of case and number. Noun gender is
+    inherent to the lexeme rather than a dimension of its paradigm, so it is
+    not requested here; see `Inflector._derive_lemma_features`.
+
+    For adjectives, gender *is* an inflectional dimension, so the singular is
+    expanded across all three genders. Russian adjectives do not distinguish
+    gender in the plural.
+
     For verbs and auxiliaries, generates all combinations of person and number.
 
     Args:
@@ -31,8 +38,16 @@ def derive_features(part_of_speech: PartOfSpeech) -> list[set[str]]:
     Raises:
         ValueError: If an unsupported part of speech is provided.
     """
-    if part_of_speech in (PartOfSpeech.NOUN, PartOfSpeech.ADJ):
+    if part_of_speech is PartOfSpeech.NOUN:
         return [{number.value, case.value} for number, case in product(Number, Case)]
+
+    if part_of_speech is PartOfSpeech.ADJ:
+        singular = [
+            {Number.SING.value, case.value, gender.value}
+            for case, gender in product(Case, Gender)
+        ]
+        plural = [{Number.PLUR.value, case.value} for case in Case]
+        return singular + plural
 
     if part_of_speech in (PartOfSpeech.VERB, PartOfSpeech.AUX):
         return [

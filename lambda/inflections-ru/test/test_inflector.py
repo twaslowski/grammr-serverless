@@ -8,7 +8,7 @@ validation of confidence scores and part of speech matching.
 from unittest.mock import MagicMock, patch
 
 import pytest
-from domain.feature import Case, Number
+from domain.feature import Case, Gender, Number
 from domain.part_of_speech import PartOfSpeech
 from inflector import (DEFAULT_CONFIDENCE_THRESHOLD, Inflector,
                        LowConfidenceError, POSMismatchError)
@@ -89,6 +89,77 @@ class TestInflect:
 
         assert len(result) == 1
         assert result[0].lemma == "большой"
+
+    def test_inflect_noun_reports_inherent_gender(self):
+        """Test that noun gender is reported once on the paradigm container."""
+        result = self.inflector.inflect(
+            word="слово",
+            features=[{"sing", "nomn"}],
+            expected_pos=PartOfSpeech.NOUN,
+        )
+
+        assert result.lemma_features == {Gender.NEUT}
+
+    def test_inflect_noun_gender_is_not_repeated_on_inflections(self):
+        """Test that inherent gender does not leak into individual cells."""
+        result = self.inflector.inflect(
+            word="книга",  # "book", feminine
+            features=[{"sing", "nomn"}, {"plur", "gent"}],
+            expected_pos=PartOfSpeech.NOUN,
+        )
+
+        assert result.lemma_features == {Gender.FEM}
+        assert all(
+            not any(isinstance(f, Gender) for f in inflection.features)
+            for inflection in result.inflections
+        )
+
+    def test_inflect_noun_without_gender_reports_no_lemma_features(self):
+        """Test that plurale tantum nouns do not fail on a missing gender."""
+        result = self.inflector.inflect(
+            word="ножницы",  # "scissors", no singular and hence no gender
+            features=[{"plur", "nomn"}],
+            expected_pos=PartOfSpeech.NOUN,
+        )
+
+        assert result.lemma_features == set()
+
+    def test_inflect_adjective_carries_gender_per_form(self):
+        """Test that adjective gender is inflectional, not inherent."""
+        low_confidence_inflector = Inflector(confidence_threshold=0.3)
+        result = low_confidence_inflector.inflect(
+            word="новый",  # "new" in Russian
+            features=[
+                {"sing", "nomn", "masc"},
+                {"sing", "nomn", "femn"},
+                {"sing", "nomn", "neut"},
+            ],
+            expected_pos=PartOfSpeech.ADJ,
+        )
+
+        assert result.lemma_features == set()
+
+        by_gender = {
+            next(f for f in inflection.features if isinstance(f, Gender)): (
+                inflection.inflected
+            )
+            for inflection in result.inflections
+        }
+        assert by_gender == {
+            Gender.MASC: "новый",
+            Gender.FEM: "новая",
+            Gender.NEUT: "новое",
+        }
+
+    def test_inflect_verb_reports_no_lemma_features(self):
+        """Test that verbs carry no inherent gender."""
+        result = self.inflector.inflect(
+            word="делать",  # "to do" in Russian
+            features=[{"1per", "sing"}],
+            expected_pos=PartOfSpeech.VERB,
+        )
+
+        assert result.lemma_features == set()
 
     def test_inflect_with_custom_threshold(self):
         """Test inflecting with a custom confidence threshold."""

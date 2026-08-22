@@ -460,5 +460,71 @@ describe("Deck ID Independence", () => {
         expect(back.paradigm?.inflections).toHaveLength(3);
       }
     });
+
+    it("should preserve inherent lemma features through export/import cycle", () => {
+      const importCard = {
+        front: "кот",
+        type: "word",
+        back: {
+          type: "word",
+          translation: "cat",
+          paradigm: {
+            partOfSpeech: "NOUN" as const,
+            lemma: "кот",
+            lemmaFeatures: [{ type: "GENDER", value: "MASC" }],
+            inflections: [
+              {
+                lemma: "кот",
+                inflected: "кот",
+                features: [{ type: "CASE", value: "NOM" }],
+              },
+            ],
+          },
+        },
+        notes: null,
+      };
+
+      const importResult = ImportFlashcardSchema.safeParse(importCard);
+      expect(importResult.success).toBe(true);
+
+      if (importResult.success) {
+        const back = importResult.data.back as ParadigmFlashcardBack;
+        expect(back.paradigm?.lemmaFeatures).toEqual([
+          { type: "GENDER", value: "MASC" },
+        ]);
+      }
+    });
+
+    it("should import exports written before lemma features existed", () => {
+      const legacyCard = {
+        front: "кот",
+        type: "word",
+        back: {
+          type: "word",
+          translation: "cat",
+          paradigm: {
+            partOfSpeech: "NOUN" as const,
+            lemma: "кот",
+            inflections: [
+              {
+                lemma: "кот",
+                inflected: "кот",
+                features: [{ type: "CASE", value: "NOM" }],
+              },
+            ],
+          },
+        },
+        notes: null,
+      };
+
+      const importResult = ImportFlashcardSchema.safeParse(legacyCard);
+      expect(importResult.success).toBe(true);
+
+      if (importResult.success) {
+        const back = importResult.data.back as ParadigmFlashcardBack;
+        expect(back.paradigm?.lemmaFeatures).toEqual([]);
+        expect(back.paradigm?.inflections).toHaveLength(1);
+      }
+    });
   });
 });

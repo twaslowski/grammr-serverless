@@ -9,6 +9,7 @@ import logging
 
 import feature_retriever
 import pymorphy3
+from domain.feature import Feature
 from domain.inflection import Inflection, Inflections
 from domain.part_of_speech import PartOfSpeech
 from pymorphy3.analyzer import Parse
@@ -127,10 +128,44 @@ class Inflector:
         result = Inflections(
             part_of_speech=expected_pos,
             lemma=parse.normal_form,
+            lemma_features=self._derive_lemma_features(parse, expected_pos),
             inflections=inflections,
         )
         result._parse = parse
         return result
+
+    @staticmethod
+    def _derive_lemma_features(
+        parse: Parse, part_of_speech: PartOfSpeech
+    ) -> set[Feature]:
+        """
+        Extract the inherent, non-inflectional features of the lexeme.
+
+        Noun gender classifies the entire paradigm instead of varying across
+        it, so it is reported once on the container rather than repeated on
+        all twelve inflections. Adjectives are excluded deliberately: their
+        gender is an inflectional dimension and is carried per inflected form.
+
+        Args:
+            parse: The validated pymorphy3 Parse object for the lemma.
+            part_of_speech: The part of speech being inflected.
+
+        Returns:
+            Set of standardized Feature enum members, empty when the part of
+            speech has no inherent features or pymorphy3 reports no gender
+            (as for plurale tantum nouns such as "ножницы").
+        """
+        if part_of_speech is not PartOfSpeech.NOUN:
+            return set()
+
+        gender = parse.tag.gender
+        if gender is None:
+            return set()
+
+        # pymorphy3 hands back a grammeme wrapper whose __eq__ raises when
+        # compared against a grammeme from another attribute, so coerce to str
+        # before it reaches the generic feature lookup.
+        return feature_retriever.map_to_standardized_features({str(gender)})
 
     def _get_validated_parse(
         self,

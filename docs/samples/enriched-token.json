@@ -25,8 +25,14 @@
     ]
   },
   "paradigm": {
-    "lemma": "слово",
     "partOfSpeech": "NOUN",
+    "lemma": "слово",
+    "lemmaFeatures": [
+      {
+        "type": "GENDER",
+        "value": "NEUT"
+      }
+    ],
     "inflections": [
       {
         "lemma": "слово",
@@ -47,12 +53,12 @@
         "inflected": "слова",
         "features": [
           {
-            "type": "NUMBER",
-            "value": "SING"
-          },
-          {
             "type": "CASE",
             "value": "GEN"
+          },
+          {
+            "type": "NUMBER",
+            "value": "SING"
           }
         ]
       },
@@ -173,12 +179,12 @@
         "inflected": "словами",
         "features": [
           {
-            "type": "CASE",
-            "value": "ABL"
-          },
-          {
             "type": "NUMBER",
             "value": "PLUR"
+          },
+          {
+            "type": "CASE",
+            "value": "ABL"
           }
         ]
       },

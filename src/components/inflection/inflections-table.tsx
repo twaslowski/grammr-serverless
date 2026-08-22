@@ -4,9 +4,12 @@ import { CreateFlashcardDialog } from "@/components/flashcard";
 import { TTSButton } from "@/components/tts/tts-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPosLabel } from "@/lib/feature-labels";
+import { getFeatureDisplayValue } from "@/types/feature";
 import {
   CASE_LABELS,
   CASE_ORDER,
+  GENDER_LABELS,
+  GENDER_ORDER,
   Inflection,
   isNounLike,
   isVerbLike,
@@ -41,6 +44,19 @@ export function InflectionsTable({
   displayHeader = true,
 }: InflectionsTableProps) {
   const { partOfSpeech, lemma } = paradigm;
+
+  // Adjectives are noun-like, but gender is a dimension of their paradigm
+  // rather than a property of the lexeme, so they need their own layout.
+  if (partOfSpeech === "ADJ") {
+    return (
+      <AdjectiveTable
+        paradigm={paradigm}
+        displayTTSButton={displayTTSButton}
+        displayAddFlashcard={displayAddFlashcard}
+        displayHeader={displayHeader}
+      />
+    );
+  }
 
   if (isNounLike(partOfSpeech)) {
     return (
@@ -87,15 +103,18 @@ function InflectionsTableHeader({
   displayTTSButton,
   displayAddFlashcard,
 }: InflectionsTableProps) {
-  const { partOfSpeech, lemma } = paradigm;
+  const { partOfSpeech, lemma, lemmaFeatures } = paradigm;
+
+  const subtitle = [
+    getPosLabel(partOfSpeech),
+    ...lemmaFeatures.map(getFeatureDisplayValue),
+  ].join(" · ");
 
   return (
     <CardHeader className="flex flex-row justify-between items-start">
       <div>
         <CardTitle className="text-xl">{lemma}</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          {getPosLabel(partOfSpeech)}
-        </p>
+        <p className="text-sm text-muted-foreground">{subtitle}</p>
       </div>
       <div className="flex gap-x-2">
         {displayTTSButton && <TTSButton text={lemma} />}
@@ -158,6 +177,97 @@ function NounLikeTable({
                       {CASE_LABELS[caseValue]}
                     </td>
                     <td className="py-2 px-3">{singular?.inflected || "—"}</td>
+                    <td className="py-2 px-3">{plural?.inflected || "—"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AdjectiveTable({
+  paradigm,
+  displayTTSButton,
+  displayAddFlashcard,
+  displayHeader,
+}: InflectionsTableProps) {
+  const { inflections } = paradigm;
+
+  // Paradigms produced before adjective gender was inflected have no gendered
+  // forms at all. Rendering them here would leave every gender column empty,
+  // so fall back to the case/number layout they were built for.
+  const hasGenderedForms = inflections.some((inf) =>
+    inf.features.some((f) => f.type === "GENDER"),
+  );
+
+  if (!hasGenderedForms) {
+    return (
+      <NounLikeTable
+        paradigm={paradigm}
+        displayTTSButton={displayTTSButton}
+        displayAddFlashcard={displayAddFlashcard}
+        displayHeader={displayHeader}
+      />
+    );
+  }
+
+  return (
+    <Card>
+      {displayHeader && (
+        <InflectionsTableHeader
+          paradigm={paradigm}
+          displayTTSButton={displayTTSButton}
+          displayAddFlashcard={displayAddFlashcard}
+        />
+      )}
+      <CardContent>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-2 px-3 font-medium">Case</th>
+                {GENDER_ORDER.map((genderValue) => (
+                  <th
+                    key={genderValue}
+                    className="text-left py-2 px-3 font-medium"
+                  >
+                    {GENDER_LABELS[genderValue]}
+                  </th>
+                ))}
+                <th className="text-left py-2 px-3 font-medium">Plural</th>
+              </tr>
+            </thead>
+            <tbody>
+              {CASE_ORDER.map((caseValue) => {
+                // Russian adjectives do not distinguish gender in the plural,
+                // so it gets a single column rather than three.
+                const plural = findInflection(inflections, {
+                  CASE: caseValue,
+                  NUMBER: "PLUR",
+                });
+
+                return (
+                  <tr key={caseValue} className="border-b last:border-0">
+                    <td className="py-2 px-3 font-medium text-muted-foreground">
+                      {CASE_LABELS[caseValue]}
+                    </td>
+                    {GENDER_ORDER.map((genderValue) => {
+                      const singular = findInflection(inflections, {
+                        CASE: caseValue,
+                        NUMBER: "SING",
+                        GENDER: genderValue,
+                      });
+
+                      return (
+                        <td key={genderValue} className="py-2 px-3">
+                          {singular?.inflected || "—"}
+                        </td>
+                      );
+                    })}
                     <td className="py-2 px-3">{plural?.inflected || "—"}</td>
                   </tr>
                 );

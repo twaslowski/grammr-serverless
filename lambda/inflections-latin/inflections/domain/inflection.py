@@ -41,11 +41,16 @@ class Inflections(BaseModel):
     Attributes:
         part_of_speech: The part of speech of the word.
         lemma: The dictionary/base form of the word.
+        lemma_features: Inherent features of the lexeme itself, such as noun
+                        gender. Always empty here, since this service only
+                        conjugates verbs; kept so the wire format matches the
+                        other inflection services.
         inflections: List of all inflected forms.
     """
 
     part_of_speech: PartOfSpeech
     lemma: str
+    lemma_features: set[Feature] = set()
     inflections: list[Inflection]
 
     def json(self, **kwargs) -> dict:
@@ -53,5 +58,6 @@ class Inflections(BaseModel):
         return {
             "partOfSpeech": self.part_of_speech.name,
             "lemma": self.lemma,
+            "lemmaFeatures": [feature.json() for feature in self.lemma_features],
             "inflections": [inflection.json() for inflection in self.inflections],
         }
