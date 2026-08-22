@@ -47,12 +47,6 @@ export function TranslationResult({
                   type: "analysis",
                   translation: translatedText,
                 }}
-                trigger={
-                  <Button variant="outline" size="sm" className="h-9 w-16">
-                    <Layers className="h-4 w-4" />
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                }
               />
               <TTSButton
                 variant="outline"

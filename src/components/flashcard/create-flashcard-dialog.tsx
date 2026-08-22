@@ -79,7 +79,7 @@ export function CreateFlashcardDialog({
   };
 
   const defaultTrigger = (
-    <Button variant="outline" size="sm" className="gap-1">
+    <Button variant="outline" size="sm" className="h-9 w-16">
       <Layers className="h-4 w-4" />
       <Plus className="h-4 w-4" />
     </Button>

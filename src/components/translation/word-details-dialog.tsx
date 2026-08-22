@@ -29,6 +29,8 @@ import {
 import { Paradigm } from "@/types/inflections";
 import { LanguageCode } from "@/types/languages";
 import { TokenMorphology } from "@/types/morphology";
+import { Button } from "@/components/ui/button";
+import { Layers, Plus } from "lucide-react";
 
 interface WordDetailsDialogProps {
   word: string;
@@ -79,7 +81,26 @@ export function WordDetailsDialog({
         </DialogHeader>
       </VisuallyHidden>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <div className="absolute top-4 right-10">
+        <div className="absolute top-4 right-10 flex gap-x-1">
+          {paradigm && (
+            <CreateFlashcardDialog
+              front={paradigm.lemma}
+              back={{
+                type: "word",
+                paradigm: paradigm,
+                translation: "",
+              }}
+            />
+          )}
+          {!paradigm && (
+            <CreateFlashcardDialog
+              front={word}
+              back={{
+                type: "phrase",
+                translation: "",
+              }}
+            />
+          )}
           <TTSButton text={word} language={language} />
         </div>
         <div className="space-y-4">
