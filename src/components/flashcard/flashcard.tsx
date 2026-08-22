@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { EyeIcon, EyeOff, Table2, Trash2 } from "lucide-react";
+import { Table2, Trash2 } from "lucide-react";
 
 import { Analysis } from "@/components/flashcard/analysis";
 import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
@@ -14,8 +14,6 @@ interface FlashcardProps {
   flashcard: FlashcardWithDeck;
   isOwner: boolean;
   onDelete: (id: number) => void;
-  onStudy: (flashcard: FlashcardWithDeck) => void;
-  onSuspend: (flashcard: FlashcardWithDeck) => void;
   onUpdate: (updatedFlashcard: FlashcardWithDeck) => void;
 }
 
@@ -23,21 +21,8 @@ export function Flashcard({
   flashcard,
   isOwner,
   onDelete,
-  onSuspend,
   onUpdate,
 }: FlashcardProps) {
-  const isStudying = !!flashcard.studyCard;
-
-  // todo: currently, unsuspending a card is not supported. The API operations are simply not in place yet.
-  const handleToggleStudying = () => {
-    if (isStudying) {
-      onSuspend(flashcard);
-    } else {
-      return;
-      // onStartStudying(flashcard);
-    }
-  };
-
   const flashcardFront =
     flashcard.back.type === "analysis" ? (
       <Analysis textStyle="text-lg" analysis={flashcard.back} />
@@ -56,23 +41,6 @@ export function Flashcard({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={!isStudying}
-              onClick={handleToggleStudying}
-              title={
-                isStudying
-                  ? "Suspend this flashcard"
-                  : "Unsuspend this flashcard"
-              }
-            >
-              {isStudying ? (
-                <EyeIcon className="h-4 w-4" />
-              ) : (
-                <EyeOff className="h-4 w-4" />
-              )}
-            </Button>
             {isOwner && (
               <>
                 <UpdateFlashcardDialog

@@ -122,14 +122,6 @@ export async function deleteFlashcard(id: number): Promise<void> {
   );
 }
 
-export async function deleteCardStudy(id: number): Promise<void> {
-  return apiFetchVoid(
-    `${BASE_URL}/${id}/study`,
-    { method: "DELETE" },
-    "Failed to suspend flashcard",
-  );
-}
-
 // --- Export/Import operations ---
 
 export async function exportFlashcards(): Promise<Blob> {

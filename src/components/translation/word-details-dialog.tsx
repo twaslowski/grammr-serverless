@@ -29,8 +29,6 @@ import {
 import { Paradigm } from "@/types/inflections";
 import { LanguageCode } from "@/types/languages";
 import { TokenMorphology } from "@/types/morphology";
-import { Button } from "@/components/ui/button";
-import { Layers, Plus } from "lucide-react";
 
 interface WordDetailsDialogProps {
   word: string;
