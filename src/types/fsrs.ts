@@ -54,6 +54,9 @@ export const CardWithFlashcardSchema = CardSchema.extend({
     front: true,
     id: true,
     notes: true,
+  }).extend({
+    // Not a flashcard column - comes from the owning deck, needed client-side for TTS.
+    language: z.string().max(3),
   }),
 });
 export type CardWithFlashcard = z.infer<typeof CardWithFlashcardSchema>;

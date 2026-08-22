@@ -21,7 +21,7 @@ export default async function LanguageSettingsPage() {
   const profile = parsed.success ? parsed.data : null;
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-6 max-w-4xl">
+    <div className="flex-1 w-full flex flex-col gap-6 max-w-4xl mx-auto">
       <div className="flex items-center gap-4">
         <Link
           href="/dashboard/settings"

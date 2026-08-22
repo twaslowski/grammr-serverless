@@ -63,7 +63,8 @@ export interface PageLayoutProps {
 
 /**
  * Wrapper component that combines PageHeader with consistent layout structure.
- * Provides a flex container with proper spacing and max-width.
+ * Owns both its max-width and its horizontal centering (`mx-auto`) so it stays
+ * centered regardless of how ancestors lay their children out.
  *
  * @example
  * ```tsx
@@ -80,7 +81,7 @@ export interface PageLayoutProps {
  */
 export function PageLayout({ children, header }: PageLayoutProps) {
   return (
-    <div className="flex-1 w-full flex flex-col gap-6 max-w-4xl">
+    <div className="flex-1 w-full flex flex-col gap-6 max-w-4xl mx-auto">
       <PageHeader {...header} />
       {children}
     </div>

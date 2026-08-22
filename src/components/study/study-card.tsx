@@ -16,6 +16,7 @@ import {
   PhraseFlashcardBack,
 } from "@/types/flashcards";
 import { CardWithFlashcard, Rating, SchedulingInfo } from "@/types/fsrs";
+import { LanguageCode } from "@/types/languages";
 
 interface StudyCardProps {
   card: CardWithFlashcard;
@@ -108,16 +109,23 @@ export function StudyCard({
     <div className="w-full max-w-xl mx-auto">
       <Card className="min-h-[300px] flex flex-col">
         <CardHeader className="relative flex-1 flex items-center justify-center text-center">
-          {card.flashcard.back.type === "analysis" && (
-            <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4">
+            {card.flashcard.back.type === "analysis" ? (
               <TTSButton
                 text={card.flashcard.back.text}
                 language={card.flashcard.back.language}
                 size="sm"
                 variant="ghost"
               />
-            </div>
-          )}
+            ) : (
+              <TTSButton
+                text={card.flashcard.front}
+                language={card.flashcard.language as LanguageCode}
+                size="sm"
+                variant="ghost"
+              />
+            )}
+          </div>
           {!isFlipped ? (
             // Front of card - show the word/phrase
             <div className="space-y-4">

@@ -27,9 +27,5 @@ export default async function ProtectedLayout({
       redirect("/auth/sign-up/select-language");
     });
 
-  return (
-    <ProfileProvider profile={userProfile}>
-      <main>{children}</main>
-    </ProfileProvider>
-  );
+  return <ProfileProvider profile={userProfile}>{children}</ProfileProvider>;
 }

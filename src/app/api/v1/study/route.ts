@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { DueCardsQuerySchema } from "@/app/api/v1/study/schema";
 import { db } from "@/db/connect";
-import { flashcards, flashcardStudy } from "@/db/schemas/schema";
+import { decks, flashcards, flashcardStudy } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { scheduleCard } from "@/lib/fsrs";
 import { Card as DbCard } from "@/types/fsrs";
@@ -29,10 +29,12 @@ export const GET = withApiHandler(
           front: flashcards.front,
           back: flashcards.back,
           notes: flashcards.notes,
+          language: decks.language,
         },
       })
       .from(flashcardStudy)
       .innerJoin(flashcards, eq(flashcardStudy.flashcardId, flashcards.id))
+      .innerJoin(decks, eq(flashcards.deckId, decks.id))
       .where(
         and(
           eq(flashcardStudy.userId, user.id),
@@ -57,10 +59,12 @@ export const GET = withApiHandler(
             front: flashcards.front,
             back: flashcards.back,
             notes: flashcards.notes,
+            language: decks.language,
           },
         })
         .from(flashcardStudy)
         .innerJoin(flashcards, eq(flashcardStudy.flashcardId, flashcards.id))
+        .innerJoin(decks, eq(flashcards.deckId, decks.id))
         .where(
           and(
             eq(flashcardStudy.userId, user.id),
