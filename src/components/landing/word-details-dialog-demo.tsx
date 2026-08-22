@@ -8,6 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -17,11 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { getPosLabel } from "@/lib/feature-labels";
-import {
-  FALLBACK_FEATURE_TYPE,
-  getFeatureDisplayType,
-  getFeatureDisplayValue,
-} from "@/types/feature";
+import { getFeatureDisplayValue, getOrderedFeatures } from "@/types/feature";
 import { Paradigm } from "@/types/inflections";
 import { TokenMorphology } from "@/types/morphology";
 
@@ -35,7 +32,7 @@ interface WordDetailsDialogDemoProps {
 
 export function WordDetailsDialogDemo({
   word,
-  translation: initialTranslation,
+  translation,
   morphology,
   trigger,
   paradigm,
@@ -48,6 +45,12 @@ export function WordDetailsDialogDemo({
 
   const defaultTrigger = <p className="cursor-pointer">{word}</p>;
 
+  const features = morphology
+    ? getOrderedFeatures(morphology.features, morphology.pos)
+    : [];
+  const lemma = morphology?.lemma;
+  const showLemma = !!lemma && lemma.toLowerCase() !== word.toLowerCase();
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
@@ -59,71 +62,56 @@ export function WordDetailsDialogDemo({
           </DialogDescription>
         </DialogHeader>
       </VisuallyHidden>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <div className="space-y-4">
-          {/* Basic word info */}
-          <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                Word
-              </p>
-              <p className="font-medium text-lg">{word}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                Translation
-              </p>
-              <p className="font-medium">{initialTranslation || "?"}</p>
-            </div>
+      <DialogContent className="max-h-[85vh] max-w-2xl gap-0 overflow-y-auto p-0">
+        {/* Header: the word itself and its grammatical identity */}
+        <div className="border-b bg-muted/30 px-6 py-5">
+          <div className="min-w-0 space-y-2 pr-8">
+            <h2 className="truncate text-3xl font-semibold leading-tight tracking-tight">
+              {word}
+            </h2>
             {morphology && (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                    Lemma
-                  </p>
-                  <p className="font-medium">{morphology.lemma}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                    Part of Speech
-                  </p>
-                  <p className="font-medium">{getPosLabel(morphology.pos)}</p>
-                </div>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+                <Badge variant="secondary" className="rounded-full font-medium">
+                  {getPosLabel(morphology.pos)}
+                </Badge>
+                {features.map((feature, index) => (
+                  <React.Fragment key={index}>
+                    {index > 0 && <span aria-hidden="true">·</span>}
+                    <span>{getFeatureDisplayValue(feature)}</span>
+                  </React.Fragment>
+                ))}
               </div>
             )}
-            {/* Grammatical Features */}
-            {morphology &&
-              morphology.features.filter(
-                (f) => f.type !== FALLBACK_FEATURE_TYPE,
-              ).length > 0 && (
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
-                    Grammatical Features
-                  </p>
-                  <div className="space-y-1">
-                    {morphology.features
-                      .filter((f) => f.type !== FALLBACK_FEATURE_TYPE)
-                      .map((feature, index) => (
-                        <div
-                          key={index}
-                          className="text-sm flex items-center gap-2"
-                        >
-                          <span className="font-medium text-muted-foreground">
-                            {getFeatureDisplayType(feature)}:
-                          </span>
-                          <span>{getFeatureDisplayValue(feature)}</span>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
           </div>
+        </div>
+
+        <div className="space-y-5 px-6 py-5">
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              Translation
+            </p>
+            <div className="flex min-h-12 w-full items-center rounded-lg border bg-muted/40 px-4 py-2">
+              <span className="text-lg leading-snug">{translation || "?"}</span>
+            </div>
+          </div>
+
+          {showLemma && (
+            <div className="flex items-baseline justify-between gap-4 border-t pt-4 text-sm">
+              <span className="text-muted-foreground">Dictionary form</span>
+              <span className="font-medium">{lemma}</span>
+            </div>
+          )}
 
           {/* Inflections section */}
           {paradigm && (
             <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="inflections">
-                <AccordionTrigger>Inflections</AccordionTrigger>
+              <AccordionItem
+                value="inflections"
+                className="border-b-0 border-t"
+              >
+                <AccordionTrigger className="hover:no-underline">
+                  Inflections
+                </AccordionTrigger>
                 <AccordionContent>
                   <InflectionsTable
                     paradigm={paradigm}

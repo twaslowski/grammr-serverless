@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Eye, Loader2, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { useProfile } from "@/components/dashboard/profile-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { translate } from "@/lib/translation";
+import { cn } from "@/lib/utils";
 
 interface TranslationInputProps {
   /** The current translation value */
@@ -74,8 +75,10 @@ export function TranslationInput({
     }
   };
 
-  const handleReveal = () => {
-    if (value && value.trim()) {
+  const handleToggleReveal = () => {
+    if (isRevealed) {
+      setIsRevealed(false);
+    } else if (value && value.trim()) {
       // If translation exists, just reveal it
       setIsRevealed(true);
     } else {
@@ -116,60 +119,69 @@ export function TranslationInput({
   }
 
   // If not editable, render the spoiler/reveal version
-  const hasTranslation = value && value.trim();
-  const shouldShowContent = isRevealed && hasTranslation;
+  const hasTranslation = !!(value && value.trim());
+  const isRevealedNow = isRevealed && hasTranslation;
+  const label = isRevealedNow
+    ? "Hide translation"
+    : hasTranslation
+      ? "Reveal translation"
+      : "Translate text";
 
   return (
     <div
-      className={`flex items-center gap-2 py-1 px-2 border rounded-md cursor-pointer hover:bg-muted/50 transition-colors ${className} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
-      onClick={disabled ? undefined : handleReveal}
+      className={cn(
+        "flex min-h-12 w-full items-center justify-between gap-3 rounded-lg border px-4 py-2 transition-colors",
+        isRevealedNow ? "bg-muted/40" : "border-dashed bg-muted/20",
+        disabled
+          ? "cursor-not-allowed opacity-50"
+          : "cursor-pointer hover:bg-muted/60",
+        className,
+      )}
+      onClick={disabled ? undefined : handleToggleReveal}
       role="button"
       tabIndex={disabled ? -1 : 0}
-      aria-label={hasTranslation ? "Reveal translation" : "Translate text"}
+      title={label}
+      aria-label={label}
       onKeyDown={(e) => {
         if (!disabled && (e.key === "Enter" || e.key === " ")) {
           e.preventDefault();
-          handleReveal();
+          handleToggleReveal();
         }
       }}
     >
-      <div className="min-h-[1rem] justify-between">
-        {isTranslating ? (
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-sm">Translating...</span>
-          </div>
-        ) : shouldShowContent ? (
-          <span
-            className={`transition-opacity duration-300 ease-in ${inputClassName}`}
-            style={{ opacity: isRevealed ? 1 : 0 }}
-          >
-            {value}
-          </span>
-        ) : (
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1">
-              {/* Redacted/spoiler blocks */}
-              <div className="h-6 w-24 bg-muted-foreground rounded"></div>
-            </div>
-            <span className="text-xs text-muted-foreground ml-2">
-              Click to reveal
-            </span>
-          </div>
-        )}
-      </div>
-      {!isTranslating && !isRevealed && (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          disabled={disabled}
-          title="reveal translation"
-          aria-label="reveal translation"
-          tabIndex={-1} // Parent container handles keyboard interaction
+      {isTranslating ? (
+        <span className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Translating...
+        </span>
+      ) : hasTranslation ? (
+        <span
+          className={cn(
+            "text-lg leading-snug transition-[filter,opacity] duration-300 ease-out",
+            isRevealedNow ? "opacity-100" : "select-none opacity-60 blur-[6px]",
+            inputClassName,
+          )}
         >
-          <Eye className="h-4 w-4" />
-        </Button>
+          {value}
+        </span>
+      ) : (
+        <span
+          aria-hidden="true"
+          className="h-4 w-28 rounded-full bg-foreground/15"
+        />
+      )}
+
+      {!isTranslating && (
+        <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+          {isRevealedNow ? (
+            <EyeOff className="h-3.5 w-3.5" />
+          ) : hasTranslation ? (
+            <Eye className="h-3.5 w-3.5" />
+          ) : (
+            <Sparkles className="h-3.5 w-3.5" />
+          )}
+          {isRevealedNow ? "Hide" : hasTranslation ? "Reveal" : "Translate"}
+        </span>
       )}
     </div>
   );

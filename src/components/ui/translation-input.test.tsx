@@ -213,21 +213,21 @@ describe("TranslationInput", () => {
   });
 
   describe("Non-editable mode", () => {
-    it("renders spoiler blocks when no translation exists", () => {
+    it("renders a placeholder prompting a translation when none exists", () => {
       render(
         <TestWrapper>
           <TranslationInput {...defaultProps} editable={false} />
         </TestWrapper>,
       );
 
-      expect(screen.getByText("Click to reveal")).toBeInTheDocument();
+      expect(screen.getByText("Translate")).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /reveal translation/i }),
+        screen.getByRole("button", { name: /translate text/i }),
       ).toBeInTheDocument();
       expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     });
 
-    it("shows translation when clicked and translation exists", async () => {
+    it("unblurs the translation when clicked and translation exists", async () => {
       const user = userEvent.setup();
 
       render(
@@ -236,13 +236,38 @@ describe("TranslationInput", () => {
         </TestWrapper>,
       );
 
-      const container = screen.getByText("Click to reveal").closest("div");
-      expect(container).toBeInTheDocument();
+      expect(screen.getByText("hola")).toHaveClass("blur-[6px]");
 
-      await user.click(container!);
+      await user.click(
+        screen.getByRole("button", { name: /reveal translation/i }),
+      );
 
       await waitFor(() => {
-        expect(screen.getByText("hola")).toBeInTheDocument();
+        expect(screen.getByText("hola")).not.toHaveClass("blur-[6px]");
+      });
+      expect(
+        screen.getByRole("button", { name: /hide translation/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("re-hides the translation when clicked again", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <TestWrapper>
+          <TranslationInput {...defaultProps} value="hola" editable={false} />
+        </TestWrapper>,
+      );
+
+      await user.click(
+        screen.getByRole("button", { name: /reveal translation/i }),
+      );
+      await user.click(
+        screen.getByRole("button", { name: /hide translation/i }),
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("hola")).toHaveClass("blur-[6px]");
       });
     });
 
@@ -301,13 +326,13 @@ describe("TranslationInput", () => {
         </TestWrapper>,
       );
 
-      expect(screen.getByTitle("reveal translation")).toBeInTheDocument();
-      const container = screen.getByText("Click to reveal").closest("div");
-      await user.click(container!);
+      const container = screen.getByRole("button", { name: /translate text/i });
+      expect(container).toBeInTheDocument();
+      await user.click(container);
 
       // Check loading state
       expect(screen.getByText("Translating...")).toBeInTheDocument();
-      expect(screen.queryByTitle("reveal translation")).not.toBeInTheDocument();
+      expect(screen.queryByText("Translate")).not.toBeInTheDocument();
 
       // Resolve translation
       resolveTranslation!({ translation: "hola" });
@@ -316,7 +341,7 @@ describe("TranslationInput", () => {
       });
     });
 
-    it("applies fade-in animation when revealing translation", async () => {
+    it("applies a fade-in transition when revealing translation", async () => {
       const user = userEvent.setup();
 
       render(
@@ -325,15 +350,16 @@ describe("TranslationInput", () => {
         </TestWrapper>,
       );
 
-      const container = screen.getByText("Click to reveal").closest("div");
-      await user.click(container!);
+      await user.click(
+        screen.getByRole("button", { name: /reveal translation/i }),
+      );
 
       await waitFor(() => {
         const translationElement = screen.getByText("hola");
         expect(translationElement).toHaveClass(
-          "transition-opacity",
+          "transition-[filter,opacity]",
           "duration-300",
-          "ease-in",
+          "ease-out",
         );
       });
     });
@@ -353,8 +379,7 @@ describe("TranslationInput", () => {
         </TestWrapper>,
       );
 
-      const container = screen.getByText("Click to reveal").closest("div");
-      await user.click(container!);
+      await user.click(screen.getByRole("button", { name: /translate text/i }));
 
       expect(mockTranslate).not.toHaveBeenCalled();
       expect(onChange).not.toHaveBeenCalled();
@@ -399,8 +424,9 @@ describe("TranslationInput", () => {
         </TestWrapper>,
       );
 
-      const container = screen.getByText("Click to reveal").closest("div");
-      await user.click(container!);
+      await user.click(
+        screen.getByRole("button", { name: /reveal translation/i }),
+      );
 
       await waitFor(() => {
         const translationElement = screen.getByText("hola");

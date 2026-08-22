@@ -10,11 +10,7 @@ import { useProfile } from "@/components/dashboard/profile-provider";
 import { DeckSelector } from "@/components/flashcard/deck-selector";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  deleteFlashcard,
-  getDecks,
-  getFlashcards,
-} from "@/lib/flashcards";
+import { deleteFlashcard, getDecks, getFlashcards } from "@/lib/flashcards";
 import { Deck } from "@/types/deck";
 import { FlashcardWithDeck } from "@/types/flashcards";
 
