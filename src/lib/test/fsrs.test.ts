@@ -13,6 +13,7 @@ import {
   createFsrsInstance,
   formatInterval,
   getDefaultParameters,
+  intervalInDays,
   mapCardToFsrs,
   mapFsrsCardToDb,
   mapFsrsLogToDb,
@@ -23,6 +24,24 @@ import {
 import { Card as DbCard } from "@/types/fsrs";
 
 describe("FSRS Service", () => {
+  const newCard = (now: Date): DbCard => ({
+    id: 1,
+    flashcard_id: 1,
+    user_id: "user-123",
+    due: now,
+    stability: 0,
+    difficulty: 0,
+    elapsed_days: 0,
+    scheduled_days: 0,
+    learning_steps: 0,
+    reps: 0,
+    lapses: 0,
+    state: "New",
+    last_review: null,
+    created_at: now.toISOString(),
+    updated_at: now.toISOString(),
+  });
+
   describe("createFsrsInstance", () => {
     it("should create an FSRS instance with default parameters", () => {
       const fsrs = createFsrsInstance();
@@ -119,6 +138,64 @@ describe("FSRS Service", () => {
       expect(easyOption!.scheduledDays).toBeGreaterThanOrEqual(1);
     });
 
+    it("should label the learning steps distinctly for a new card", () => {
+      // Regression: scheduled_days is 0 for every intra-day step, so labelling
+      // from that field collapsed Again/Hard/Good into an identical "1 minute".
+      const now = new Date("2026-01-21T10:00:00Z");
+      const result = scheduleCard(newCard(now), now);
+
+      const labels = Object.fromEntries(
+        result.map((o) => [o.rating, o.nextReviewInterval]),
+      );
+      expect(labels).toEqual({
+        Again: "1 minute",
+        Hard: "6 minutes",
+        Good: "10 minutes",
+        Easy: "7 days",
+      });
+    });
+
+    it("should keep intervals strictly increasing across ratings", () => {
+      const now = new Date("2026-01-21T10:00:00Z");
+      const card = newCard(now);
+
+      // Walk the card through learning into Review, checking each step.
+      let current = card;
+      let at = now;
+      for (let i = 0; i < 4; i++) {
+        const intervals = scheduleCard(current, at).map((o) =>
+          intervalInDays(o.card.due, at),
+        );
+        for (let j = 1; j < intervals.length; j++) {
+          expect(intervals[j]).toBeGreaterThan(intervals[j - 1]);
+        }
+
+        const good = scheduleCard(current, at).find((o) => o.rating === "Good")!;
+        current = { ...current, ...good.card };
+        at = good.card.due;
+      }
+      expect(current.state).toBe("Review");
+    });
+
+    it("should label a lapse with the relearning step, not one minute", () => {
+      const now = new Date("2026-01-21T10:00:00Z");
+      const reviewCard: DbCard = {
+        ...newCard(now),
+        stability: 10,
+        difficulty: 5,
+        elapsed_days: 10,
+        scheduled_days: 10,
+        reps: 5,
+        state: "Review",
+        last_review: new Date("2026-01-11T10:00:00Z"),
+      };
+
+      const again = scheduleCard(reviewCard, now).find(
+        (o) => o.rating === "Again",
+      );
+      expect(again!.nextReviewInterval).toBe("10 minutes");
+    });
+
     it("should schedule a review card with longer intervals", () => {
       const now = new Date("2026-01-21T10:00:00Z");
       const dbCard: DbCard = {
@@ -167,7 +244,13 @@ describe("FSRS Service", () => {
 
     it("should format months correctly", () => {
       expect(formatInterval(30)).toContain("month");
-      expect(formatInterval(60)).toContain("month");
+      expect(formatInterval(60)).toBe("2 months");
+    });
+
+    it("should distinguish sub-hour intervals", () => {
+      expect(formatInterval(1 / 1440)).toBe("1 minute");
+      expect(formatInterval(6 / 1440)).toBe("6 minutes");
+      expect(formatInterval(10 / 1440)).toBe("10 minutes");
     });
 
     it("should format years correctly", () => {

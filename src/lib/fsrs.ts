@@ -23,15 +23,26 @@ import {
   SchedulingInfo,
 } from "@/types/fsrs";
 
+const MS_PER_MINUTE = 60 * 1000;
+const MS_PER_DAY = 24 * 60 * MS_PER_MINUTE;
+const DAYS_PER_MONTH = 30.44;
+const DAYS_PER_YEAR = 365.25;
+
 /**
  * Default FSRS parameters as specified in the requirements
+ *
+ * The learning/relearning steps are spelled out rather than left to the
+ * library defaults because they drive every sub-day interval a user sees:
+ * Again/Good land on the first/last step, Hard on the midpoint between them.
  */
 export const DEFAULT_FSRS_PARAMS = {
   request_retention: 0.9, // Target 90% recall probability
   maximum_interval: 36500, // ~100 years max interval
   enable_fuzz: true, // Prevent card clusters with random offsets
   enable_short_term: true, // Enable short-term scheduling
-};
+  learning_steps: ["1m", "10m"], // New cards: Again 1m, Hard 6m, Good 10m
+  relearning_steps: ["10m"], // Lapsed cards: Again 10m
+} satisfies Partial<FSRSParameters>;
 
 /**
  * Get the default FSRS parameters
@@ -201,31 +212,50 @@ export function mapFsrsLogToDb(log: TsFsrsReviewLog): {
   };
 }
 
+function pluralize(value: number, unit: string): string {
+  return `${value} ${unit}${value === 1 ? "" : "s"}`;
+}
+
+/** Round to at most one decimal so long intervals keep some resolution */
+function round1(value: number): number {
+  return Math.round(value * 10) / 10;
+}
+
 /**
- * Format a scheduled_days value to a human-readable interval string
+ * Format an interval expressed in (possibly fractional) days as a
+ * human-readable string.
+ *
+ * Note this must be given the real interval, not a card's `scheduled_days`:
+ * FSRS reports `scheduled_days === 0` for every intra-day learning and
+ * relearning step, so formatting that field collapses 1m/6m/10m into "1 minute".
  */
-export function formatInterval(scheduledDays: number): string {
-  if (scheduledDays < 1 / 24) {
-    // Less than an hour
-    const minutes = Math.round(scheduledDays * 24 * 60);
-    return `${Math.max(1, minutes)} minute${minutes === 1 ? "" : "s"}`;
-  } else if (scheduledDays < 1) {
-    // Less than a day
-    const hours = Math.round(scheduledDays * 24);
-    return `${hours} hour${hours === 1 ? "" : "s"}`;
-  } else if (scheduledDays < 30) {
-    // Less than a month
-    const days = Math.round(scheduledDays);
-    return `${days} day${days === 1 ? "" : "s"}`;
-  } else if (scheduledDays < 365) {
-    // Less than a year
-    const months = Math.round(scheduledDays / 30);
-    return `${months} month${months === 1 ? "" : "s"}`;
-  } else {
-    // Years
-    const years = Math.round(scheduledDays / 365);
-    return `${years} year${years === 1 ? "" : "s"}`;
+export function formatInterval(days: number): string {
+  const minutes = Math.round(days * 24 * 60);
+  if (minutes < 60) {
+    return pluralize(Math.max(1, minutes), "minute");
   }
+
+  const hours = Math.round(days * 24);
+  if (hours < 24) {
+    return pluralize(hours, "hour");
+  }
+
+  if (days < 30) {
+    return pluralize(Math.round(days), "day");
+  }
+
+  if (days < 365) {
+    return pluralize(round1(days / DAYS_PER_MONTH), "month");
+  }
+
+  return pluralize(round1(days / DAYS_PER_YEAR), "year");
+}
+
+/**
+ * The interval, in fractional days, between `now` and when the card falls due.
+ */
+export function intervalInDays(due: Date, now: Date): number {
+  return Math.max(0, (due.getTime() - now.getTime()) / MS_PER_DAY);
 }
 
 /**
@@ -256,9 +286,11 @@ export function scheduleCard(
     const result = scheduling[fsrsRating] as RecordLogItem;
     const cardFields = mapFsrsCardToDb(result.card);
 
+    // `scheduled_days` is 0 for intra-day steps, so the label has to come from
+    // the actual due date; `scheduledDays` stays the raw FSRS value the row stores.
     return {
       rating,
-      nextReviewInterval: formatInterval(result.card.scheduled_days),
+      nextReviewInterval: formatInterval(intervalInDays(result.card.due, now)),
       scheduledDays: result.card.scheduled_days,
       card: cardFields,
     };
