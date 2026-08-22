@@ -796,20 +796,14 @@
           "isExpression": false,
           "asc": true,
           "nullsFirst": false,
-          "opclass": {
-            "name": "timestamp_ops",
-            "default": false
-          }
+          "opclass": null
         },
         {
           "value": "due",
           "isExpression": false,
           "asc": true,
           "nullsFirst": false,
-          "opclass": {
-            "name": "uuid_ops",
-            "default": false
-          }
+          "opclass": null
         }
       ],
       "isUnique": false,
@@ -830,20 +824,14 @@
           "isExpression": false,
           "asc": true,
           "nullsFirst": false,
-          "opclass": {
-            "name": "enum_ops",
-            "default": false
-          }
+          "opclass": null
         },
         {
           "value": "state",
           "isExpression": false,
           "asc": true,
           "nullsFirst": false,
-          "opclass": {
-            "name": "enum_ops",
-            "default": false
-          }
+          "opclass": null
         }
       ],
       "isUnique": false,

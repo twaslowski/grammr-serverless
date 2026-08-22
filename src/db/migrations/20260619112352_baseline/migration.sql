@@ -96,8 +96,8 @@ ALTER TABLE "review_log" ADD CONSTRAINT "review_log_card_id_fkey" FOREIGN KEY ("
 CREATE UNIQUE INDEX "idx_only_one_default_deck" ON "deck" USING btree ("user_id" uuid_ops) WHERE (is_default = true);--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_unique_deck_name_per_user" ON "deck" USING btree (user_id,lower((name)::text));--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "idx_flashcard_study_deck_id" ON "flashcard_study" USING btree ("deck_id" int4_ops);--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "idx_flashcard_study_due" ON "flashcard_study" USING btree ("user_id" timestamp_ops,"due" uuid_ops) WHERE (state <> 'New'::card_state);--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "idx_flashcard_study_user_state" ON "flashcard_study" USING btree ("user_id" enum_ops,"state" enum_ops);--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_flashcard_study_due" ON "flashcard_study" USING btree ("user_id","due") WHERE (state <> 'New'::card_state);--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_flashcard_study_user_state" ON "flashcard_study" USING btree ("user_id","state");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "idx_review_log_flashcard_study_id" ON "review_log" USING btree ("flashcard_study_id" int4_ops);--> statement-breakpoint
 CREATE POLICY "owned entity access" ON "deck" AS PERMISSIVE FOR ALL TO public USING ((( SELECT auth.uid() AS uid) = user_id));--> statement-breakpoint
 CREATE POLICY "public entity read access" ON "deck" AS PERMISSIVE FOR SELECT TO public;--> statement-breakpoint
