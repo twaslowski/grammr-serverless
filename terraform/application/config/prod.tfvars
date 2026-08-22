@@ -5,5 +5,5 @@ supabase_project_id      = "wgngrrmngatubjsilhbj"
 supabase_publishable_key = "sb_publishable_lpFzYUt6e8OxbLQNPG4SIw_rf2MYDFq"
 
 morphology_lambda_version        = "0.2.1"
-inflections_ru_lambda_version    = "0.1.7"
+inflections_ru_lambda_version    = "0.2.0"
 inflections_latin_lambda_version = "0.3.1"

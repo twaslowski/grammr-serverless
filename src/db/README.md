@@ -36,3 +36,16 @@ the Supabase transaction pooler that `DATABASE_URL` points at.
 
 `drizzle.config.ts` reads `DATABASE_URL`, falling back to the local Supabase instance started by `task start-env`.
 Set `DATABASE_URL` to target any other environment.
+
+## Data backfills
+
+`scripts/` holds one-off backfills for data that a schema migration cannot express — typically reshaping the JSON in
+`flashcard.back`, which is opaque to Drizzle. They are plain scripts rather than migrations because they may need to
+call a service to work out the new values, and because they are safe to re-run.
+
+Each one defaults to a dry run and only writes when passed `--apply`, so the shape of the change can be inspected
+first. They read `DATABASE_URL` like everything else here, so point it at the environment you mean to touch.
+
+| Script                        | Purpose                                                                                            |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| `backfill-paradigm-gender.ts` | Records noun gender on `lemmaFeatures`, and refetches adjectives so their forms inflect for gender |
