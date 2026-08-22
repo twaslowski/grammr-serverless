@@ -22,7 +22,7 @@ The Dockerfile uses uv to export dependencies and install them during the build 
 ### pytest
 
 Run tests with `uv run pytest`.
-Note that you have to first download a model for testing purposes by running `uv run spacy download de_core_news_sm`.
+A `conftest.py` hook automatically downloads the `de_core_news_sm` model used for testing if it isn't already installed.
 
 ### Docker image
 
