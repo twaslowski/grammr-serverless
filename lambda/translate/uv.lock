@@ -230,26 +230,26 @@ name = "translate"
 version = "0.3.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "boto3" },
     { name = "deepl" },
     { name = "requests" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "boto3" },
     { name = "pytest" },
     { name = "pytest-env" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "boto3", specifier = ">=1.42.38" },
     { name = "deepl", specifier = ">=1.27.0" },
     { name = "requests", specifier = ">=2.32.5" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "boto3", specifier = ">=1.42.38" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-env", specifier = ">=1.7.0" },
 ]

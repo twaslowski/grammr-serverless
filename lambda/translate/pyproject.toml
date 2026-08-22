@@ -5,13 +5,14 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "boto3>=1.42.38",
     "deepl>=1.27.0",
     "requests>=2.32.5",
 ]
 
 [dependency-groups]
+# boto3 is provided by the AWS Lambda Python runtime, so it is deliberately not a project dependency
 dev = [
+    "boto3>=1.42.38",
     "pytest>=9.0.2",
     "pytest-env>=1.7.0",
 ]

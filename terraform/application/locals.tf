@@ -31,6 +31,30 @@ locals {
     version   = var.inflections_latin_lambda_version
   }
 
+  # Files to keep out of the zip-packaged lambda artifacts.
+  #
+  # These are Python regexes matched against paths relative to the source
+  # directory, and are applied to both the source tree and the dependencies uv
+  # installs. A leading "!" excludes. Note that the packager walks the source
+  # with followlinks=True, so a local .venv does not merely duplicate every
+  # dependency, it also materialises the symlinked interpreter as three real
+  # ~18 MB copies -- which on its own pushed the translate artifact past the
+  # 50 MB direct-upload limit.
+  lambda_source_excludes = [
+    "!\\.venv(/.*)?",
+    "!(.*/)?__pycache__(/.*)?",
+    "!\\.pytest_cache(/.*)?",
+    "!\\.ruff_cache(/.*)?",
+    "!\\.mypy_cache(/.*)?",
+    "!(.*/)?\\.DS_Store",
+    "!\\.python-version",
+    "!tests(/.*)?",
+    "!test_.*\\.py",
+    "!pytest\\.ini",
+    "!event\\.json",
+    "!INSTRUCTIONS_LOCAL\\.md",
+  ]
+
   lambda_allowed_triggers = {
     apigateway = {
       service    = "apigateway"

@@ -120,7 +120,11 @@ module "polly_lambda" {
   runtime       = "python3.14"
   memory_size   = 256
   timeout       = 30
-  source_path   = "${path.module}/../../lambda/tts"
+  source_path = [{
+    path       = "${path.module}/../../lambda/tts"
+    uv_install = true
+    patterns   = local.lambda_source_excludes
+  }]
 
   trigger_on_package_timestamp = false
 
@@ -155,7 +159,11 @@ module "translate_lambda" {
   runtime       = "python3.14"
   memory_size   = 256
   timeout       = 30
-  source_path   = "${path.module}/../../lambda/translate"
+  source_path = [{
+    path       = "${path.module}/../../lambda/translate"
+    uv_install = true
+    patterns   = local.lambda_source_excludes
+  }]
 
   cloudwatch_logs_retention_in_days = 14
 
