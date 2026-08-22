@@ -35,11 +35,7 @@ async function request(
  */
 export function createValidatedFetcher<T>(schema: z.ZodType<T>) {
   return async (url: string, options?: RequestInit): Promise<T> => {
-    const response = await request(
-      url,
-      options,
-      `Failed to fetch from ${url}`,
-    );
+    const response = await request(url, options, `Failed to fetch from ${url}`);
 
     const result = schema.safeParse(await response.json());
 

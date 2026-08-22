@@ -16,13 +16,13 @@ the Supabase transaction pooler that `DATABASE_URL` points at.
 
 ## Layout
 
-| File | Contents |
-|---|---|
-| `connect.ts` | The `db` handle |
-| `schemas/*.ts` | One file per table |
-| `schemas/schema.ts` | Re-exports every table; import tables from here |
-| `schemas/relations.ts` | Central `defineRelations()` call, passed to `drizzle()` |
-| `migrations/` | Generated migrations — the source of truth for the schema |
+| File                   | Contents                                                  |
+| ---------------------- | --------------------------------------------------------- |
+| `connect.ts`           | The `db` handle                                           |
+| `schemas/*.ts`         | One file per table                                        |
+| `schemas/schema.ts`    | Re-exports every table; import tables from here           |
+| `schemas/relations.ts` | Central `defineRelations()` call, passed to `drizzle()`   |
+| `migrations/`          | Generated migrations — the source of truth for the schema |
 
 `docs/legacy-migrations/` holds the pre-Drizzle SQL and is kept for reference only.
 

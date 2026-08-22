@@ -60,16 +60,24 @@ function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
     case "word":
       const paradigmBack = back as ParadigmFlashcardBack;
       return (
-        <InflectionsDialog
-          paradigm={paradigmBack.paradigm}
-          displayHeader={true}
-          displayAddToFlashcards={false}
-          trigger={
-            <p className="text-3xl font-bold bg-primary/10 text-primary cursor-pointer">
-              {paradigmBack.translation}
-            </p>
-          }
-        />
+        <div>
+          <InflectionsDialog
+            paradigm={paradigmBack.paradigm}
+            displayHeader={true}
+            displayAddToFlashcards={false}
+            trigger={
+              <p className="text-3xl font-bold text-primary cursor-pointer">
+                {paradigmBack.paradigm.lemma}
+              </p>
+            }
+          />
+          <p className="text-2xl text-primary mt-4">
+            {paradigmBack.translation}
+          </p>
+          {notes && (
+            <p className="text-sm text-muted-foreground italic">{notes}</p>
+          )}
+        </div>
       );
     case "phrase":
       const phraseBack = back as PhraseFlashcardBack;

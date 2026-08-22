@@ -1,7 +1,4 @@
-import {
-  apiFetch,
-  createValidatedFetcher,
-} from "@/lib/api/validated-fetcher";
+import { apiFetch, createValidatedFetcher } from "@/lib/api/validated-fetcher";
 import {
   DueCardsCount,
   DueCardsCountSchema,

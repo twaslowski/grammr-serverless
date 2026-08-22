@@ -65,5 +65,8 @@ export function apiGatewayNotConfiguredResponse(error: unknown): NextResponse {
 
   console.error(error.message);
 
-  return NextResponse.json({ error: "Service not configured" }, { status: 503 });
+  return NextResponse.json(
+    { error: "Service not configured" },
+    { status: 503 },
+  );
 }

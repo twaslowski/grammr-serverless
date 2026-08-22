@@ -170,7 +170,9 @@ describe("FSRS Service", () => {
           expect(intervals[j]).toBeGreaterThan(intervals[j - 1]);
         }
 
-        const good = scheduleCard(current, at).find((o) => o.rating === "Good")!;
+        const good = scheduleCard(current, at).find(
+          (o) => o.rating === "Good",
+        )!;
         current = { ...current, ...good.card };
         at = good.card.due;
       }
