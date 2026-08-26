@@ -3,18 +3,17 @@
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { TTSButton } from "@/components/tts/tts-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getPosLabel } from "@/lib/feature-labels";
-import { getFeatureDisplayValue } from "@/types/feature";
 import {
-  CASE_LABELS,
+  getFeatureDisplayLabel,
+  getFeatureValueLabel,
+  getPosLabel,
+} from "@/lib/feature-labels";
+import { paradigmLayout } from "@/lib/inflections";
+import {
   CASE_ORDER,
-  GENDER_LABELS,
   GENDER_ORDER,
   Inflection,
-  isNounLike,
-  isVerbLike,
   Paradigm,
-  PERSON_LABELS,
   PERSON_ORDER,
 } from "@/types/inflections";
 
@@ -44,58 +43,37 @@ export function InflectionsTable({
   displayHeader = true,
 }: InflectionsTableProps) {
   const { partOfSpeech, lemma } = paradigm;
+  const shared = {
+    paradigm,
+    displayTTSButton,
+    displayAddFlashcard,
+    displayHeader,
+  };
 
-  // Adjectives are noun-like, but gender is a dimension of their paradigm
-  // rather than a property of the lexeme, so they need their own layout.
-  if (partOfSpeech === "ADJ") {
-    return (
-      <AdjectiveTable
-        paradigm={paradigm}
-        displayTTSButton={displayTTSButton}
-        displayAddFlashcard={displayAddFlashcard}
-        displayHeader={displayHeader}
-      />
-    );
+  switch (paradigmLayout(partOfSpeech)) {
+    case "adjective":
+      return <AdjectiveTable {...shared} />;
+    case "noun":
+      return <NounLikeTable {...shared} />;
+    case "verb":
+      return <VerbLikeTable {...shared} />;
+    case "unsupported":
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl">{lemma}</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Part of speech: {partOfSpeech}
+            </p>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Inflection table not available for this part of speech.
+            </p>
+          </CardContent>
+        </Card>
+      );
   }
-
-  if (isNounLike(partOfSpeech)) {
-    return (
-      <NounLikeTable
-        paradigm={paradigm}
-        displayTTSButton={displayTTSButton}
-        displayAddFlashcard={displayAddFlashcard}
-        displayHeader={displayHeader}
-      />
-    );
-  }
-
-  if (isVerbLike(partOfSpeech)) {
-    return (
-      <VerbLikeTable
-        paradigm={paradigm}
-        displayTTSButton={displayTTSButton}
-        displayAddFlashcard={displayAddFlashcard}
-        displayHeader={displayHeader}
-      />
-    );
-  }
-
-  // Fallback for unknown POS
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">{lemma}</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Part of speech: {partOfSpeech}
-        </p>
-      </CardHeader>
-      <CardContent>
-        <p className="text-muted-foreground">
-          Inflection table not available for this part of speech.
-        </p>
-      </CardContent>
-    </Card>
-  );
 }
 
 function InflectionsTableHeader({
@@ -107,7 +85,7 @@ function InflectionsTableHeader({
 
   const subtitle = [
     getPosLabel(partOfSpeech),
-    ...lemmaFeatures.map(getFeatureDisplayValue),
+    ...lemmaFeatures.map(getFeatureDisplayLabel),
   ].join(" · ");
 
   return (
@@ -174,7 +152,7 @@ function NounLikeTable({
                 return (
                   <tr key={caseValue} className="border-b last:border-0">
                     <td className="py-2 px-3 font-medium text-muted-foreground">
-                      {CASE_LABELS[caseValue]}
+                      {getFeatureValueLabel("CASE", caseValue)}
                     </td>
                     <td className="py-2 px-3">{singular?.inflected || "—"}</td>
                     <td className="py-2 px-3">{plural?.inflected || "—"}</td>
@@ -235,7 +213,7 @@ function AdjectiveTable({
                     key={genderValue}
                     className="text-left py-2 px-3 font-medium"
                   >
-                    {GENDER_LABELS[genderValue]}
+                    {getFeatureValueLabel("GENDER", genderValue)}
                   </th>
                 ))}
                 <th className="text-left py-2 px-3 font-medium">Plural</th>
@@ -253,7 +231,7 @@ function AdjectiveTable({
                 return (
                   <tr key={caseValue} className="border-b last:border-0">
                     <td className="py-2 px-3 font-medium text-muted-foreground">
-                      {CASE_LABELS[caseValue]}
+                      {getFeatureValueLabel("CASE", caseValue)}
                     </td>
                     {GENDER_ORDER.map((genderValue) => {
                       const singular = findInflection(inflections, {
@@ -321,7 +299,7 @@ function VerbLikeTable({
                 return (
                   <tr key={personValue} className="border-b last:border-0">
                     <td className="py-2 px-3 font-medium text-muted-foreground">
-                      {PERSON_LABELS[personValue]}
+                      {getFeatureValueLabel("PERSON", personValue)}
                     </td>
                     <td className="py-2 px-3">{singular?.inflected || "—"}</td>
                     <td className="py-2 px-3">{plural?.inflected || "—"}</td>

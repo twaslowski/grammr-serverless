@@ -20,9 +20,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { TranslationInput } from "@/components/ui/translation-input";
-import { getPosLabel } from "@/lib/feature-labels";
+import {
+  getFeatureDisplayLabel,
+  getOrderedFeatures,
+  getPosLabel,
+} from "@/lib/feature-labels";
 import { createFlashcardBack } from "@/lib/flashcards";
-import { getFeatureDisplayValue, getOrderedFeatures } from "@/types/feature";
 import { Paradigm } from "@/types/inflections";
 import { LanguageCode } from "@/types/languages";
 import { TokenMorphology } from "@/types/morphology";
@@ -57,9 +60,7 @@ export function WordDetailsDialog({
 
   const defaultTrigger = <p className="cursor-pointer">{word}</p>;
 
-  const features = morphology
-    ? getOrderedFeatures(morphology.features, morphology.pos)
-    : [];
+  const features = morphology ? getOrderedFeatures(morphology.features) : [];
   const lemma = morphology?.lemma;
 
   return (
@@ -94,7 +95,7 @@ export function WordDetailsDialog({
                   {features.map((feature, index) => (
                     <React.Fragment key={index}>
                       {index > 0 && <span aria-hidden="true">·</span>}
-                      <span>{getFeatureDisplayValue(feature)}</span>
+                      <span>{getFeatureDisplayLabel(feature)}</span>
                     </React.Fragment>
                   ))}
                 </div>

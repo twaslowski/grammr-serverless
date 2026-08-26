@@ -1,8 +1,13 @@
 import {
+  getFeatureDisplayLabel,
+  getFeatureDisplayType,
+  getFeatureDisplayValue,
   getFeatureTypeLabel,
   getFeatureValueLabel,
+  getOrderedFeatures,
   getPosLabel,
 } from "@/lib/feature-labels";
+import { Feature } from "@/types/feature";
 
 describe("feature-labels", () => {
   describe("getFeatureValueLabel", () => {
@@ -143,6 +148,110 @@ describe("feature-labels", () => {
 
     it("should return the original POS tag if no mapping exists", () => {
       expect(getPosLabel("UNKNOWN_POS")).toBe("UNKNOWN_POS");
+    });
+  });
+
+  describe("getFeatureDisplayValue", () => {
+    it("labels a value from its type", () => {
+      expect(getFeatureDisplayValue({ type: "NUMBER", value: "SING" })).toBe(
+        "Singular",
+      );
+      expect(getFeatureDisplayValue({ type: "CASE", value: "NOM" })).toBe(
+        "Nominative",
+      );
+    });
+
+    it("reconciles the two services' PERSON vocabularies", () => {
+      // The inflection services emit FIRST/SECOND/THIRD, spaCy emits 1/2/3.
+      expect(getFeatureDisplayValue({ type: "PERSON", value: "1" })).toBe(
+        "1st Person",
+      );
+      expect(getFeatureDisplayValue({ type: "PERSON", value: "FIRST" })).toBe(
+        "1st Person",
+      );
+    });
+
+    it("reconciles the two services' instrumental-case spellings", () => {
+      expect(getFeatureDisplayValue({ type: "CASE", value: "ABL" })).toBe(
+        "Instrumental",
+      );
+      expect(getFeatureDisplayValue({ type: "CASE", value: "INS" })).toBe(
+        "Instrumental",
+      );
+    });
+
+    it("falls back to the raw value when unmapped", () => {
+      expect(getFeatureDisplayValue({ type: "CASE", value: "UNKNOWN" })).toBe(
+        "UNKNOWN",
+      );
+    });
+  });
+
+  describe("getFeatureDisplayType", () => {
+    it("labels the type", () => {
+      expect(getFeatureDisplayType({ type: "NUMBER", value: "SING" })).toBe(
+        "Number",
+      );
+      expect(getFeatureDisplayType({ type: "VERBFORM", value: "INF" })).toBe(
+        "Verb form",
+      );
+    });
+  });
+
+  describe("getFeatureDisplayLabel", () => {
+    it("leaves the core axes as a bare value", () => {
+      expect(getFeatureDisplayLabel({ type: "CASE", value: "NOM" })).toBe(
+        "Nominative",
+      );
+    });
+
+    it("qualifies the other axes, whose values are ambiguous alone", () => {
+      expect(getFeatureDisplayLabel({ type: "DEGREE", value: "POS" })).toBe(
+        "Degree: Positive",
+      );
+      expect(getFeatureDisplayLabel({ type: "POLARITY", value: "POS" })).toBe(
+        "Polarity: Affirmative",
+      );
+      expect(getFeatureDisplayLabel({ type: "VOICE", value: "ACT" })).toBe(
+        "Voice: Active",
+      );
+    });
+  });
+
+  describe("getOrderedFeatures", () => {
+    const shuffled = (types: Feature["type"][]): Feature[] =>
+      types.map((type) => ({ type, value: "X" }));
+
+    it("reads case, number, gender for a declined form", () => {
+      const ordered = getOrderedFeatures(
+        shuffled(["GENDER", "NUMBER", "CASE"]),
+      );
+      expect(ordered.map((f) => f.type)).toEqual(["CASE", "NUMBER", "GENDER"]);
+    });
+
+    it("reads person, number, tense for a conjugated form", () => {
+      const ordered = getOrderedFeatures(
+        shuffled(["TENSE", "NUMBER", "PERSON"]),
+      );
+      expect(ordered.map((f) => f.type)).toEqual(["PERSON", "NUMBER", "TENSE"]);
+    });
+
+    it("puts the additional axes after the core ones", () => {
+      const ordered = getOrderedFeatures(
+        shuffled(["ANIMACY", "CASE", "ASPECT", "NUMBER"]),
+      );
+      expect(ordered.map((f) => f.type)).toEqual([
+        "CASE",
+        "NUMBER",
+        "ASPECT",
+        "ANIMACY",
+      ]);
+    });
+
+    it("drops features it cannot classify", () => {
+      expect(getOrderedFeatures(shuffled(["OTHER", "CASE"]))).toEqual([
+        { type: "CASE", value: "X" },
+      ]);
     });
   });
 });

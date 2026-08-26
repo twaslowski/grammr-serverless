@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { FeatureSchema, isNounLike, isVerbLike } from "@/types/feature";
+import { FeatureSchema } from "@/types/feature";
 import { LanguageCodeSchema } from "@/types/languages";
 
 // Part of Speech enum, defaults to X for unknown values
@@ -33,6 +33,11 @@ export const PartOfSpeechEnum = z
   .catch("X");
 export type PartOfSpeech = z.infer<typeof PartOfSpeechEnum>;
 
+/**
+ * The parts of speech worth asking the inflection services about. Narrower than
+ * what `paradigmLayout` (in `@/lib/inflections`) can render: it answers whether a
+ * request is worth making at all, not how to lay the answer out.
+ */
 export const InflectablePosSet: Set<PartOfSpeech> = new Set([
   "ADJ",
   "NOUN",
@@ -73,38 +78,12 @@ export const ParadigmSchema = z.object({
 });
 export type Paradigm = z.infer<typeof ParadigmSchema>;
 
-// Helper to check if POS is noun-like (NOUN, ADJ)
-export { isNounLike, isVerbLike };
-
-// Case display order for noun-like words
+// Row/column order for the inflection tables. The labels for these values live
+// in `@/lib/feature-labels`, which is the single owner of feature display names.
 export const CASE_ORDER = ["NOM", "GEN", "DAT", "ACC", "ABL", "LOC"] as const;
-
-// Case labels
-export const CASE_LABELS: Record<string, string> = {
-  NOM: "Nominative",
-  GEN: "Genitive",
-  DAT: "Dative",
-  ACC: "Accusative",
-  ABL: "Instrumental",
-  LOC: "Prepositional",
-};
 
 // Gender column order for adjectives, whose gender is inflectional
 export const GENDER_ORDER = ["MASC", "FEM", "NEUT"] as const;
 
-// Gender labels
-export const GENDER_LABELS: Record<string, string> = {
-  MASC: "Masculine",
-  FEM: "Feminine",
-  NEUT: "Neuter",
-};
-
 // Person display order for verb-like words
 export const PERSON_ORDER = ["FIRST", "SECOND", "THIRD"] as const;
-
-// Person labels
-export const PERSON_LABELS: Record<string, string> = {
-  FIRST: "1st Person",
-  SECOND: "2nd Person",
-  THIRD: "3rd Person",
-};

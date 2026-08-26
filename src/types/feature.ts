@@ -1,25 +1,44 @@
 import { z } from "zod";
 
-import {
-  getFeatureTypeLabel,
-  getFeatureValueLabel,
-} from "@/lib/feature-labels";
-
 export const FALLBACK_FEATURE_TYPE = "OTHER";
+
+/**
+ * The grammatical dimensions the app understands.
+ *
+ * The two NLP services disagree on casing — the inflection services emit
+ * `"CASE"`, the morphology service emits spaCy's `"case"` — so the type is
+ * normalised on the way in. Anything outside this list becomes `OTHER` and is
+ * dropped before display.
+ *
+ * The list past `TENSE` is what the morphology service actually sends for
+ * Russian (see `docs/samples/*.json`); before they were admitted here, every
+ * one of them was silently discarded.
+ */
+export const FEATURE_TYPES = [
+  // Core axes: the dimensions an inflection table is pivoted on.
+  "CASE",
+  "NUMBER",
+  "GENDER",
+  "PERSON",
+  "TENSE",
+  // Additional axes reported per token by morphological analysis.
+  "ASPECT",
+  "MOOD",
+  "VOICE",
+  "ANIMACY",
+  "DEGREE",
+  "VERBFORM",
+  "POLARITY",
+  FALLBACK_FEATURE_TYPE,
+] as const;
+
+export const FeatureTypeEnum = z.enum(FEATURE_TYPES);
+export type FeatureType = z.infer<typeof FeatureTypeEnum>;
 
 export const FeatureTypes = z
   .string()
   .transform((val) => val.toUpperCase())
-  .pipe(
-    z.enum([
-      "CASE",
-      "NUMBER",
-      "GENDER",
-      "PERSON",
-      "TENSE",
-      FALLBACK_FEATURE_TYPE,
-    ]),
-  )
+  .pipe(FeatureTypeEnum)
   .catch(FALLBACK_FEATURE_TYPE);
 
 export const FeatureSchema = z.object({
@@ -27,53 +46,3 @@ export const FeatureSchema = z.object({
   value: z.string(),
 });
 export type Feature = z.infer<typeof FeatureSchema>;
-
-const NOUN_FEATURE_ORDER = ["CASE", "NUMBER", "GENDER"];
-const VERB_FEATURE_ORDER = ["PERSON", "NUMBER", "TENSE"];
-
-/**
- * Get the human-readable display name for a feature value.
- */
-export function getFeatureDisplayValue(feature: Feature): string {
-  return getFeatureValueLabel(feature.type, feature.value);
-}
-
-/**
- * Get the human-readable display name for a feature type.
- */
-export function getFeatureDisplayType(feature: Feature): string {
-  return getFeatureTypeLabel(feature.type);
-}
-
-export function isNounLike(pos: string): boolean {
-  return pos === "NOUN" || pos === "ADJ";
-}
-
-export function isVerbLike(pos: string): boolean {
-  return pos === "VERB" || pos === "AUX";
-}
-
-export function getOrderedFeatures(
-  features: Feature[],
-  pos: string,
-): Feature[] {
-  const filtered = features.filter((f) => f.type !== FALLBACK_FEATURE_TYPE);
-  const order = isNounLike(pos)
-    ? NOUN_FEATURE_ORDER
-    : isVerbLike(pos)
-      ? VERB_FEATURE_ORDER
-      : [];
-
-  if (order.length === 0) return filtered;
-
-  const ordered: Feature[] = [];
-  for (const type of order) {
-    const f = filtered.find((f) => f.type === type);
-    if (f) ordered.push(f);
-  }
-  // Append any remaining features not in the order
-  for (const f of filtered) {
-    if (!order.includes(f.type)) ordered.push(f);
-  }
-  return ordered;
-}

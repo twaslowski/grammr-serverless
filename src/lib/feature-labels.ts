@@ -1,9 +1,12 @@
 /**
- * Human-readable labels for grammatical feature values and part of speech tags.
+ * How grammatical features are presented: the raw values the NLP services send
+ * (spaCy universal-dependency tags, pymorphy3 tags, verbecc labels) mapped to
+ * names a learner can read, plus the ordering rules the UI relies on.
  *
- * This module provides mappings from raw feature values (as received from the backend)
- * to user-friendly display names for the frontend.
+ * This is the single owner of those strings. `src/types/feature.ts` stays pure
+ * schema so the wire format has no opinion about display.
  */
+import { Feature, FeatureType } from "@/types/feature";
 
 // Part of Speech labels (Universal Dependencies tags)
 // See: https://universaldependencies.org/u/pos/
@@ -122,6 +125,28 @@ export const ANIMACY_VALUE_LABELS: Record<string, string> = {
   INAN: "Inanimate",
 };
 
+// Degree labels
+export const DEGREE_VALUE_LABELS: Record<string, string> = {
+  POS: "Positive",
+  CMP: "Comparative",
+  SUP: "Superlative",
+};
+
+// Verb form labels
+export const VERBFORM_VALUE_LABELS: Record<string, string> = {
+  FIN: "Finite",
+  INF: "Infinitive",
+  PART: "Participle",
+  CONV: "Adverbial participle",
+  GER: "Gerund",
+};
+
+// Polarity labels
+export const POLARITY_VALUE_LABELS: Record<string, string> = {
+  NEG: "Negative",
+  POS: "Affirmative",
+};
+
 // Feature type labels (for the type itself)
 export const FEATURE_TYPE_LABELS: Record<string, string> = {
   CASE: "Case",
@@ -133,6 +158,9 @@ export const FEATURE_TYPE_LABELS: Record<string, string> = {
   MOOD: "Mood",
   VOICE: "Voice",
   ANIMACY: "Animacy",
+  DEGREE: "Degree",
+  VERBFORM: "Verb form",
+  POLARITY: "Polarity",
   OTHER: "Other",
 };
 
@@ -166,6 +194,12 @@ export function getFeatureValueLabel(type: string, value: string): string {
       return VOICE_VALUE_LABELS[normalizedValue] || value;
     case "ANIMACY":
       return ANIMACY_VALUE_LABELS[normalizedValue] || value;
+    case "DEGREE":
+      return DEGREE_VALUE_LABELS[normalizedValue] || value;
+    case "VERBFORM":
+      return VERBFORM_VALUE_LABELS[normalizedValue] || value;
+    case "POLARITY":
+      return POLARITY_VALUE_LABELS[normalizedValue] || value;
     default:
       return value;
   }
@@ -191,4 +225,77 @@ export function getFeatureTypeLabel(type: string): string {
 export function getPosLabel(pos: string): string {
   const normalizedPos = pos.toUpperCase();
   return POS_LABELS[normalizedPos] || pos;
+}
+
+/**
+ * Get the human-readable display name for a feature value.
+ */
+export function getFeatureDisplayValue(feature: Feature): string {
+  return getFeatureValueLabel(feature.type, feature.value);
+}
+
+/**
+ * Get the human-readable display name for a feature type.
+ */
+export function getFeatureDisplayType(feature: Feature): string {
+  return getFeatureTypeLabel(feature.type);
+}
+
+/**
+ * The axes an inflection table is pivoted on. Their values ("Nominative",
+ * "Plural") name the grammatical category unambiguously on their own.
+ */
+const CORE_FEATURE_TYPES = new Set<FeatureType>([
+  "CASE",
+  "NUMBER",
+  "GENDER",
+  "PERSON",
+  "TENSE",
+]);
+
+/**
+ * A feature as a single label.
+ *
+ * Core axes read fine as a bare value; the rest do not — "Positive" alone could
+ * be a degree or a polarity — so those are qualified with their type.
+ */
+export function getFeatureDisplayLabel(feature: Feature): string {
+  const value = getFeatureDisplayValue(feature);
+
+  return CORE_FEATURE_TYPES.has(feature.type)
+    ? value
+    : `${getFeatureDisplayType(feature)}: ${value}`;
+}
+
+/**
+ * Display order for a token's features.
+ *
+ * One canonical order rather than a per-part-of-speech one: it reproduces the
+ * case/number/gender reading for nouns and person/number/tense for verbs, while
+ * staying deterministic for tokens carrying both — which matters because the
+ * inflection services build their feature lists from Python sets, so the array
+ * arrives in arbitrary order.
+ */
+const FEATURE_TYPE_ORDER: FeatureType[] = [
+  "CASE",
+  "PERSON",
+  "NUMBER",
+  "GENDER",
+  "TENSE",
+  "ASPECT",
+  "MOOD",
+  "VOICE",
+  "VERBFORM",
+  "DEGREE",
+  "ANIMACY",
+  "POLARITY",
+];
+
+export function getOrderedFeatures(features: Feature[]): Feature[] {
+  return features
+    .filter((feature) => FEATURE_TYPE_ORDER.includes(feature.type))
+    .sort(
+      (a, b) =>
+        FEATURE_TYPE_ORDER.indexOf(a.type) - FEATURE_TYPE_ORDER.indexOf(b.type),
+    );
 }

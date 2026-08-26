@@ -17,8 +17,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { getPosLabel } from "@/lib/feature-labels";
-import { getFeatureDisplayValue, getOrderedFeatures } from "@/types/feature";
+import {
+  getFeatureDisplayLabel,
+  getOrderedFeatures,
+  getPosLabel,
+} from "@/lib/feature-labels";
 import { Paradigm } from "@/types/inflections";
 import { TokenMorphology } from "@/types/morphology";
 
@@ -45,9 +48,7 @@ export function WordDetailsDialogDemo({
 
   const defaultTrigger = <p className="cursor-pointer">{word}</p>;
 
-  const features = morphology
-    ? getOrderedFeatures(morphology.features, morphology.pos)
-    : [];
+  const features = morphology ? getOrderedFeatures(morphology.features) : [];
   const lemma = morphology?.lemma;
   const showLemma = !!lemma && lemma.toLowerCase() !== word.toLowerCase();
 
@@ -77,7 +78,7 @@ export function WordDetailsDialogDemo({
                 {features.map((feature, index) => (
                   <React.Fragment key={index}>
                     {index > 0 && <span aria-hidden="true">·</span>}
-                    <span>{getFeatureDisplayValue(feature)}</span>
+                    <span>{getFeatureDisplayLabel(feature)}</span>
                   </React.Fragment>
                 ))}
               </div>
