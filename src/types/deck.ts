@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { LanguageCodeSchema } from "@/types/languages";
+
 /**
  * Wire-format schema for a deck.
  *
@@ -25,8 +27,8 @@ export const DeckSchema = z.object({
     .transform((v) => v ?? undefined),
   createdAt: z.string(),
   updatedAt: z.string(),
-  visibility: z.string(),
-  language: z.string().max(3),
+  visibility: DeckVisibilityEnum,
+  language: LanguageCodeSchema,
   isStudying: z.boolean().optional(),
 });
 export type Deck = z.infer<typeof DeckSchema>;

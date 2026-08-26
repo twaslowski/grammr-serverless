@@ -4,9 +4,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/db/connect";
 import { decks, flashcards } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
-import { DeckVisibility } from "@/types/deck";
-import { FlashcardBack } from "@/types/flashcards";
-import { LanguageCode } from "@/types/languages";
 import { FlashcardExport } from "../schema";
 
 // GET /api/v1/flashcards/export - Export all user's flashcards (without progress)
@@ -29,11 +26,11 @@ export const GET = withApiHandler({}, async ({ user }) => {
     version: "1.0",
     exported_at: new Date().toISOString(),
     // Exports are assumed to come from decks sharing one language/visibility.
-    language: rows[0]?.language as LanguageCode | undefined,
-    visibility: rows[0]?.visibility as DeckVisibility | undefined,
+    language: rows[0]?.language,
+    visibility: rows[0]?.visibility,
     flashcards: rows.map((row) => ({
       front: row.front,
-      back: row.back as FlashcardBack,
+      back: row.back,
       notes: row.notes,
       deck_name: row.deckName,
     })),

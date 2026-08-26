@@ -7,9 +7,3 @@ export const cardState = pgEnum("card_state", [
   "Relearning",
 ]);
 export const rating = pgEnum("rating", ["Again", "Hard", "Good", "Easy"]);
-
-export const deckVisibilityEnum = pgEnum("deck_visibility", [
-  "private",
-  "public",
-  "unlisted",
-]);

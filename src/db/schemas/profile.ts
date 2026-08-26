@@ -9,12 +9,18 @@ import {
 } from "drizzle-orm/pg-core";
 import { authUsers } from "drizzle-orm/supabase";
 
+import { LanguageCode } from "@/types/languages";
+
 export const profiles = pgTable(
   "profiles",
   {
     id: uuid().primaryKey().notNull(),
-    sourceLanguage: varchar("source_language", { length: 3 }).notNull(),
-    targetLanguage: varchar("target_language", { length: 3 }).notNull(),
+    sourceLanguage: varchar("source_language", { length: 3 })
+      .$type<LanguageCode>()
+      .notNull(),
+    targetLanguage: varchar("target_language", { length: 3 })
+      .$type<LanguageCode>()
+      .notNull(),
     createdAt: timestamp("created_at", { mode: "string" }).defaultNow(),
   },
   (table) => [

@@ -10,7 +10,7 @@ import {
   flashcardStudy,
 } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
-import { FlashcardBack, FlashcardWithDeck } from "@/types/flashcards";
+import { FlashcardWithDeck } from "@/types/flashcards";
 
 import {
   CreateFlashcardRequestSchema,
@@ -54,7 +54,6 @@ export const GET = withApiHandler(
     // Transform to match expected format
     const flashcardsWithDeck: FlashcardWithDeck[] = result.map((row) => ({
       ...row.flashcard,
-      back: row.flashcard.back as FlashcardBack,
       deck: row.deck,
       studyCard: row.studyCard || undefined,
     }));

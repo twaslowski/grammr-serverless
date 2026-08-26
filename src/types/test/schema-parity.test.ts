@@ -15,6 +15,12 @@ import { DeckSchema } from "@/types/deck";
 import { FlashcardBack, FlashcardSchema } from "@/types/flashcards";
 import { ProfileSchema } from "@/types/profile";
 
+// `flashcard.back` is a `jsonb().$type<FlashcardBack>()` column, which
+// drizzle-zod cannot describe structurally, so it is compared by type only.
+const flashcardTable = createSelectSchema(flashcards, {
+  back: z.custom<FlashcardBack>(),
+});
+
 const deckRow = {
   id: 1,
   name: "Russian Vocabulary",
@@ -53,12 +59,7 @@ const profileRow = {
 describe("wire schemas match their Drizzle tables", () => {
   it.each([
     ["deck", DeckSchema, createSelectSchema(decks), deckRow],
-    [
-      "flashcard",
-      FlashcardSchema,
-      createSelectSchema(flashcards, { back: z.custom<FlashcardBack>() }),
-      flashcardRow,
-    ],
+    ["flashcard", FlashcardSchema, flashcardTable, flashcardRow],
     ["profile", ProfileSchema, createSelectSchema(profiles), profileRow],
   ])("%s: accepts a representative row", (_name, wire, derived, row) => {
     expect(derived.safeParse(row).success).toBe(true);
@@ -80,7 +81,7 @@ describe("wire schemas match their Drizzle tables", () => {
   });
 
   it("flashcard covers exactly the table's columns", () => {
-    const derivedKeys = Object.keys(createSelectSchema(flashcards).shape);
+    const derivedKeys = Object.keys(flashcardTable.shape);
     const wireKeys = Object.keys(FlashcardSchema.shape);
 
     expect(wireKeys).toEqual(expect.arrayContaining(derivedKeys));
@@ -89,6 +90,10 @@ describe("wire schemas match their Drizzle tables", () => {
   it.each([
     ["deck", DeckSchema, { ...deckRow, id: "not-a-number" }],
     ["deck", DeckSchema, { ...deckRow, name: "x".repeat(256) }],
+    // Both columns are enum-typed on the wire, matching the table's CHECK
+    // constraint and the languages the app actually supports.
+    ["deck", DeckSchema, { ...deckRow, visibility: "unlisted" }],
+    ["deck", DeckSchema, { ...deckRow, language: "klingon" }],
     ["flashcard", FlashcardSchema, { ...flashcardRow, front: 42 }],
     ["profile", ProfileSchema, { ...profileRow, targetLanguage: "klingon" }],
   ])("%s: rejects malformed input", (_name, wire, row) => {

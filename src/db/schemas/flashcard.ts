@@ -11,6 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { decks } from "@/db/schemas/deck";
+import { FlashcardBack } from "@/types/flashcards";
 
 export const flashcards = pgTable(
   "flashcard",
@@ -18,7 +19,7 @@ export const flashcards = pgTable(
     id: serial().primaryKey().notNull(),
     deckId: integer("deck_id"),
     front: text().notNull(),
-    back: jsonb().notNull(),
+    back: jsonb().$type<FlashcardBack>().notNull(),
     notes: text(),
     version: integer().default(1),
     createdAt: timestamp("created_at", { mode: "string" })

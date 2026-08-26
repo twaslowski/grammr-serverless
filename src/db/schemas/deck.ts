@@ -14,6 +14,9 @@ import {
 } from "drizzle-orm/pg-core";
 import { authUsers } from "drizzle-orm/supabase";
 
+import { DeckVisibility } from "@/types/deck";
+import { LanguageCode } from "@/types/languages";
+
 export const decks = pgTable(
   "deck",
   {
@@ -28,8 +31,8 @@ export const decks = pgTable(
     updatedAt: timestamp("updated_at", { mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    visibility: text().default("private").notNull(),
-    language: varchar({ length: 3 }).notNull(),
+    visibility: text().$type<DeckVisibility>().default("private").notNull(),
+    language: varchar({ length: 3 }).$type<LanguageCode>().notNull(),
   },
   (table) => [
     uniqueIndex("idx_only_one_default_deck")

@@ -1,26 +1,16 @@
-import { and, eq, inArray, or } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { CreateDeckRequestSchema } from "@/app/api/v1/flashcards/schema";
 import { db } from "@/db/connect";
 import { decks, deckStudy, profiles } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
+import { LanguageCode } from "@/types/languages";
 
 // GET /api/v1/flashcards/decks - List all decks the user owns or studies, via a deck_study subquery
 export const GET = withApiHandler({}, async ({ user }) => {
   const result = await db
-    .selectDistinct({
-      id: decks.id,
-      name: decks.name,
-      userId: decks.userId,
-      visibility: decks.visibility,
-      description: decks.description,
-      language: decks.language,
-      isDefault: decks.isDefault,
-      createdAt: decks.createdAt,
-      updatedAt: decks.updatedAt,
-      deckStudyId: deckStudy.id,
-    })
+    .selectDistinct({ ...getTableColumns(decks), deckStudyId: deckStudy.id })
     .from(decks)
     .leftJoin(
       deckStudy,
@@ -58,7 +48,7 @@ export const POST = withApiHandler(
 
     // deck.language is NOT NULL. Fall back to the language the user is
     // learning, which every profile has.
-    let deckLanguage: string | undefined = language;
+    let deckLanguage: LanguageCode | undefined = language;
     if (!deckLanguage) {
       const [profile] = await db
         .select({ targetLanguage: profiles.targetLanguage })
