@@ -1,15 +1,15 @@
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import { db } from "@/db/connect";
 import { decks, deckStudy, profiles } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
-import { LanguageCode, LanguageCodeSchema } from "@/types/languages";
+import { LanguageCode } from "@/types/languages";
+import { ProfileSchema } from "@/types/profile";
 
-const SaveProfileRequestSchema = z.object({
-  sourceLanguage: LanguageCodeSchema,
-  targetLanguage: LanguageCodeSchema,
+const SaveProfileRequestSchema = ProfileSchema.pick({
+  sourceLanguage: true,
+  targetLanguage: true,
 });
 
 // POST/PUT /api/v1/profile - Save or update user profile

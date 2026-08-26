@@ -9,14 +9,8 @@ import { TTSButton } from "@/components/tts/tts-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import {
-  AnalysisFlashcardBack,
-  FlashcardBack,
-  ParadigmFlashcardBack,
-  PhraseFlashcardBack,
-} from "@/types/flashcards";
+import { FlashcardBack } from "@/types/flashcards";
 import { CardWithFlashcard, Rating, SchedulingInfo } from "@/types/fsrs";
-import { LanguageCode } from "@/types/languages";
 
 interface StudyCardProps {
   card: CardWithFlashcard;
@@ -32,13 +26,6 @@ const RATING_COLORS: Record<Rating, string> = {
   Easy: "bg-blue-500 hover:bg-blue-600",
 };
 
-const RATING_LABELS: Record<Rating, string> = {
-  Again: "Again",
-  Hard: "Hard",
-  Good: "Good",
-  Easy: "Easy",
-};
-
 interface FlashcardBackProps {
   back: FlashcardBack;
   notes?: string | null;
@@ -47,10 +34,9 @@ interface FlashcardBackProps {
 function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
   switch (back.type) {
     case "analysis":
-      const analysisBack = back as AnalysisFlashcardBack;
       return (
         <div className="space-y-4">
-          <Analysis analysis={analysisBack} textStyle="text-2xl font-bold" />
+          <Analysis analysis={back} textStyle="text-2xl font-bold" />
           <p className="text-xl text-primary/80">{back.translation}</p>
           {notes && (
             <p className="text-sm text-muted-foreground italic">{notes}</p>
@@ -58,34 +44,28 @@ function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
         </div>
       );
     case "word":
-      const paradigmBack = back as ParadigmFlashcardBack;
       return (
         <div>
           <InflectionsDialog
-            paradigm={paradigmBack.paradigm}
+            paradigm={back.paradigm}
             displayHeader={true}
             displayAddToFlashcards={false}
             trigger={
               <p className="text-3xl font-bold text-primary cursor-pointer">
-                {paradigmBack.paradigm.lemma}
+                {back.paradigm.lemma}
               </p>
             }
           />
-          <p className="text-2xl text-primary mt-4">
-            {paradigmBack.translation}
-          </p>
+          <p className="text-2xl text-primary mt-4">{back.translation}</p>
           {notes && (
             <p className="text-sm text-muted-foreground italic">{notes}</p>
           )}
         </div>
       );
     case "phrase":
-      const phraseBack = back as PhraseFlashcardBack;
       return (
         <div className="space-y-4">
-          <p className="text-3xl font-bold text-primary">
-            {phraseBack.translation}
-          </p>
+          <p className="text-3xl font-bold text-primary">{back.translation}</p>
           {notes && (
             <p className="text-sm text-muted-foreground italic">{notes}</p>
           )}
@@ -128,7 +108,7 @@ export function StudyCard({
             ) : (
               <TTSButton
                 text={card.flashcard.front}
-                language={card.flashcard.language as LanguageCode}
+                language={card.flashcard.language}
                 size="sm"
                 variant="ghost"
               />
@@ -169,9 +149,7 @@ export function StudyCard({
                       RATING_COLORS[option.rating],
                     )}
                   >
-                    <span className="font-semibold">
-                      {RATING_LABELS[option.rating]}
-                    </span>
+                    <span className="font-semibold">{option.rating}</span>
                     <span className="text-xs opacity-80">
                       {option.nextReviewInterval}
                     </span>

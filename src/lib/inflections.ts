@@ -1,14 +1,44 @@
+import { ApiError, createValidatedFetcher } from "@/lib/api/validated-fetcher";
 import {
   InflectablePosSet,
   InflectionsRequest,
   Paradigm,
   ParadigmSchema,
+  PartOfSpeech,
 } from "@/types/inflections";
 import { LanguageCode } from "@/types/languages";
 import {
   EnrichedMorphologicalAnalysis,
   MorphologicalAnalysis,
 } from "@/types/morphology";
+
+/**
+ * Which table shape a paradigm needs.
+ *
+ * The three groupings this replaces disagreed: adjectives are noun-like in that
+ * they decline for case and number, but their gender is a dimension of the
+ * paradigm rather than a property of the lexeme, so they need a third layout of
+ * their own. Deriving all of it from one function keeps that distinction in a
+ * single place.
+ *
+ * The set matches `InflectablePosSet`, since a paradigm can only ever come from
+ * a request this app made for one of those parts of speech.
+ */
+export type ParadigmLayout = "noun" | "adjective" | "verb" | "unsupported";
+
+export function paradigmLayout(pos: PartOfSpeech): ParadigmLayout {
+  switch (pos) {
+    case "ADJ":
+      return "adjective";
+    case "NOUN":
+      return "noun";
+    case "VERB":
+    case "AUX":
+      return "verb";
+    default:
+      return "unsupported";
+  }
+}
 
 export class InflectionError extends Error {
   constructor(
@@ -20,43 +50,40 @@ export class InflectionError extends Error {
   }
 }
 
+const fetchParadigm = createValidatedFetcher(ParadigmSchema);
+
+/**
+ * A failed paradigm lookup, classified for the UI.
+ *
+ * The route answers 400 for the cases the reader can act on — unknown word,
+ * part-of-speech mismatch, low confidence — and anything else is ours to fix.
+ */
+function asInflectionError(error: unknown): InflectionError {
+  if (error instanceof ApiError) {
+    return error.status === 400
+      ? new InflectionError(
+          error.detail ??
+            "Could not inflect the provided word. Please check the word and part of speech.",
+          true,
+        )
+      : new InflectionError(error.detail ?? "An unexpected error occurred");
+  }
+
+  // Anything else means the response did not match ParadigmSchema.
+  return new InflectionError("Invalid response from server");
+}
+
 export async function getParadigm(
   request: InflectionsRequest,
 ): Promise<Paradigm> {
-  const response = await fetch("/api/v1/inflections", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(request),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    // 400 errors are user errors (invalid word, POS mismatch, low confidence)
-    if (response.status === 400) {
-      throw new InflectionError(
-        data.error ||
-          "Could not inflect the provided word. Please check the word and part of speech.",
-        true,
-      );
-    }
-
-    // Other errors are system errors
-    throw new InflectionError(
-      data.error || "An unexpected error occurred",
-      false,
-    );
+  try {
+    return await fetchParadigm("/api/v1/inflections", {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
+  } catch (error) {
+    throw asInflectionError(error);
   }
-
-  // Validate response
-  const parseResult = ParadigmSchema.safeParse(data);
-  if (!parseResult.success) {
-    throw new InflectionError("Invalid response from server", false);
-  }
-
-  return parseResult.data;
 }
 
 export const enrichWithParadigms = async (

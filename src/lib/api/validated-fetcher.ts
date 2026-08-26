@@ -5,8 +5,27 @@ import { z } from "zod";
  *
  * All of them share the same failure contract: a non-2xx response carries a
  * JSON body of `{ error: string }` (see `withApiHandler`), which is surfaced
- * as the thrown Error's message.
+ * as the thrown `ApiError`'s message.
  */
+
+/**
+ * A non-2xx reply from an API route.
+ *
+ * Carries the status so callers that need to tell a user error from a server
+ * error can branch on it without re-doing the fetch themselves, and `detail`
+ * separately from `message` so they can tell "the route explained itself" from
+ * "we fell back to a generic string".
+ */
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly detail?: string,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
 
 async function request(
   url: string,
@@ -20,7 +39,8 @@ async function request(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || fallbackMessage);
+    const detail: string | undefined = errorData.error || undefined;
+    throw new ApiError(detail ?? fallbackMessage, response.status, detail);
   }
 
   return response;

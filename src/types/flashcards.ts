@@ -5,24 +5,32 @@ import { DeckSchema } from "@/types/deck";
 import { ParadigmSchema } from "./inflections";
 import { EnrichedMorphologicalAnalysisSchema } from "./morphology";
 
-// Separate schemas for each type
-export const ParadigmFlashcardBackSchema = z.object({
-  type: z.literal("word"),
+/**
+ * Every kind of back carries a translation — that is the one thing a reviewer is
+ * always being asked to recall — so it lives on a shared base rather than being
+ * repeated per variant. Consumers rely on it: `flashcard.tsx` reads
+ * `back.translation` without narrowing, and both dialogs edit it with
+ * `{ ...back, translation }`.
+ */
+export const FlashcardBackBaseSchema = z.object({
   translation: z.string(),
+});
+
+export const ParadigmFlashcardBackSchema = FlashcardBackBaseSchema.extend({
+  type: z.literal("word"),
   paradigm: ParadigmSchema,
 });
 export type ParadigmFlashcardBack = z.infer<typeof ParadigmFlashcardBackSchema>;
 
-export const SimpleFlashcardBackSchema = z.object({
+export const SimpleFlashcardBackSchema = FlashcardBackBaseSchema.extend({
   type: z.literal("phrase"),
-  translation: z.string(),
 });
 export type PhraseFlashcardBack = z.infer<typeof SimpleFlashcardBackSchema>;
 
 export const AnalysisFlashcardBackSchema =
   EnrichedMorphologicalAnalysisSchema.extend({
+    ...FlashcardBackBaseSchema.shape,
     type: z.literal("analysis"),
-    translation: z.string(),
   });
 export type AnalysisFlashcardBack = z.infer<typeof AnalysisFlashcardBackSchema>;
 

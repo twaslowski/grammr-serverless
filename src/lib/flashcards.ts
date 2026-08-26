@@ -4,11 +4,13 @@ import {
   CreateDeckRequest,
   CreateFlashcardRequest,
   FlashcardImportRequest,
+  FlashcardImportResponse,
+  FlashcardImportResponseSchema,
   FlashcardListQuery,
+  UpdateDeckRequest,
   UpdateFlashcardRequest,
 } from "@/app/api/v1/flashcards/schema";
 import {
-  apiFetch,
   apiFetchBlob,
   apiFetchVoid,
   createValidatedFetcher,
@@ -17,6 +19,7 @@ import { Deck, DeckSchema } from "@/types/deck";
 import {
   Flashcard,
   FlashcardBack,
+  FlashcardSchema,
   FlashcardWithDeck,
   FlashcardWithDeckSchema,
 } from "@/types/flashcards";
@@ -29,6 +32,8 @@ const fetchDeck = createValidatedFetcher(DeckSchema);
 const fetchFlashcards = createValidatedFetcher(
   z.array(FlashcardWithDeckSchema),
 );
+const fetchFlashcard = createValidatedFetcher(FlashcardSchema);
+const postImport = createValidatedFetcher(FlashcardImportResponseSchema);
 
 export async function getDecks(): Promise<Deck[]> {
   return fetchDecks(`${BASE_URL}/decks`, { method: "GET" });
@@ -48,7 +53,7 @@ export async function createDeck({
 
 export async function updateDeck(
   id: number,
-  data: { name?: string; description?: string },
+  data: UpdateDeckRequest,
 ): Promise<Deck> {
   return fetchDeck(`${BASE_URL}/decks/${id}`, {
     method: "PATCH",
@@ -96,22 +101,20 @@ export async function getFlashcards(
 export async function createFlashcard(
   request: CreateFlashcardRequest,
 ): Promise<Flashcard> {
-  return apiFetch(
-    BASE_URL,
-    { method: "POST", body: JSON.stringify(request) },
-    "Failed to create flashcard",
-  );
+  return fetchFlashcard(BASE_URL, {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
 }
 
 export async function updateFlashcard(
   id: number,
   request: UpdateFlashcardRequest,
 ): Promise<Flashcard> {
-  return apiFetch(
-    `${BASE_URL}/${id}`,
-    { method: "PATCH", body: JSON.stringify(request) },
-    "Failed to update flashcard",
-  );
+  return fetchFlashcard(`${BASE_URL}/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(request),
+  });
 }
 
 export async function deleteFlashcard(id: number): Promise<void> {
@@ -134,12 +137,11 @@ export async function exportFlashcards(): Promise<Blob> {
 
 export async function importFlashcards(
   data: FlashcardImportRequest,
-): Promise<{ message: string; imported_count: number }> {
-  return apiFetch(
-    `${BASE_URL}/import`,
-    { method: "POST", body: JSON.stringify(data) },
-    "Failed to import flashcards",
-  );
+): Promise<FlashcardImportResponse> {
+  return postImport(`${BASE_URL}/import`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 }
 
 // --- Additional operations can be added here as needed ---

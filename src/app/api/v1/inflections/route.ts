@@ -5,7 +5,7 @@ import {
   callApiGateway,
 } from "@/lib/api/api-gateway";
 import { withApiHandler } from "@/lib/api/with-api-handler";
-import { InflectionsRequestSchema } from "@/types/inflections";
+import { InflectionsRequestSchema, ParadigmSchema } from "@/types/inflections";
 
 export const POST = withApiHandler(
   {
@@ -59,6 +59,21 @@ export const POST = withApiHandler(
       );
     }
 
-    return NextResponse.json(responseData);
+    // Validate the service's response here rather than only in the browser, so
+    // a contract break is one clear 502 instead of a parse failure per caller.
+    const paradigm = ParadigmSchema.safeParse(responseData);
+
+    if (!paradigm.success) {
+      console.error(
+        "Invalid response from inflections service:",
+        paradigm.error,
+      );
+      return NextResponse.json(
+        { error: "Invalid response from inflections service" },
+        { status: 502 },
+      );
+    }
+
+    return NextResponse.json(paradigm.data);
   },
 );

@@ -4,7 +4,10 @@ import React, { useRef, useState } from "react";
 import { Download, FileJson, Loader2, Upload } from "lucide-react";
 import toast from "react-hot-toast";
 
-import { FlashcardImportRequest } from "@/app/api/v1/flashcards/schema";
+import {
+  FlashcardExport,
+  FlashcardExportSchema,
+} from "@/app/api/v1/flashcards/schema";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,15 +18,8 @@ import {
 } from "@/components/ui/card";
 import { exportFlashcards, getDecks, importFlashcards } from "@/lib/flashcards";
 import { Deck } from "@/types/deck";
-import { LanguageCode } from "@/types/languages";
 
 import { ImportDeckDialog } from "./import-deck-dialog";
-
-interface ParsedImportFile {
-  version: string;
-  language: LanguageCode;
-  flashcards: FlashcardImportRequest["flashcards"];
-}
 
 interface FlashcardImportExportProps {
   onImportComplete: () => Promise<void>;
@@ -36,7 +32,7 @@ export function FlashcardImportExport({
   const [isImporting, setIsImporting] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [decks, setDecks] = useState<Deck[]>([]);
-  const [parsedFileData, setParsedFileData] = useState<ParsedImportFile | null>(
+  const [parsedFileData, setParsedFileData] = useState<FlashcardExport | null>(
     null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -82,25 +78,22 @@ export function FlashcardImportExport({
 
     try {
       const text = await file.text();
-      let data;
+      let raw: unknown;
       try {
-        data = JSON.parse(text);
+        raw = JSON.parse(text);
       } catch {
         handleError();
         return;
       }
 
-      if (!data.version || !Array.isArray(data.flashcards)) {
+      // The file we are reading is what `GET /flashcards/export` wrote, so
+      // validate it against that schema rather than spot-checking two fields.
+      const parsed = FlashcardExportSchema.safeParse(raw);
+      if (!parsed.success) {
         handleError();
         return;
       }
-
-      // Store parsed data and fetch decks
-      setParsedFileData({
-        version: data.version,
-        language: data.language,
-        flashcards: data.flashcards,
-      });
+      setParsedFileData(parsed.data);
 
       // Fetch user's decks for the dialog
       const userDecks = await getDecks();
@@ -123,14 +116,11 @@ export function FlashcardImportExport({
 
     setIsImporting(true);
     try {
-      const importData = {
+      const result = await importFlashcards({
         version: parsedFileData.version,
-        deckId: deckId,
-        language: parsedFileData.language,
+        deckId,
         flashcards: parsedFileData.flashcards,
-      };
-
-      const result = await importFlashcards(importData);
+      });
       toast.success(
         `Successfully imported ${result.imported_count} flashcards!`,
       );

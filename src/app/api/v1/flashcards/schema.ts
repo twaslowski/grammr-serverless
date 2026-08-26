@@ -76,3 +76,11 @@ export const FlashcardImportRequestSchema = z.object({
 export type FlashcardImportRequest = z.infer<
   typeof FlashcardImportRequestSchema
 >;
+
+export const FlashcardImportResponseSchema = z.object({
+  message: z.string(),
+  imported_count: z.number().int(),
+});
+export type FlashcardImportResponse = z.infer<
+  typeof FlashcardImportResponseSchema
+>;

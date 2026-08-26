@@ -56,9 +56,6 @@ importers:
       drizzle-orm:
         specifier: ^1.0.0-rc.3
         version: 1.0.0-rc.4-5d5b77c(@sinclair/typebox@0.34.49)(postgres@3.4.9)(zod@4.4.3)
-      drizzle-zod:
-        specifier: ^0.8.3
-        version: 0.8.3(drizzle-orm@1.0.0-rc.4-5d5b77c(@sinclair/typebox@0.34.49)(postgres@3.4.9)(zod@4.4.3))(zod@4.4.3)
       lucide-react:
         specifier: ^0.511.0
         version: 0.511.0(react@19.2.7)
@@ -71,9 +68,6 @@ importers:
       postgres:
         specifier: ^3.4.9
         version: 3.4.9
-      radash:
-        specifier: ^12.1.1
-        version: 12.1.1
       react:
         specifier: ^19.2.7
         version: 19.2.7
@@ -129,6 +123,9 @@ importers:
       drizzle-kit:
         specifier: ^1.0.0-rc.3
         version: 1.0.0-rc.4-ca0f029
+      drizzle-zod:
+        specifier: ^0.8.3
+        version: 0.8.3(drizzle-orm@1.0.0-rc.4-5d5b77c(@sinclair/typebox@0.34.49)(postgres@3.4.9)(zod@4.4.3))(zod@4.4.3)
       eslint:
         specifier: ^9.39.4
         version: 9.39.4(jiti@1.21.7)(supports-color@8.1.1)
@@ -3739,10 +3736,6 @@ packages:
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
-
-  radash@12.1.1:
-    resolution: {integrity: sha512-h36JMxKRqrAxVD8201FrCpyeNuUY9Y5zZwujr20fFO77tpUtGa6EZzfKw/3WaiBX95fq7+MpsuMLNdSnORAwSA==}
-    engines: {node: '>=14.18.0'}
 
   react-dom@19.2.7:
     resolution: {integrity: sha512-t0BRVXvbiE/o20Hfw669rLbMCDWtYZLvmJigy2f0MxsXF+71pxhR3xOkspmsO8h3ZlNzyibAmtCa3l4lYKk6gQ==}
@@ -8106,8 +8099,6 @@ snapshots:
   pure-rand@7.0.1: {}
 
   queue-microtask@1.2.3: {}
-
-  radash@12.1.1: {}
 
   react-dom@19.2.7(react@19.2.7):
     dependencies:
