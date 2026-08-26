@@ -14,7 +14,7 @@ import lambda_util
 from domain.inflection import Inflections
 from domain.inflection_request import InflectionRequest
 from inflector import InflectionError, Inflector
-from pydantic.v1 import ValidationError
+from pydantic import ValidationError
 
 logger = logging.getLogger("root")
 logger.setLevel(logging.INFO)
@@ -40,10 +40,10 @@ def handler(event, _):
         if keep_warm_response := lambda_util.check_keep_warm(event):
             return keep_warm_response
 
-        body = json.loads(event.get("body", {}))
         try:
+            body = json.loads(event.get("body", "{}"))
             request = InflectionRequest(**body)
-        except ValidationError as e:
+        except (ValidationError, json.JSONDecodeError) as e:
             logger.warning(
                 json.dumps(
                     {

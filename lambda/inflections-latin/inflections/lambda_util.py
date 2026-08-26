@@ -56,7 +56,13 @@ def check_keep_warm(event: dict[str, str]) -> Optional[dict]:
     Returns:
         A success response if this is a keep-warm request, None otherwise.
     """
-    body = json.loads(event.get("body", "{}"))
-    if body.get("keep-warm") is not None:
+    # A body we cannot parse is not a keep-warm ping. Leave it to the handler,
+    # which answers 400 for it; raising here would surface as a 500.
+    try:
+        body = json.loads(event.get("body", "{}"))
+    except json.JSONDecodeError:
+        return None
+
+    if isinstance(body, dict) and body.get("keep-warm") is not None:
         return ok({"keep-warm": "success"})
     return None
