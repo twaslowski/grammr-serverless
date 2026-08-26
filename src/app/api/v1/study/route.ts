@@ -6,7 +6,6 @@ import { db } from "@/db/connect";
 import { decks, flashcards, flashcardStudy } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { scheduleCard } from "@/lib/fsrs";
-import { Card as DbCard } from "@/types/fsrs";
 
 /**
  * GET /api/v1/study - Get a batch of cards to study with scheduling options
@@ -114,40 +113,12 @@ export const GET = withApiHandler(
 
     const remaining = (dueResult.length || 0) + (newResult.length || 0);
 
-    // Convert all cards to the response format with scheduling options
-    const cardsWithScheduling = allCards.map((row) => {
-      const cardData = row.flashcard_study;
-      const dbCard: DbCard = {
-        id: cardData.id,
-        flashcard_id: cardData.flashcardId,
-        user_id: cardData.userId,
-        due: cardData.due,
-        stability: cardData.stability,
-        difficulty: cardData.difficulty,
-        elapsed_days: cardData.elapsedDays,
-        scheduled_days: cardData.scheduledDays,
-        learning_steps: cardData.learningSteps,
-        reps: cardData.reps,
-        lapses: cardData.lapses,
-        state: cardData.state,
-        last_review: cardData.lastReview,
-        created_at: cardData.createdAt.toISOString(),
-        updated_at: cardData.updatedAt.toISOString(),
-      };
-
-      // Generate scheduling options for this card
-      const schedulingOptions = scheduleCard(dbCard, now);
-
-      return {
-        card: {
-          ...dbCard,
-          due: dbCard.due.toISOString(),
-          last_review: dbCard.last_review?.toISOString() || null,
-          flashcard: row.flashcard,
-        },
-        schedulingOptions,
-      };
-    });
+    // The `flashcard_study` row is already the wire shape (see @/types/fsrs),
+    // so it needs no remapping — only the joined flashcard is attached.
+    const cardsWithScheduling = allCards.map((row) => ({
+      card: { ...row.flashcard_study, flashcard: row.flashcard },
+      schedulingOptions: scheduleCard(row.flashcard_study, now),
+    }));
 
     return NextResponse.json({
       cards: cardsWithScheduling,

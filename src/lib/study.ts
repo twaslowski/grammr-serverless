@@ -1,4 +1,4 @@
-import { apiFetch, createValidatedFetcher } from "@/lib/api/validated-fetcher";
+import { createValidatedFetcher } from "@/lib/api/validated-fetcher";
 import {
   DueCardsCount,
   DueCardsCountSchema,
@@ -6,12 +6,14 @@ import {
   StudySession,
   StudySessionSchema,
   SubmitReviewResponse,
+  SubmitReviewResponseSchema,
 } from "@/types/fsrs";
 
 const BASE_URL = "/api/v1/study";
 
 const fetchDueCardsCount = createValidatedFetcher(DueCardsCountSchema);
 const fetchSession = createValidatedFetcher(StudySessionSchema);
+const postReview = createValidatedFetcher(SubmitReviewResponseSchema);
 
 /**
  * Fetch the count of due cards for study
@@ -44,9 +46,8 @@ export async function submitReview(
   cardId: number,
   rating: Rating,
 ): Promise<SubmitReviewResponse> {
-  return apiFetch(
-    `${BASE_URL}/${cardId}/review`,
-    { method: "POST", body: JSON.stringify({ rating }) },
-    "Failed to submit review",
-  );
+  return postReview(`${BASE_URL}/${cardId}/review`, {
+    method: "POST",
+    body: JSON.stringify({ rating }),
+  });
 }

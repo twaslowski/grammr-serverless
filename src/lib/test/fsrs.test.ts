@@ -21,25 +21,20 @@ import {
   mapStateToDb,
   scheduleCard,
 } from "@/lib/fsrs";
-import { Card as DbCard } from "@/types/fsrs";
+import { ScheduledState } from "@/types/fsrs";
 
 describe("FSRS Service", () => {
-  const newCard = (now: Date): DbCard => ({
-    id: 1,
-    flashcard_id: 1,
-    user_id: "user-123",
+  const newCard = (now: Date): ScheduledState => ({
     due: now,
     stability: 0,
     difficulty: 0,
-    elapsed_days: 0,
-    scheduled_days: 0,
-    learning_steps: 0,
+    elapsedDays: 0,
+    scheduledDays: 0,
+    learningSteps: 0,
     reps: 0,
     lapses: 0,
     state: "New",
-    last_review: null,
-    created_at: now.toISOString(),
-    updated_at: now.toISOString(),
+    lastReview: null,
   });
 
   describe("createFsrsInstance", () => {
@@ -69,22 +64,17 @@ describe("FSRS Service", () => {
   describe("scheduleCard", () => {
     it("should generate scheduling options for all four ratings", () => {
       const now = new Date("2026-01-21T10:00:00Z");
-      const dbCard: DbCard = {
-        id: 1,
-        flashcard_id: 1,
-        user_id: "user-123",
+      const dbCard: ScheduledState = {
         due: now,
         stability: 0,
         difficulty: 0,
-        elapsed_days: 0,
-        scheduled_days: 0,
-        learning_steps: 0,
+        elapsedDays: 0,
+        scheduledDays: 0,
+        learningSteps: 0,
         reps: 0,
         lapses: 0,
         state: "New",
-        last_review: null,
-        created_at: now.toISOString(),
-        updated_at: now.toISOString(),
+        lastReview: null,
       };
 
       const result = scheduleCard(dbCard, now);
@@ -107,22 +97,17 @@ describe("FSRS Service", () => {
 
     it("should schedule a new card with appropriate intervals", () => {
       const now = new Date("2026-01-21T10:00:00Z");
-      const dbCard: DbCard = {
-        id: 1,
-        flashcard_id: 1,
-        user_id: "user-123",
+      const dbCard: ScheduledState = {
         due: now,
         stability: 0,
         difficulty: 0,
-        elapsed_days: 0,
-        scheduled_days: 0,
-        learning_steps: 0,
+        elapsedDays: 0,
+        scheduledDays: 0,
+        learningSteps: 0,
         reps: 0,
         lapses: 0,
         state: "New",
-        last_review: null,
-        created_at: now.toISOString(),
-        updated_at: now.toISOString(),
+        lastReview: null,
       };
 
       const result = scheduleCard(dbCard, now);
@@ -181,15 +166,15 @@ describe("FSRS Service", () => {
 
     it("should label a lapse with the relearning step, not one minute", () => {
       const now = new Date("2026-01-21T10:00:00Z");
-      const reviewCard: DbCard = {
+      const reviewCard: ScheduledState = {
         ...newCard(now),
         stability: 10,
         difficulty: 5,
-        elapsed_days: 10,
-        scheduled_days: 10,
+        elapsedDays: 10,
+        scheduledDays: 10,
         reps: 5,
         state: "Review",
-        last_review: new Date("2026-01-11T10:00:00Z"),
+        lastReview: new Date("2026-01-11T10:00:00Z"),
       };
 
       const again = scheduleCard(reviewCard, now).find(
@@ -200,22 +185,17 @@ describe("FSRS Service", () => {
 
     it("should schedule a review card with longer intervals", () => {
       const now = new Date("2026-01-21T10:00:00Z");
-      const dbCard: DbCard = {
-        id: 1,
-        flashcard_id: 1,
-        user_id: "user-123",
+      const dbCard: ScheduledState = {
         due: now,
         stability: 10, // Card has some stability
         difficulty: 5,
-        elapsed_days: 10,
-        scheduled_days: 10,
-        learning_steps: 0,
+        elapsedDays: 10,
+        scheduledDays: 10,
+        learningSteps: 0,
         reps: 5, // Has been reviewed
         lapses: 0,
         state: "Review",
-        last_review: new Date("2026-01-11T10:00:00Z"),
-        created_at: now.toISOString(),
-        updated_at: now.toISOString(),
+        lastReview: new Date("2026-01-11T10:00:00Z"),
       };
 
       const result = scheduleCard(dbCard, now);
@@ -264,22 +244,17 @@ describe("FSRS Service", () => {
   describe("mapCardToFsrs", () => {
     it("should convert a database card to ts-fsrs card format", () => {
       const now = new Date("2026-01-21T10:00:00Z");
-      const dbCard: DbCard = {
-        id: 1,
-        flashcard_id: 1,
-        user_id: "user-123",
+      const dbCard: ScheduledState = {
         due: now,
         stability: 5.5,
         difficulty: 4.2,
-        elapsed_days: 10,
-        scheduled_days: 15,
-        learning_steps: 0,
+        elapsedDays: 10,
+        scheduledDays: 15,
+        learningSteps: 0,
         reps: 3,
         lapses: 1,
         state: "Review",
-        last_review: new Date("2026-01-06T10:00:00Z"),
-        created_at: now.toISOString(),
-        updated_at: now.toISOString(),
+        lastReview: new Date("2026-01-06T10:00:00Z"),
       };
 
       const fsrsCard = mapCardToFsrs(dbCard);
@@ -295,22 +270,17 @@ describe("FSRS Service", () => {
     });
 
     it("should map all card states correctly", () => {
-      const baseCard: DbCard = {
-        id: 1,
-        flashcard_id: 1,
-        user_id: "user-123",
+      const baseCard: ScheduledState = {
         due: new Date(),
         stability: 0,
         difficulty: 0,
-        elapsed_days: 0,
-        scheduled_days: 0,
-        learning_steps: 0,
+        elapsedDays: 0,
+        scheduledDays: 0,
+        learningSteps: 0,
         reps: 0,
         lapses: 0,
         state: "New",
-        last_review: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        lastReview: null,
       };
 
       expect(mapCardToFsrs({ ...baseCard, state: "New" }).state).toBe(
@@ -357,8 +327,8 @@ describe("FSRS Service", () => {
       expect(dbLog.rating).toBe("Good");
       expect(dbLog.state).toBeDefined();
       expect(dbLog.review).toBeDefined();
-      expect(typeof dbLog.elapsed_days).toBe("number");
-      expect(typeof dbLog.scheduled_days).toBe("number");
+      expect(typeof dbLog.elapsedDays).toBe("number");
+      expect(typeof dbLog.scheduledDays).toBe("number");
     });
   });
 
@@ -386,22 +356,17 @@ describe("FSRS Integration", () => {
     const startDate = new Date("2026-01-21T10:00:00Z");
 
     // Create a new card
-    const dbCard: DbCard = {
-      id: 1,
-      flashcard_id: 1,
-      user_id: "user-123",
+    const dbCard: ScheduledState = {
       due: startDate,
       stability: 0,
       difficulty: 0,
-      elapsed_days: 0,
-      scheduled_days: 0,
-      learning_steps: 0,
+      elapsedDays: 0,
+      scheduledDays: 0,
+      learningSteps: 0,
       reps: 0,
       lapses: 0,
       state: "New",
-      last_review: null,
-      created_at: startDate.toISOString(),
-      updated_at: startDate.toISOString(),
+      lastReview: null,
     };
 
     // First review - rate as Good
@@ -413,10 +378,10 @@ describe("FSRS Integration", () => {
 
     // Simulate second review after the scheduled interval
     const secondReviewDate = new Date(goodOption.card.due);
-    const updatedCard: DbCard = {
+    const updatedCard: ScheduledState = {
       ...dbCard,
       ...goodOption.card,
-      last_review: startDate,
+      lastReview: startDate,
     };
 
     const secondScheduling = scheduleCard(updatedCard, secondReviewDate);
@@ -431,22 +396,17 @@ describe("FSRS Integration", () => {
     const startDate = new Date("2026-01-21T10:00:00Z");
 
     // Create a review card (has been studied before)
-    const dbCard: DbCard = {
-      id: 1,
-      flashcard_id: 1,
-      user_id: "user-123",
+    const dbCard: ScheduledState = {
       due: startDate,
       stability: 10,
       difficulty: 5,
-      elapsed_days: 10,
-      scheduled_days: 10,
-      learning_steps: 0,
+      elapsedDays: 10,
+      scheduledDays: 10,
+      learningSteps: 0,
       reps: 5,
       lapses: 0,
       state: "Review",
-      last_review: new Date("2026-01-11T10:00:00Z"),
-      created_at: startDate.toISOString(),
-      updated_at: startDate.toISOString(),
+      lastReview: new Date("2026-01-11T10:00:00Z"),
     };
 
     const scheduling = scheduleCard(dbCard, startDate);

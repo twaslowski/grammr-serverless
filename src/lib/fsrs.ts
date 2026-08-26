@@ -17,9 +17,10 @@ import {
 } from "ts-fsrs";
 
 import {
-  Card as DbCard,
   CardState,
   Rating,
+  ReviewLogEntry,
+  ScheduledState,
   SchedulingInfo,
 } from "@/types/fsrs";
 
@@ -137,77 +138,63 @@ export function mapRatingToDb(rating: TsFsrsRating): Rating {
 }
 
 /**
- * Convert a database card to ts-fsrs card format
+ * Convert a `flashcard_study` row to ts-fsrs card format.
+ *
+ * This is where camelCase becomes snake_case: ts-fsrs uses snake_case field
+ * names, nothing else in the app does.
  */
-export function mapCardToFsrs(dbCard: DbCard): TsFsrsCard {
+export function mapCardToFsrs(card: ScheduledState): TsFsrsCard {
   return {
-    due: dbCard.due,
-    stability: dbCard.stability,
-    difficulty: dbCard.difficulty,
-    elapsed_days: dbCard.elapsed_days,
-    scheduled_days: dbCard.scheduled_days,
-    learning_steps: dbCard.learning_steps,
-    reps: dbCard.reps,
-    lapses: dbCard.lapses,
-    state: mapStateToFsrs(dbCard.state),
-    // todo: this nested ternary looks nasty. maybe solvable if we require stronger types on date
-    //  and make it not-nullable i.e. introduce initial default?
-    last_review: dbCard.last_review
-      ? dbCard.last_review instanceof Date
-        ? dbCard.last_review
-        : new Date(dbCard.last_review)
-      : undefined,
+    due: card.due,
+    stability: card.stability,
+    difficulty: card.difficulty,
+    elapsed_days: card.elapsedDays,
+    scheduled_days: card.scheduledDays,
+    learning_steps: card.learningSteps,
+    reps: card.reps,
+    lapses: card.lapses,
+    state: mapStateToFsrs(card.state),
+    // ts-fsrs distinguishes "never reviewed" with undefined, the column with null.
+    last_review: card.lastReview ?? undefined,
   };
 }
 
 /**
- * Convert a ts-fsrs card to database card fields (partial, for updates)
+ * Convert a ts-fsrs card back to the columns a `flashcard_study` update sets.
+ *
+ * The result is directly assignable to a Drizzle `.set()`, which is why the
+ * routes no longer restate the field names themselves.
  */
-export function mapFsrsCardToDb(
-  fsrsCard: TsFsrsCard,
-): Omit<
-  DbCard,
-  "id" | "flashcard_id" | "user_id" | "created_at" | "updated_at"
-> {
+export function mapFsrsCardToDb(fsrsCard: TsFsrsCard): ScheduledState {
   return {
     due: fsrsCard.due,
     stability: fsrsCard.stability,
     difficulty: fsrsCard.difficulty,
-    elapsed_days: fsrsCard.elapsed_days,
-    scheduled_days: fsrsCard.scheduled_days,
-    learning_steps: fsrsCard.learning_steps,
+    elapsedDays: fsrsCard.elapsed_days,
+    scheduledDays: fsrsCard.scheduled_days,
+    learningSteps: fsrsCard.learning_steps,
     reps: fsrsCard.reps,
     lapses: fsrsCard.lapses,
     state: mapStateToDb(fsrsCard.state),
-    last_review: fsrsCard.last_review || null,
+    lastReview: fsrsCard.last_review || null,
   };
 }
 
 /**
- * Convert a ts-fsrs review log to database format
+ * Convert a ts-fsrs review log to the columns a `review_log` insert supplies.
+ * Directly assignable to a Drizzle `.values()`, minus the owning row's id.
  */
-export function mapFsrsLogToDb(log: TsFsrsReviewLog): {
-  rating: Rating;
-  state: CardState;
-  due: Date;
-  stability: number;
-  difficulty: number;
-  elapsed_days: number;
-  last_elapsed_days: number;
-  scheduled_days: number;
-  learning_steps: number;
-  review: Date;
-} {
+export function mapFsrsLogToDb(log: TsFsrsReviewLog): ReviewLogEntry {
   return {
     rating: mapRatingToDb(log.rating),
     state: mapStateToDb(log.state),
     due: log.due,
     stability: log.stability,
     difficulty: log.difficulty,
-    elapsed_days: log.elapsed_days,
-    last_elapsed_days: log.last_elapsed_days,
-    scheduled_days: log.scheduled_days,
-    learning_steps: log.learning_steps,
+    elapsedDays: log.elapsed_days,
+    lastElapsedDays: log.last_elapsed_days,
+    scheduledDays: log.scheduled_days,
+    learningSteps: log.learning_steps,
     review: log.review,
   };
 }
@@ -262,12 +249,12 @@ export function intervalInDays(due: Date, now: Date): number {
  * Schedule a card and return scheduling options for all four ratings
  */
 export function scheduleCard(
-  dbCard: DbCard,
+  card: ScheduledState,
   now: Date = new Date(),
   customParams?: Partial<FSRSParameters>,
 ): SchedulingInfo[] {
   const f = createFsrsInstance(customParams);
-  const fsrsCard = mapCardToFsrs(dbCard);
+  const fsrsCard = mapCardToFsrs(card);
 
   // Get scheduling for all ratings
   const scheduling = f.repeat(fsrsCard, now);
@@ -301,19 +288,16 @@ export function scheduleCard(
  * Process a review and return the updated card and review log
  */
 export function processReview(
-  dbCard: DbCard,
+  card: ScheduledState,
   rating: Rating,
   now: Date = new Date(),
   customParams?: Partial<FSRSParameters>,
 ): {
-  updatedCard: Omit<
-    DbCard,
-    "id" | "flashcard_id" | "user_id" | "created_at" | "updated_at"
-  >;
-  reviewLog: ReturnType<typeof mapFsrsLogToDb>;
+  updatedCard: ScheduledState;
+  reviewLog: ReviewLogEntry;
 } {
   const f = createFsrsInstance(customParams);
-  const fsrsCard = mapCardToFsrs(dbCard);
+  const fsrsCard = mapCardToFsrs(card);
   const fsrsRating = mapRatingToFsrs(rating);
 
   // Get the scheduling for the selected rating

@@ -5,7 +5,6 @@ import { db } from "@/db/connect";
 import { flashcardStudy, reviewLogs } from "@/db/schemas/schema";
 import { IdParamSchema, withApiHandler } from "@/lib/api/with-api-handler";
 import { processReview } from "@/lib/fsrs";
-import { Card as DbCard } from "@/types/fsrs";
 import { SubmitReviewRequestSchema } from "../../schema";
 
 /**
@@ -36,46 +35,18 @@ export const POST = withApiHandler(
       return NextResponse.json({ error: "Card not found" }, { status: 404 });
     }
 
-    const cardData = cardResults[0];
-
-    // Convert to DbCard format
-    const dbCard: DbCard = {
-      id: cardData.id,
-      flashcard_id: cardData.flashcardId,
-      user_id: cardData.userId,
-      due: cardData.due,
-      stability: cardData.stability,
-      difficulty: cardData.difficulty,
-      elapsed_days: cardData.elapsedDays,
-      scheduled_days: cardData.scheduledDays,
-      learning_steps: cardData.learningSteps,
-      reps: cardData.reps,
-      lapses: cardData.lapses,
-      state: cardData.state,
-      last_review: cardData.lastReview,
-      created_at: cardData.createdAt.toISOString(),
-      updated_at: cardData.updatedAt.toISOString(),
-    };
-
-    // Process the review using FSRS
-    const { updatedCard, reviewLog } = processReview(dbCard, rating, now);
+    // The row is already the shape FSRS expects (see @/types/fsrs).
+    const { updatedCard, reviewLog } = processReview(
+      cardResults[0],
+      rating,
+      now,
+    );
 
     try {
       // Update the card
       const updatedCardData = await db
         .update(flashcardStudy)
-        .set({
-          due: updatedCard.due,
-          stability: updatedCard.stability,
-          difficulty: updatedCard.difficulty,
-          elapsedDays: updatedCard.elapsed_days,
-          scheduledDays: updatedCard.scheduled_days,
-          learningSteps: updatedCard.learning_steps,
-          reps: updatedCard.reps,
-          lapses: updatedCard.lapses,
-          state: updatedCard.state,
-          lastReview: updatedCard.last_review || now,
-        })
+        .set({ ...updatedCard, lastReview: updatedCard.lastReview ?? now })
         .where(
           and(
             eq(flashcardStudy.id, params.id),
@@ -94,19 +65,7 @@ export const POST = withApiHandler(
       // Create the review log
       const reviewLogData = await db
         .insert(reviewLogs)
-        .values({
-          flashcardStudyId: params.id,
-          rating: reviewLog.rating,
-          state: reviewLog.state,
-          due: reviewLog.due,
-          stability: reviewLog.stability,
-          difficulty: reviewLog.difficulty,
-          elapsedDays: reviewLog.elapsed_days,
-          lastElapsedDays: reviewLog.last_elapsed_days,
-          scheduledDays: reviewLog.scheduled_days,
-          learningSteps: reviewLog.learning_steps,
-          review: reviewLog.review,
-        })
+        .values({ ...reviewLog, flashcardStudyId: params.id })
         .returning();
 
       return NextResponse.json({
