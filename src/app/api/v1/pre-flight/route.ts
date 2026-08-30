@@ -32,7 +32,13 @@ export const POST = withApiHandler(
     }
 
     // Fire warm-up requests in parallel and ignore any errors
+    // The dictionary is the one that most needs this: its cold start includes
+    // pulling a SQLite artifact out of S3, and its warm-up handler primes that
+    // rather than returning early, so this request pays the cost instead of a
+    // reader's first lookup. A language with no published artifact answers 404
+    // here, which allSettled discards along with the rest.
     await Promise.allSettled([
+      callApiGateway(`/dictionary/${language}`, KEEP_WARM_BODY),
       callApiGateway(`/inflections/${language}`, KEEP_WARM_BODY),
       callApiGateway(`/morphology/${language}`, KEEP_WARM_BODY),
     ]);

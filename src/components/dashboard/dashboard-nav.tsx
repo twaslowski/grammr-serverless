@@ -2,6 +2,7 @@
 
 import {
   ArrowRight,
+  BookOpen,
   HammerIcon,
   HelpCircleIcon,
   Languages,
@@ -39,11 +40,23 @@ const defaultNavItems: DashboardNavItem[] = [
     // Available for all languages
   },
   {
+    title: "Dictionary",
+    description: "Look up any word: meanings, and its forms when it has any",
+    href: "/dashboard/dictionary",
+    icon: BookOpen,
+    // Kept in step with `dictionaryEnabled` in src/types/languages.ts: the
+    // dictionary needs a published artifact per language, so it rolls out one at
+    // a time.
+    availableForLanguages: ["ru"],
+  },
+  {
+    // Still the only option for the Romance languages, which have a verb
+    // conjugator but no dictionary artifact yet. Retire this once they do.
     title: "Inflection Tables",
     description: "Look up conjugation and declension tables for words",
     href: "/dashboard/inflect",
     icon: Table2,
-    availableForLanguages: ["ru"],
+    availableForLanguages: ["es", "it", "fr", "pt"],
   },
   {
     title: "Flashcards",

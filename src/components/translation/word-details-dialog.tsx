@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
+import { useDictionaryEntry } from "@/components/dictionary";
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { InflectionsTable } from "@/components/inflection/inflections-table";
 import { TTSButton } from "@/components/tts/tts-button";
@@ -63,6 +64,19 @@ export function WordDetailsDialog({
   const features = morphology ? getOrderedFeatures(morphology.features) : [];
   const lemma = morphology?.lemma;
 
+  // Real definitions, where the dictionary has them. The translation below is
+  // one contextual rendering produced by an LLM for this sentence; a dictionary
+  // entry says what the word means in general, which is a different and usually
+  // more useful thing to read. Fetched only while the dialog is open, and absent
+  // without complaint when there is no entry.
+  const { entry } = useDictionaryEntry({
+    lemma,
+    pos: morphology?.pos,
+    language,
+    enabled: open,
+  });
+  const senses = entry?.senses ?? [];
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
@@ -112,6 +126,31 @@ export function WordDetailsDialog({
         </div>
 
         <div className="space-y-5 px-6 py-5">
+          {senses.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Definitions
+              </p>
+              <ol className="space-y-1.5">
+                {senses.map((sense, index) => (
+                  <li key={index} className="flex gap-2 text-sm">
+                    <span className="shrink-0 text-muted-foreground">
+                      {index + 1}.
+                    </span>
+                    <span>
+                      {sense.tags.length > 0 && (
+                        <em className="mr-1.5 text-muted-foreground">
+                          {sense.tags.join(", ")}
+                        </em>
+                      )}
+                      {sense.gloss}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+
           {/* Translation, hidden until the reader asks for it */}
           <div className="space-y-2">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">

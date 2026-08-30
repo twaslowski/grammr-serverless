@@ -25,6 +25,16 @@ export interface Language {
   nativeName: string;
   flag: string;
   inflectionConfig?: InflectionConfig;
+  /**
+   * Whether a dictionary artifact is published for this language.
+   *
+   * Kept separate from `inflectionConfig` rather than folded into it. That config
+   * exists to drive the part-of-speech picker on the inflection form, and the
+   * dictionary has no picker to drive -- asking the reader to classify a word
+   * before looking it up is the thing being removed. The two will converge once
+   * the inflection form is retired.
+   */
+  dictionaryEnabled?: boolean;
 }
 
 export const allLanguages: Language[] = [
@@ -45,6 +55,7 @@ export const allLanguages: Language[] = [
     name: "Russian",
     nativeName: "Русский",
     flag: "🇷🇺",
+    dictionaryEnabled: true,
     inflectionConfig: {
       enabled: true,
       pos: ["NOUN", "ADJ", "VERB", "AUX"],

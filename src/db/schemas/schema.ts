@@ -3,5 +3,6 @@ export * from "./deckStudy";
 export * from "./enum";
 export * from "./flashcard";
 export * from "./flashcardStudy";
+export * from "./lexemeCache";
 export * from "./profile";
 export * from "./reviewLog";

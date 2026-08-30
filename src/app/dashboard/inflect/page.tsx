@@ -1,17 +1,41 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 import { useProfile } from "@/components/dashboard/profile-provider";
 import { usePreflightWarmup } from "@/components/dashboard/use-preflight-warmup";
 import { InflectionForm } from "@/components/inflection";
 import { PageLayout } from "@/components/page-header";
 import { getLanguageByCode } from "@/lib/languages";
 
+/**
+ * The inflection generator, now a fallback rather than the main entrance.
+ *
+ * Where a dictionary artifact exists, this page redirects to it: asking for a
+ * base form and a part of speech up front is the friction the dictionary removes,
+ * so there is no reason to keep two doors onto the same paradigms. The form
+ * survives for the Romance languages, which have a verb conjugator but no
+ * artifact yet, and should be deleted once they do.
+ */
 export default function InflectionsPage() {
   const profile = useProfile();
+  const router = useRouter();
   const languageInfo = getLanguageByCode(profile.targetLanguage);
+  const hasDictionary = languageInfo?.dictionaryEnabled ?? false;
+
+  useEffect(() => {
+    if (hasDictionary) {
+      router.replace("/dashboard/dictionary");
+    }
+  }, [hasDictionary, router]);
 
   // Trigger Lambda warmup on page load
   usePreflightWarmup(profile.targetLanguage);
+
+  if (hasDictionary) {
+    return null;
+  }
 
   return (
     <PageLayout
