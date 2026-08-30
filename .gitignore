@@ -68,3 +68,5 @@ test.json
 
 models/
 drizzle-prod.config.ts
+# Locally built dictionary artifacts (see lambda/dictionary-build)
+.artifacts/

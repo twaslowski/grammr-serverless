@@ -12,6 +12,7 @@ and generate inflected forms—all while using a scientifically-backed spaced re
 - 🌍 **Multi-Language Support**: Spanish, Italian, French, Portuguese, Romanian, Russian, and more
 - 📝 **Sentence & Literal Translation**: Context-aware translation preserving grammatical structure
 - 🔬 **Morphological Analysis**: Deep grammatical analysis using spaCy models (tense, case, number, gender, etc.)
+- 📖 **Dictionary**: Look up any word — meanings, grammatical identity, and its forms when it has any
 - 🔄 **Inflection Generation**: Generate all forms of verbs, nouns, and adjectives
 - 🃏 **Smart Flashcards**: Spaced repetition system (FSRS algorithm) for optimal learning
 - 🎤 **Text-to-Speech**: Native pronunciation using AWS Polly
@@ -42,6 +43,7 @@ directory. Each service can be used standalone via the API Gateway.
 
 | Service               | Description                                                                        | Languages                                      | Technology        |
 |-----------------------|------------------------------------------------------------------------------------|------------------------------------------------|-------------------|
+| **dictionary**        | Word lookup: senses, part of speech, inherent features, and an inflection table where the word has one | Russian | Python, SQLite    |
 | **morphology**        | Grammatical analysis of words (POS tagging, lemmatization, morphological features) | Multi-language (via spaCy models)              | Python, spaCy     |
 | **inflections-latin** | Verb conjugation for Romance languages                                             | Spanish, Italian, French, Portuguese, Romanian | Python, verbecc   |
 | **inflections-ru**    | Verb conjugation and noun declension for Russian                                   | Russian                                        | Python, pymorphy2 |
@@ -418,6 +420,17 @@ This project is licensed under the GNU General Public License v3.0 (GPL-3.0) - s
 for details.
 
 All code in this repository, including the NLP modules, is open source under GPL-3.0.
+
+### Data
+
+The dictionary service serves data derived from [Wiktionary](https://en.wiktionary.org), extracted with
+[wiktextract](https://github.com/tatuylonen/wiktextract). That content is licensed
+**[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)** (dual-licensed with the GFDL), not GPL-3.0: the code
+here is GPL, and the dataset carries its own licence and its own obligations, which are attribution and ShareAlike.
+
+Every dictionary entry in the UI links back to its Wiktionary page and names the licence, the artifact records its
+provenance in a `meta` table, and each API response carries an `attribution` object. See
+[`lambda/dictionary-build`](lambda/dictionary-build) for how the dataset is produced.
 
 ## Support
 

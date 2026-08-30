@@ -16,6 +16,35 @@ tasks:
       - pnpm db:migrate
       - pnpm e2e
 
+  dictionary:artifact:
+    desc: Build a local dictionary artifact from the committed fixture
+    dir: ./lambda/dictionary-build
+    cmds:
+      # The fixture, not the 22.9 GB dump: it covers a noun, an adjective, a
+      # verb, an adverb with no paradigm, an indeclinable noun and a homograph
+      # pair, which is every shape the UI has to render.
+      - mkdir -p ../../.artifacts
+      - uv run --frozen python build.py ru --source fixtures/ru-sample.jsonl --out ../../.artifacts/ru.sqlite
+
+  dictionary:serve:
+    desc: Serve the dictionary Lambda locally on :9010 (set API_GW_URL to it)
+    dir: ./lambda/dictionary
+    deps: [dictionary:artifact]
+    cmds:
+      # Requests for the other services are forwarded to DICTIONARY_UPSTREAM_URL
+      # when it is set, so the dictionary runs from local source while morphology
+      # and inflections keep coming from the deployed environment. That matters:
+      # resolving an inflected query calls the morphology service.
+      - uv run --frozen python local_server.py --artifact-dir ../../.artifacts
+
+  dictionary:publish:*:
+    desc: Build and publish a dictionary artifact to S3 (e.g. dictionary:publish:ru)
+    dir: ./lambda/dictionary-build
+    vars:
+      LANGUAGE: "{{index .MATCH 0}}"
+    cmds:
+      - ./publish.sh {{.LANGUAGE}}
+
   run:
     desc: Run the development server
     cmds:

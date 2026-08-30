@@ -46,6 +46,8 @@ jobs:
       matrix:
         service:
           - authorizer
+          - dictionary
+          - dictionary-build
           - inflections-latin
           - inflections-ru
           - morphology
