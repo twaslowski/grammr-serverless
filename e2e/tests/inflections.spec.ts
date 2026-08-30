@@ -10,6 +10,15 @@ for (const targetLanguage of testTargetLanguages) {
     continue;
   }
 
+  // Languages with a dictionary artifact redirect /dashboard/inflect to
+  // /dashboard/dictionary, so this form is unreachable for them and
+  // `dictionary.spec.ts` covers the paradigms instead. The remaining languages
+  // have a verb conjugator but no artifact yet, and this is still their only way
+  // in.
+  if (testData.dictionary) {
+    continue;
+  }
+
   test.describe(`Inflections Page - ${testData.name}`, () => {
     // Use the language-specific authentication
     test.use({

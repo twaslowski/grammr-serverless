@@ -5,6 +5,24 @@ export interface LanguageTestData {
   name: string;
   sourceLanguage: LanguageCode;
   targetLanguage: LanguageCode;
+  /**
+   * Present only for languages with a published dictionary artifact.
+   *
+   * Its presence also means `/dashboard/inflect` redirects to the dictionary for
+   * this language, so `inflections.spec.ts` skips it -- see the guard there.
+   */
+  dictionary?: {
+    /** A headword that resolves directly. */
+    lemma: string;
+    /** An inflected form that has to be resolved to `lemma` first. */
+    inflectedForm: string;
+    /** A real word with no paradigm, which the old form could not describe. */
+    uninflectedWord: string;
+    /** A spelling with entries under more than one part of speech. */
+    homograph: string;
+    /** Labels expected in the resulting table. */
+    expectedCases: string[];
+  };
   inflections: {
     distinguishPos?: boolean;
     noun?: {
@@ -37,6 +55,27 @@ export const languageTestData: Record<LanguageCode, LanguageTestData> = {
     name: "Russian",
     sourceLanguage: "de",
     targetLanguage: "ru",
+    dictionary: {
+      // Chosen to match `lambda/dictionary-build/fixtures/ru-sample.jsonl`, so
+      // these specs run against a locally built fixture artifact
+      // (`task dictionary:serve`) as well as against a published one.
+      lemma: "стол",
+      // Genitive singular of "стол". Typing this into the old form produced a
+      // POS-mismatch error.
+      inflectedForm: "стола",
+      // An adverb: real word, real meaning, no table.
+      uninflectedWord: "быстро",
+      // Noun ("build, bearing") and verb ("to become").
+      homograph: "стать",
+      expectedCases: [
+        "Nominative",
+        "Genitive",
+        "Dative",
+        "Accusative",
+        "Instrumental",
+        "Prepositional",
+      ],
+    },
     inflections: {
       distinguishPos: true,
       noun: {
