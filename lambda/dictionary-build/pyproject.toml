@@ -1,0 +1,15 @@
+[project]
+name = "dictionary-build"
+version = "0.1.0"
+description = "Builds grammr's dictionary artifact from a wiktextract dump"
+readme = "README.md"
+requires-python = ">=3.12"
+# Deliberately empty. Streaming and filtering a JSONL dump into SQLite needs
+# nothing beyond urllib, gzip, json and sqlite3, and a build tool with no
+# dependency tree is a build tool that still runs in a year.
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+]

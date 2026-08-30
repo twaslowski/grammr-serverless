@@ -1,0 +1,21 @@
+[project]
+name = "dictionary"
+version = "0.1.0"
+description = "Dictionary lookup over a wiktextract-derived SQLite artifact"
+readme = "README.md"
+requires-python = ">=3.14"
+# Empty on purpose. The artifact is read with the standard library's sqlite3, so
+# this function packages to a few kilobytes -- which matters because the zip
+# Lambdas already run close to the 50 MB direct-upload limit (see the note on
+# `lambda_source_excludes` in terraform/application/locals.tf).
+dependencies = []
+
+[dependency-groups]
+# boto3 is provided by the AWS Lambda Python runtime, so it is deliberately not a
+# project dependency: shipping it adds ~25 MB of boto3/botocore for no benefit.
+# It stays here so local runs and tests still resolve it, since `uv export
+# --no-dev` (which the packager uses) leaves it out.
+dev = [
+    "boto3>=1.42.28",
+    "pytest>=8.0.0",
+]

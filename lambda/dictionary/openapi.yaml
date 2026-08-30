@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: grammr dictionary service
+  version: 0.1.0
+  description: |
+    Dictionary lookup over a SQLite artifact derived from a wiktextract dump of the
+    English edition of Wiktionary, built offline by `lambda/dictionary-build`.
+
+    Unlike `/inflections/{language}`, a lookup that finds nothing is not an error.
+    An empty `entries` list means the word is unknown; an entry whose
+    `inflections` is `null` means the word is real and does not inflect. Both are
+    200s.
+  license:
+    name: GPL-3.0
+paths:
+  /dictionary/{language}:
+    post:
+      summary: Look up a headword
+      parameters:
+        - name: language
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [ru]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LookupRequest"
+      responses:
+        "200":
+          description: |
+            The lookup completed. `entries` may be empty, which means the word is
+            not in the dictionary.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LookupResponse"
+        "400":
+          description: The query was missing, blank or too long, or the body was not JSON.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          description: No artifact is published for the requested language.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503":
+          description: The artifact could not be fetched or opened.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+components:
+  schemas:
+    LookupRequest:
+      type: object
+      required: [query]
+      properties:
+        query:
+          type: string
+          description: |
+            The word to look up. Matched against headwords after normalisation
+            (casefolded, stress marks removed, `ё` folded onto `е`), so a
+            stressed or capitalised query resolves. Inflected forms do not: the
+            caller resolves those to a lemma via the morphology service first.
+          example: стол
+        pos:
+          type: string
+          description: |
+            Optional Universal Dependencies tag, used to narrow homographs when
+            the caller already knows the part of speech. Never required.
+          example: NOUN
+    LookupResponse:
+      type: object
+      required: [query, entries, attribution]
+      properties:
+        query:
+          type: string
+        entries:
+          type: array
+          items: { $ref: "#/components/schemas/Entry" }
+        attribution:
+          $ref: "#/components/schemas/Attribution"
+    Entry:
+      type: object
+      required: [lemma, partOfSpeech, lemmaFeatures, senses, inflections]
+      properties:
+        lemma:
+          type: string
+          description: Unstressed headword. Safe for TTS and flashcard fronts.
+        accented:
+          type: string
+          nullable: true
+          description: Stressed spelling, for display only. Null when identical to the lemma.
+        partOfSpeech:
+          type: string
+          description: Universal Dependencies tag.
+        lemmaFeatures:
+          type: array
+          description: |
+            Features inherent to the lexeme rather than to one cell: gender for a
+            noun, animacy, verb aspect, and an `OTHER/INDECLINABLE` marker for a
+            word that has no paradigm by nature.
+          items: { $ref: "#/components/schemas/Feature" }
+        senses:
+          type: array
+          items: { $ref: "#/components/schemas/Sense" }
+        inflections:
+          type: array
+          nullable: true
+          description: |
+            The paradigm, or `null` when the word does not inflect. Null and an
+            empty array are not the same thing, and the distinction is deliberate.
+          items: { $ref: "#/components/schemas/Inflection" }
+    Sense:
+      type: object
+      required: [gloss, tags]
+      properties:
+        gloss: { type: string }
+        tags:
+          type: array
+          description: Raw Wiktionary sense tags, e.g. `["figurative"]`.
+          items: { type: string }
+    Inflection:
+      type: object
+      required: [lemma, inflected, features]
+      properties:
+        lemma: { type: string }
+        inflected: { type: string }
+        accented:
+          type: string
+          nullable: true
+        features:
+          type: array
+          items: { $ref: "#/components/schemas/Feature" }
+    Feature:
+      type: object
+      required: [type, value]
+      properties:
+        type:
+          type: string
+          enum: [CASE, NUMBER, GENDER, PERSON, TENSE, ASPECT, ANIMACY, OTHER]
+        value:
+          type: string
+          description: |
+            Matched verbatim by the frontend's inflection table, so these are
+            fixed: NOM/GEN/DAT/ACC/ABL/LOC, SING/PLUR, MASC/FEM/NEUT,
+            FIRST/SECOND/THIRD, PRES/PAST/FUT. Note that grammr names the
+            instrumental ABL and the prepositional LOC.
+    Attribution:
+      type: object
+      properties:
+        source: { type: string }
+        license: { type: string }
+        licenseUrl: { type: string }
+    Error:
+      type: object
+      properties:
+        error: { type: string }
