@@ -14,6 +14,12 @@ and `src/lib/preflight.ts` exist for exactly this, and the download happens on
 the same warm-up request that already pays for initialisation. If a language's
 file ever outgrows the configured ephemeral storage, that is the point to
 reconsider -- not before.
+
+Why SQLite rather than a columnar format in S3 is written up in
+`docs/dictionary-handover.md`. The short version: Parquet has no index, so a
+point lookup means decompressing a whole row group or data page, and reading it
+needs pyarrow -- which would put this function over the zip limit the repo has
+already fought once.
 """
 
 import json
