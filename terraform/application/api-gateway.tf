@@ -82,6 +82,24 @@ module "api_gateway" {
         }
       }
     },
+    # One deployment serves every dictionary language, so the routes fan out to
+    # the same integration and the language travels in the path. Unlike
+    # /inflections/* and /morphology/*, these carry the authorizer: those two
+    # predate it and are a known gap, which is no reason to add a third.
+    {
+      for lang in local.dictionary.languages :
+      "POST /dictionary/${lang}" => {
+        authorization_type = "CUSTOM"
+        authorizer_key     = "token"
+
+        integration = {
+          uri         = module.dictionary_lambda.lambda_function_invoke_arn
+          type        = "AWS_PROXY"
+          description = "Dictionary lookup for ${lang}"
+          method      = "POST"
+        }
+      }
+    },
     # Static routes
     {
       "POST /inflections/ru" = {

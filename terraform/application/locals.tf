@@ -31,6 +31,19 @@ locals {
     version   = var.inflections_latin_lambda_version
   }
 
+  dictionary = {
+    # Languages with a published artifact in s3://<bucket>/dictionary/. One
+    # deployment serves all of them -- unlike inflections, which needs a function
+    # per language because each bakes in its own morphology library.
+    languages = toset(["ru"])
+
+    # The artifact is fetched into /tmp on cold start, so ephemeral storage has to
+    # hold the largest published file with room to spare. Raise this before adding
+    # a language whose file is bigger than the current headroom; the Lambda reports
+    # a 503 rather than failing silently if the fetch cannot complete.
+    ephemeral_storage_mb = 1024
+  }
+
   # Files to keep out of the zip-packaged lambda artifacts.
   #
   # These are Python regexes matched against paths relative to the source
@@ -51,6 +64,8 @@ locals {
     "!tests(/.*)?",
     "!test_.*\\.py",
     "!pytest\\.ini",
+    "!conftest\\.py",
+    "!local_server\\.py",
     "!event\\.json",
     "!INSTRUCTIONS_LOCAL\\.md",
   ]
