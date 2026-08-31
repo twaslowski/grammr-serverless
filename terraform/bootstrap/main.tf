@@ -7,7 +7,7 @@ module "secret" {
   recovery_window_in_days = 30
 
   secret_string = jsonencode({
-    google_sso_client_id = "",
+    google_sso_client_id     = "",
     google_sso_client_secret = ""
   })
 

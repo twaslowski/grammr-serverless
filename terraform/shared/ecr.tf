@@ -13,8 +13,8 @@ module "ecr" {
   create_repository_policy = true
   repository_policy_statements = {
     lambda_access = {
-      sid     = "LambdaAccess"
-      effect  = "Allow"
+      sid    = "LambdaAccess"
+      effect = "Allow"
       actions = [
         "ecr:BatchGetImage",
         "ecr:GetDownloadUrlForLayer"

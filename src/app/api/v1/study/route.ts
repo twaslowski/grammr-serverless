@@ -6,6 +6,7 @@ import { db } from "@/db/connect";
 import { decks, flashcards, flashcardStudy } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
 import { scheduleCard } from "@/lib/fsrs";
+import { shuffle } from "@/lib/shuffle";
 
 /**
  * GET /api/v1/study - Get a batch of cards to study with scheduling options
@@ -74,8 +75,11 @@ export const GET = withApiHandler(
         .limit(remainingSlots);
     }
 
-    // Combine cards: review cards first, then new cards
-    const allCards = [...(reviewCards || []), ...newCards];
+    // Combine cards: review cards first, then new cards. Each group is
+    // shuffled so cards aren't always presented in the same relative
+    // sequence, which otherwise lets a user recall a card by its position
+    // next to another card instead of recalling it on its own.
+    const allCards = [...shuffle(reviewCards || []), ...shuffle(newCards)];
 
     if (allCards.length === 0) {
       return NextResponse.json({
