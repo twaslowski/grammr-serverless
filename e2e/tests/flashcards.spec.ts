@@ -51,7 +51,9 @@ for (const targetLanguage of testTargetLanguages) {
 
       // Wait for the dialog to open
       await expect(
-        page.getByRole("dialog").getByRole("heading", { name: "Create Flashcard" }),
+        page
+          .getByRole("dialog")
+          .getByRole("heading", { name: "Create Flashcard" }),
       ).toBeVisible();
 
       // Fill in the translation
@@ -66,7 +68,9 @@ for (const targetLanguage of testTargetLanguages) {
 
       // Wait for success
       await expect(
-        page.getByRole("dialog").getByRole("heading", { name: "Create Flashcard" }),
+        page
+          .getByRole("dialog")
+          .getByRole("heading", { name: "Create Flashcard" }),
       ).not.toBeVisible({
         timeout: 5000,
       });
@@ -83,35 +87,50 @@ for (const targetLanguage of testTargetLanguages) {
       });
     });
 
-    test("should search for flashcards on flashcards page", async ({
+    /**
+     * Seeds through the API rather than the UI: this is about the list, and
+     * creating 30 cards by hand through the dialog would be a different test
+     * that also happened to be slow.
+     */
+    test("searches and pages through a long list", async ({
       page,
+      request,
     }) => {
-      // Only run if we have noun data to search for
-      if (!testData.inflections.noun) {
-        test.skip();
-        return;
+      const marker = `zz-page-${Date.now()}`;
+      const needle = `${marker}-needle`;
+
+      for (let i = 0; i < 30; i++) {
+        const response = await request.post("/api/v1/flashcards", {
+          data: {
+            front: i === 0 ? needle : `${marker}-${i}`,
+            back: { type: "phrase", translation: `translation ${i}` },
+          },
+        });
+        expect(response.status()).toBe(201);
       }
 
-      // First, ensure there's at least one flashcard
-      // (This assumes previous tests have run or there's existing data)
       await page.goto("/dashboard/flashcards");
 
-      // Use the search functionality
-      const searchInput = page.getByPlaceholder(/Search flashcards/i);
-      await searchInput.fill(testData.inflections.noun.word);
+      // The first page is capped, so the 30 just-seeded cards cannot all be
+      // present until "Load more" has been used.
+      const firstPage = page.getByText(new RegExp(`^${marker}-`));
+      await expect(firstPage.first()).toBeVisible({ timeout: 15000 });
+      const firstPageCount = await firstPage.count();
+      expect(firstPageCount).toBeLessThanOrEqual(25);
 
-      // Click search button
-      await page.getByRole("button", { name: /Search/i }).click();
+      await page.getByRole("button", { name: /load more/i }).click();
+      await expect
+        .poll(async () => firstPage.count(), { timeout: 15000 })
+        .toBeGreaterThan(firstPageCount);
 
-      // Wait for search results
-      await expect(page.getByRole("button", { name: /Search/i })).toBeEnabled({
-        timeout: 5000,
-      });
-
-      // The flashcard should still be visible (if it exists)
-      // This is a soft check - the test won't fail if no results are found
-      // as it depends on previous test state
+      // Searching narrows to the single marked card.
+      await page.getByLabel("Search flashcards").fill(needle);
+      await expect(page.getByText(needle)).toBeVisible({ timeout: 15000 });
+      await expect
+        .poll(async () => page.getByText(new RegExp(`^${marker}-`)).count(), {
+          timeout: 15000,
+        })
+        .toBe(1);
     });
   });
 }
-

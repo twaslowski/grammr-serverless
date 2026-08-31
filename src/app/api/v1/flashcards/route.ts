@@ -24,12 +24,11 @@ export const GET = withApiHandler(
     querySchema: FlashcardListQuerySchema,
   },
   async ({ user, query }) => {
-    const { deckId, search } = query;
+    const { deckId, search, limit, offset } = query;
 
     // Build where conditions
     const conditions = buildConditions(user, deckId, search);
 
-    // Build and execute query
     const result = await db
       .select({
         flashcard: flashcards,
@@ -50,16 +49,31 @@ export const GET = withApiHandler(
         ),
       )
       .where(and(...conditions))
-      .orderBy(desc(flashcards.updatedAt));
+      // The `id` tiebreaker is load-bearing, not cosmetic: `updatedAt` is not
+      // unique, and without a total order Postgres may return the same row on
+      // two consecutive pages and drop another entirely.
+      .orderBy(desc(flashcards.updatedAt), desc(flashcards.id))
+      // One more than asked for, so the end of the list is known without a
+      // second COUNT query.
+      .limit(limit + 1)
+      .offset(offset);
 
-    // Transform to match expected format
-    const flashcardsWithDeck: FlashcardWithDeck[] = result.map((row) => ({
+    const hasMore = result.length > limit;
+    const page = hasMore ? result.slice(0, limit) : result;
+
+    const items: FlashcardWithDeck[] = page.map((row) => ({
       ...row.flashcard,
       deck: row.deck,
       studyCard: row.studyCard || undefined,
     }));
 
-    return NextResponse.json(flashcardsWithDeck);
+    // Offset paging rather than keyset, deliberately: keyset on `updatedAt`
+    // breaks as soon as an edit moves a row to the top mid-scroll, and offset
+    // has the same symptom for a fraction of the machinery at these list sizes.
+    return NextResponse.json({
+      items,
+      nextOffset: hasMore ? offset + limit : null,
+    });
   },
 );
 

@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 import {
   CreateFlashcardRequest,
   FlashcardImportRequest,
@@ -16,31 +14,31 @@ import {
 import {
   Flashcard,
   FlashcardBack,
+  FlashcardPage,
+  FlashcardPageSchema,
   FlashcardSchema,
-  FlashcardWithDeck,
-  FlashcardWithDeckSchema,
 } from "@/types/flashcards";
 import { Paradigm } from "@/types/inflections";
 
 const BASE_URL = "/api/v1/flashcards";
 
-const fetchFlashcards = createValidatedFetcher(
-  z.array(FlashcardWithDeckSchema),
-);
+const fetchFlashcardPage = createValidatedFetcher(FlashcardPageSchema);
 const fetchFlashcard = createValidatedFetcher(FlashcardSchema);
 const postImport = createValidatedFetcher(FlashcardImportResponseSchema);
 
 // --- Flashcard operations ---
 export async function getFlashcards(
-  query?: FlashcardListQuery,
-): Promise<FlashcardWithDeck[]> {
+  query?: Partial<FlashcardListQuery>,
+): Promise<FlashcardPage> {
   const params = new URLSearchParams();
   if (query?.deckId) params.set("deckId", query.deckId.toString());
   if (query?.search) params.set("search", query.search);
+  if (query?.limit !== undefined) params.set("limit", String(query.limit));
+  if (query?.offset) params.set("offset", String(query.offset));
 
   const url = params.toString() ? `${BASE_URL}?${params}` : BASE_URL;
 
-  return fetchFlashcards(url, { method: "GET" });
+  return fetchFlashcardPage(url, { method: "GET" });
 }
 
 export async function createFlashcard(

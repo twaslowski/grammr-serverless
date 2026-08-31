@@ -64,3 +64,16 @@ export const FlashcardWithDeckSchema = FlashcardSchema.extend({
   studyCard: z.number().optional(),
 });
 export type FlashcardWithDeck = z.infer<typeof FlashcardWithDeckSchema>;
+
+/**
+ * One page of the flashcard list.
+ *
+ * A response envelope rather than a table, so it has no counterpart in
+ * `schema-parity.test.ts`. `nextOffset` is `null` at the end of the list, which
+ * is what the caller stops on — a short page is not a reliable signal.
+ */
+export const FlashcardPageSchema = z.object({
+  items: z.array(FlashcardWithDeckSchema),
+  nextOffset: z.number().int().nullable(),
+});
+export type FlashcardPage = z.infer<typeof FlashcardPageSchema>;

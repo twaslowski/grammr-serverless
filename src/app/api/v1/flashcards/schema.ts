@@ -38,9 +38,23 @@ export type UpdateFlashcardRequest = z.infer<
   typeof UpdateFlashcardRequestSchema
 >;
 
+export const DEFAULT_FLASHCARD_PAGE_SIZE = 25;
+
 export const FlashcardListQuerySchema = z.object({
+  /** No UI drives this any more, but the API keeps honouring it. */
   deckId: z.coerce.number().optional(),
   search: z.string().optional(),
+  /**
+   * `.catch` rather than `.default`: a junk `?limit=abc` should fall back to a
+   * sane page rather than 400 a list request.
+   */
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(100)
+    .catch(DEFAULT_FLASHCARD_PAGE_SIZE),
+  offset: z.coerce.number().int().min(0).catch(0),
 });
 export type FlashcardListQuery = z.infer<typeof FlashcardListQuerySchema>;
 
