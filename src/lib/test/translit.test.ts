@@ -57,4 +57,19 @@ describe("convertTyped", () => {
   it("shows the intermediate letter of a digraph", () => {
     expect(convertTyped("", "s")).toBe("с");
   });
+
+  it("resolves a digraph once its second character arrives", () => {
+    let value = convertTyped("", "z");
+    expect(value).toBe("з");
+    value = convertTyped(value, value + "h");
+    expect(value).toBe("ж");
+  });
+
+  it("builds a word up one keystroke at a time through a digraph", () => {
+    let value = "";
+    for (const char of "zhaba") {
+      value = convertTyped(value, value + char);
+    }
+    expect(value).toBe("жаба");
+  });
 });

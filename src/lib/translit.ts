@@ -23,8 +23,14 @@ export function latinToCyrillic(text: string): string {
  *
  * `previous` is the value currently shown in the field — already Cyrillic —
  * and `next` is what the input event produced, so `next` is normally
- * `previous` with a Latin character or two appended. Only that tail is
- * converted.
+ * `previous` with a Latin character or two appended.
+ *
+ * The last character of `previous` is re-opened rather than left alone: it
+ * may be the single-letter conversion of a Latin character that starts a
+ * digraph (`z` → `з`), and the newly typed character may complete it (`h`
+ * arriving to form `zh` → `ж`). Re-latinizing just that one character and
+ * re-converting it together with the new tail handles that case without
+ * re-converting the whole buffer.
  *
  * Doing it this way matters because the mapping is not one character to one:
  * `sh` becomes a single `ш`. Re-converting the whole buffer on every keystroke
@@ -39,7 +45,10 @@ export function latinToCyrillic(text: string): string {
  */
 export function convertTyped(previous: string, next: string): string {
   if (next.startsWith(previous) && next.length > previous.length) {
-    return previous + latinToCyrillic(next.slice(previous.length));
+    const tail = next.slice(previous.length);
+    const stable = previous.slice(0, -1);
+    const reopened = converter.transform(previous.slice(-1));
+    return stable + latinToCyrillic(reopened + tail);
   }
   return latinToCyrillic(next);
 }
