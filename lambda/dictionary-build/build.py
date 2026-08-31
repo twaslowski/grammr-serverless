@@ -99,9 +99,9 @@ def senses_of(entry: dict) -> list[tuple[str, list[str]]]:
     return out[:MAX_SENSES]
 
 
-def canonical_lemma(entry: dict) -> tuple[str, str | None]:
+def canonical_lemma(entry: dict) -> tuple[str, str | None, list[str]]:
     """
-    Pick the headword to display, returning (plain, accented or None).
+    Pick the headword to display, returning (plain, accented or None, canonical_tags).
 
     The plain form is authoritative and is always the unstressed spelling: it is
     what goes into a flashcard front, what Polly is asked to pronounce, and what
@@ -115,20 +115,27 @@ def canonical_lemma(entry: dict) -> tuple[str, str | None]:
     than trusting ``word`` to be plain. A canonical row that disagrees once
     stress is stripped is describing something else -- a multi-word citation
     form, say -- and is ignored.
+
+    The canonical row's own tags are returned alongside it because that is where
+    a real Russian dump puts gender, animacy and aspect: unlike the hand-built
+    fixture this was first tested against, ``entry["tags"]`` is consistently
+    ``None`` there, and ``соба́ка``'s gender arrives as
+    ``{"form": "соба́ка", "tags": ["animate", "canonical", "feminine"]}``.
     """
     word = (entry.get("word") or "").strip()
     plain = strip_accents(word)
     if not plain:
-        return "", None
+        return "", None, []
 
     for raw in entry.get("forms") or []:
-        if "canonical" not in (raw.get("tags") or []):
+        tags = [t for t in (raw.get("tags") or []) if isinstance(t, str)]
+        if "canonical" not in tags:
             continue
         candidate = (raw.get("form") or "").strip()
         if candidate and strip_accents(candidate) == plain:
-            return plain, candidate if candidate != plain else None
+            return plain, candidate if candidate != plain else None, tags
 
-    return plain, word if word != plain else None
+    return plain, word if word != plain else None, []
 
 
 def sort_cells(forms: list[MappedForm]) -> list[MappedForm]:
@@ -203,13 +210,18 @@ def build(source: str, language: str, out: Path) -> dict[str, int]:
                 continue
 
             pos = map_pos(entry.get("pos"))
-            lemma, accented = canonical_lemma(entry)
+            lemma, accented, canonical_tags = canonical_lemma(entry)
             if not lemma:
                 continue
 
             lexeme_id += 1
             counts["lexemes"] += 1
             head_tags = [t for t in (entry.get("tags") or []) if isinstance(t, str)]
+            head_tags += [t for t in canonical_tags if t not in head_tags]
+            categories = [t for t in (entry.get("categories") or []) if isinstance(t, str)]
+            head_tags += [
+                t for t in mapper.category_tags(categories) if t not in head_tags
+            ]
             features = mapper.lemma_features(pos, head_tags)
 
             connection.execute(

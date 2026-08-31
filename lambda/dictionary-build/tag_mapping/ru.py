@@ -93,11 +93,50 @@ INDECLINABLE_TAGS = frozenset({"indeclinable"})
 #: `68c61a8` drew exactly this distinction and the artifact has to respect it.
 POS_WITH_INHERENT_GENDER = frozenset({"NOUN", "PROPN"})
 
+#: Same vocabulary as `INHERENT_TAGS`, keyed by the suffix of a wiktextract
+#: category name instead of a head tag. Most entries carry gender, animacy and
+#: aspect on the `forms[]` row tagged ``canonical`` -- but not all of them do
+#: (``приём`` has no canonical row at all), and the category is there regardless,
+#: because it drives Wiktionary's own category pages. Matched by suffix rather
+#: than exact string because the prefix is the Wiktionary language name
+#: ("Russian"), which the categories list never spells out any other way.
+#:
+#: Order matters: "inanimate nouns" ends with "animate nouns" as a literal
+#: substring, and "imperfective verbs" with "perfective verbs", so the more
+#: specific suffix has to be tried first and `category_tags` has to stop at its
+#: first match per category, or a single inanimate noun would come back tagged
+#: both ways.
+CATEGORY_INHERENT_SUFFIXES: dict[str, str] = {
+    "inanimate nouns": "inanimate",
+    "animate nouns": "animate",
+    "masculine nouns": "masculine",
+    "feminine nouns": "feminine",
+    "neuter nouns": "neuter",
+    "imperfective verbs": "imperfective",
+    "perfective verbs": "perfective",
+}
+
 
 class RussianTagMapper:
     """Maps one wiktextract Russian entry's tags onto grammr features."""
 
     language = "ru"
+
+    def category_tags(self, categories: list[str]) -> list[str]:
+        """
+        Recover head tags from an entry's category names.
+
+        Meant to be unioned with the ``canonical`` form's tags in `build.py`, not
+        used alone: categories are the fallback for the entries that have no
+        canonical row to carry gender, animacy or aspect at all.
+        """
+        tags = []
+        for category in categories:
+            for suffix, tag in CATEGORY_INHERENT_SUFFIXES.items():
+                if category.endswith(suffix):
+                    tags.append(tag)
+                    break
+        return tags
 
     def lemma_features(self, pos: str, tags: list[str]) -> list[Feature]:
         """
@@ -172,6 +211,20 @@ class RussianTagMapper:
             else:
                 if tag not in EXCLUDED_FROM_CELLS:
                     features.append(Feature("OTHER", tag.upper()))
+
+        # Wiktionary tags a singular cell by omission rather than by name: a
+        # plural form says so explicitly, but a singular one carries no
+        # "singular" tag at all -- only the case (a noun's headline genitive) or
+        # the gender (an adjective, which does not distinguish gender in the
+        # plural). Without this, such a cell's coordinate lacks NUMBER and can
+        # never match the one the declension table -- or the inflection
+        # service -- produces for the very same form.
+        if (
+            any(f.type in ("CASE", "GENDER") for f in features)
+            and not any(f.type == "NUMBER" for f in features)
+        ):
+            features.append(Feature("NUMBER", "SING"))
+
         return features
 
     @staticmethod

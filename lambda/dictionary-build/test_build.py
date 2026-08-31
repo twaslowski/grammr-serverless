@@ -126,11 +126,43 @@ class TestNoun:
         cell_rows = cells(db, row["id"])
         assert find_cell(cell_rows, CASE="PART") is None
 
+    def test_headline_genitive_summary_does_not_leave_a_numberless_cell(self, db):
+        """
+        Wiktionary's headline gloss repeats the genitive singular tagged only
+        ``["genitive"]`` -- no ``"singular"``. Without inferring NUMBER=SING for
+        it, this row would sit at a bare ``CASE=GEN`` coordinate the real
+        declension table never produces: a stray cell no lookup can ever reach,
+        since every real lookup asks for a number too.
+        """
+        row = lexeme(db, "стол", "NOUN")
+        cell_rows = cells(db, row["id"])
+        genitive_cells = [
+            c
+            for c in cell_rows
+            if any(f["type"] == "CASE" and f["value"] == "GEN" for f in c["features"])
+        ]
+        assert len(genitive_cells) == 3  # the headline summary, plus singular and plural
+        assert all(
+            any(f["type"] == "NUMBER" for f in c["features"]) for c in genitive_cells
+        )
+
     def test_romanization_and_template_rows_are_not_cells(self, db):
         row = lexeme(db, "стол", "NOUN")
         cell_forms = {c["form"] for c in cells(db, row["id"])}
         assert "stol" not in cell_forms
         assert "ru-noun-table" not in cell_forms
+
+    def test_gender_is_recovered_from_categories_without_a_canonical_row(self, db):
+        """
+        ``приём`` has no ``forms[]`` row tagged ``canonical`` at all -- some real
+        entries simply don't have one -- so its gender has nowhere to come from
+        except the category names Wiktionary files it under.
+        """
+        row = lexeme(db, "приём", "NOUN")
+        assert json.loads(row["lemma_features"]) == [
+            {"type": "GENDER", "value": "MASC"},
+            {"type": "ANIMACY", "value": "INAN"},
+        ]
 
     def test_canonical_row_is_not_duplicated_as_a_form(self, db):
         row = lexeme(db, "стол", "NOUN")

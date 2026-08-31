@@ -54,6 +54,22 @@ class TestLemmaFeatures:
         assert mapper().lemma_features("VERB", ["transitive", "class-1a"]) == []
 
 
+class TestCategoryTags:
+    def test_gender_and_animacy_suffixes_are_recognised(self):
+        tags = mapper().category_tags(
+            ["Russian masculine nouns", "Russian inanimate nouns", "Russian lemmas"]
+        )
+        assert tags == ["masculine", "inanimate"]
+
+    def test_aspect_suffixes_are_recognised(self):
+        assert mapper().category_tags(["Russian imperfective verbs"]) == [
+            "imperfective"
+        ]
+
+    def test_unrelated_categories_are_ignored(self):
+        assert mapper().category_tags(["Russian terms with IPA pronunciation"]) == []
+
+
 class TestMapForm:
     def test_case_and_number_become_a_cell(self):
         form = mapper().map_form({"form": STRESSED_TABLE, "tags": ["genitive", "singular"]})
