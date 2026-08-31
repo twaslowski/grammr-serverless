@@ -89,6 +89,51 @@ describe("DictionarySearch", () => {
     });
   });
 
+  describe("transliteration", () => {
+    beforeEach(() => {
+      window.localStorage.clear();
+    });
+
+    it("leaves Latin input alone while the toggle is off", async () => {
+      mockLookup.mockResolvedValue(response());
+      renderSearch();
+      await search("stol");
+
+      await waitFor(() =>
+        expect(mockLookup).toHaveBeenCalledWith({
+          query: "stol",
+          language: "ru",
+        }),
+      );
+    });
+
+    /**
+     * The reason the toggle exists: looking a word up should not require a
+     * Cyrillic keyboard.
+     */
+    it("looks up the Cyrillic form when the toggle is on", async () => {
+      mockLookup.mockResolvedValue(response());
+      renderSearch();
+
+      const user = userEvent.setup({
+        advanceTimers: jest.advanceTimersByTime,
+      });
+      await user.click(screen.getByRole("button", { name: /Cyrillic/i }));
+      await user.type(field(), "stol");
+      await act(async () => {
+        jest.advanceTimersByTime(400);
+      });
+
+      expect(field()).toHaveValue("стол");
+      await waitFor(() =>
+        expect(mockLookup).toHaveBeenCalledWith({
+          query: "стол",
+          language: "ru",
+        }),
+      );
+    });
+  });
+
   describe("searching", () => {
     it("looks the word up after the debounce and shows the entry", async () => {
       mockLookup.mockResolvedValue(response());

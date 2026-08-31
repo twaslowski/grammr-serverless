@@ -3,6 +3,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, Search } from "lucide-react";
 
+import { TranslitToggle } from "@/components/translit/translit-toggle";
+import { useTranslit } from "@/components/translit/use-translit";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { lookup } from "@/lib/dictionary";
@@ -35,6 +37,7 @@ export function DictionarySearch({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DictionaryResponse | null>(null);
+  const translit = useTranslit();
 
   // Guards against a slow earlier lookup resolving after a faster later one and
   // painting stale results over them.
@@ -72,7 +75,10 @@ export function DictionarySearch({
    * nothing -- so it belongs in the handler. Doing it in the effect would mean
    * setting state synchronously during render, which cascades.
    */
-  const handleChange = (value: string) => {
+  const handleChange = (raw: string) => {
+    // Converted here rather than in render: rewriting the value during render
+    // would fight the caret, and only the newly typed tail should change.
+    const value = translit.convert(query, raw);
     setQuery(value);
 
     if (!value.trim()) {
@@ -110,14 +116,20 @@ export function DictionarySearch({
               autoComplete="off"
               autoFocus
               aria-label={`Search the ${languageName} dictionary`}
-              className="pl-9 pr-9"
+              className="h-11 pl-9 pr-24"
             />
-            {isLoading && (
-              <Loader2
-                className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground"
-                aria-label="Searching"
+            <div className="absolute right-1 top-1/2 flex -translate-y-1/2 items-center">
+              {isLoading && (
+                <Loader2
+                  className="mr-1 h-4 w-4 animate-spin text-muted-foreground"
+                  aria-label="Searching"
+                />
+              )}
+              <TranslitToggle
+                enabled={translit.enabled}
+                onToggle={translit.toggle}
               />
-            )}
+            </div>
           </div>
         </CardContent>
       </Card>

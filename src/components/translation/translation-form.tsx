@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { ArrowRightLeft, Loader2 } from "lucide-react";
 
+import { TranslitToggle } from "@/components/translit/translit-toggle";
+import { useTranslit } from "@/components/translit/use-translit";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,6 +45,11 @@ export function TranslationForm({ profile }: TranslationFormProps) {
 
   const sourceLanguageInfo = getLanguageByCode(sourceLanguage);
   const targetLanguageInfo = getLanguageByCode(targetLanguage);
+
+  // Only worth offering when the box expects Russian; over an English input a
+  // Latin-to-Cyrillic toggle is noise.
+  const translit = useTranslit();
+  const showTranslit = sourceLanguage === "ru";
 
   const handleTranslate = async () => {
     if (!text.trim()) return;
@@ -129,14 +136,29 @@ export function TranslationForm({ profile }: TranslationFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Textarea
-              placeholder={`Enter text in ${sourceLanguageInfo?.name || "source language"}...`}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              rows={4}
-              className="resize-none"
-            />
+            <div className="relative">
+              <Textarea
+                placeholder={`Enter text in ${sourceLanguageInfo?.name || "source language"}...`}
+                value={text}
+                onChange={(e) =>
+                  setText(
+                    showTranslit
+                      ? translit.convert(text, e.target.value)
+                      : e.target.value,
+                  )
+                }
+                onKeyDown={handleKeyDown}
+                rows={4}
+                className={showTranslit ? "resize-none pr-12" : "resize-none"}
+              />
+              {showTranslit && (
+                <TranslitToggle
+                  enabled={translit.enabled}
+                  onToggle={translit.toggle}
+                  className="absolute right-1 top-1"
+                />
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">
               Press Ctrl+Enter to translate
             </p>
