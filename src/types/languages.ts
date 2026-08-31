@@ -38,11 +38,10 @@ export interface Language {
   /**
    * Whether a dictionary artifact is published for this language.
    *
-   * Kept separate from `inflectionConfig` rather than folded into it. That config
-   * exists to drive the part-of-speech picker on the inflection form, and the
-   * dictionary has no picker to drive -- asking the reader to classify a word
-   * before looking it up is the thing being removed. The two will converge once
-   * the inflection form is retired.
+   * The inflection form it used to be distinguished from is gone, so this is
+   * now simply the gate on offering a language at all. `inflectionConfig`
+   * survives because the generators behind `/api/v1/inflections` are still the
+   * dictionary's last-resort fallback for a word Wiktionary does not cover.
    */
   dictionaryEnabled?: boolean;
 }
@@ -117,7 +116,3 @@ export const allLanguages: Language[] = [
     },
   },
 ];
-
-export const targetLanguages: Language[] = allLanguages.filter(
-  (lang) => lang.code !== "en" && lang.code !== "de",
-);

@@ -7,11 +7,9 @@ import { useDebounce } from "use-debounce";
 
 import { FlashcardListQuery } from "@/app/api/v1/flashcards/schema";
 import { useProfile } from "@/components/dashboard/profile-provider";
-import { DeckSelector } from "@/components/flashcard/deck-selector";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { deleteFlashcard, getDecks, getFlashcards } from "@/lib/flashcards";
-import { Deck } from "@/types/deck";
+import { deleteFlashcard, getFlashcards } from "@/lib/flashcards";
 import { FlashcardWithDeck } from "@/types/flashcards";
 
 import { Flashcard } from "./flashcard";
@@ -25,23 +23,11 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     useState<FlashcardWithDeck[]>(initialFlashcards);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [decks, setDecks] = useState<Deck[]>([]);
-  const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
-
   const profile = useProfile();
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
-
-  const fetchDecks = useCallback(async () => {
-    try {
-      const decks = await getDecks();
-      setDecks(decks);
-    } catch (err) {
-      console.error("Failed to fetch decks:", err);
-    }
-  }, []);
 
   const fetchFlashcards = useCallback(async () => {
     setIsLoading(true);
@@ -49,7 +35,6 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
 
     try {
       const query: FlashcardListQuery = {
-        deckId: selectedDeck?.id,
         search: debouncedSearchQuery || undefined,
       };
 
@@ -62,7 +47,7 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [debouncedSearchQuery, selectedDeck]);
+  }, [debouncedSearchQuery]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this flashcard?")) {
@@ -88,14 +73,6 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
     void fetchFlashcards();
   }, [fetchFlashcards]);
 
-  // Initial fetch on mount
-  useEffect(() => {
-    // Effect-driven data fetching: loading/result state is set after an await.
-    // The real fix is to fetch on the server and pass the data in as props.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void fetchDecks();
-  }, [fetchDecks]);
-
   return (
     <div className="space-y-6">
       {/* Filters */}
@@ -103,11 +80,6 @@ export function FlashcardList({ initialFlashcards = [] }: FlashcardListProps) {
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex flex-row gap-x-2 w-full">
-              <DeckSelector
-                decks={decks}
-                value={selectedDeck?.name}
-                onChange={(deck) => setSelectedDeck(deck)}
-              />
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input

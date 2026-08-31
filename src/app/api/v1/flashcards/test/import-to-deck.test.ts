@@ -31,7 +31,12 @@ describe("Import flashcards to specific deck", () => {
       }
     });
 
-    it("should reject import request without deckId", () => {
+    /**
+     * The UI has no deck picker any more, so it sends no `deckId` and the route
+     * resolves the caller's default deck. An explicit id is still accepted for
+     * anything scripted against the API.
+     */
+    it("should accept import request without deckId", () => {
       const importRequest = {
         version: "1.0",
         flashcards: [
@@ -47,7 +52,10 @@ describe("Import flashcards to specific deck", () => {
       };
 
       const result = FlashcardImportRequestSchema.safeParse(importRequest);
-      expect(result.success).toBe(false);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.deckId).toBeUndefined();
+      }
     });
 
     it("should accept import request with multiple flashcards", () => {

@@ -70,7 +70,14 @@ export const ImportFlashcardSchema = z.object({
 
 export const FlashcardImportRequestSchema = z.object({
   version: z.string(),
-  deckId: z.number(),
+  /**
+   * Optional: falls back to the caller's default deck.
+   *
+   * There is no deck picker in the UI any more — a user has one deck — but the
+   * field stays accepted so an existing client, or a script targeting a
+   * specific deck, keeps working.
+   */
+  deckId: z.number().optional(),
   flashcards: z.array(ImportFlashcardSchema),
 });
 export type FlashcardImportRequest = z.infer<

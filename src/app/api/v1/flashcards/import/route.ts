@@ -22,11 +22,19 @@ export const POST = withApiHandler(
       );
     }
 
-    // Verify the deck exists and belongs to the user
+    // A named deck must be one the caller owns; an unnamed one resolves to
+    // their default deck, which is what the UI now always wants.
     const [deck] = await db
       .select({ id: decks.id })
       .from(decks)
-      .where(and(eq(decks.id, deckId), eq(decks.userId, user.id)))
+      .where(
+        and(
+          eq(decks.userId, user.id),
+          deckId === undefined
+            ? eq(decks.isDefault, true)
+            : eq(decks.id, deckId),
+        ),
+      )
       .limit(1);
 
     if (!deck) {
@@ -38,7 +46,7 @@ export const POST = withApiHandler(
 
     // Prepare flashcards for insertion
     const flashcardsToInsert = flashcards.map((card) => ({
-      deckId: deckId,
+      deckId: deck.id,
       front: card.front,
       back: card.back,
       notes: card.notes || null,

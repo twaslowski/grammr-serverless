@@ -27,14 +27,14 @@ interface ProfileNavItem {
 
 const profileNavItems: ProfileNavItem[] = [
   {
-    title: "Language Settings",
-    description: "Change your native language and the language you're learning",
+    title: "Language",
+    description: "Change the language translations are given in",
     href: "/dashboard/settings/language",
     icon: Languages,
   },
   {
-    title: "Flashcards",
-    description: "Manage your flashcards and decks",
+    title: "Flashcard data",
+    description: "Export your flashcards to a file, or restore them from one",
     href: "/dashboard/settings/flashcards",
     icon: Layers,
   },
@@ -120,7 +120,7 @@ function ProfileNavCard({ item }: ProfileNavCardProps) {
           <div className="flex-1 space-y-1">
             <CardTitle className="text-lg flex items-center gap-2">
               {item.title}
-              <ArrowRight className="h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </CardTitle>
             <CardDescription>{item.description}</CardDescription>
           </div>

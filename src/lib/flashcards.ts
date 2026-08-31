@@ -1,13 +1,11 @@
 import { z } from "zod";
 
 import {
-  CreateDeckRequest,
   CreateFlashcardRequest,
   FlashcardImportRequest,
   FlashcardImportResponse,
   FlashcardImportResponseSchema,
   FlashcardListQuery,
-  UpdateDeckRequest,
   UpdateFlashcardRequest,
 } from "@/app/api/v1/flashcards/schema";
 import {
@@ -15,7 +13,6 @@ import {
   apiFetchVoid,
   createValidatedFetcher,
 } from "@/lib/api/validated-fetcher";
-import { Deck, DeckSchema } from "@/types/deck";
 import {
   Flashcard,
   FlashcardBack,
@@ -27,63 +24,11 @@ import { Paradigm } from "@/types/inflections";
 
 const BASE_URL = "/api/v1/flashcards";
 
-const fetchDecks = createValidatedFetcher(z.array(DeckSchema));
-const fetchDeck = createValidatedFetcher(DeckSchema);
 const fetchFlashcards = createValidatedFetcher(
   z.array(FlashcardWithDeckSchema),
 );
 const fetchFlashcard = createValidatedFetcher(FlashcardSchema);
 const postImport = createValidatedFetcher(FlashcardImportResponseSchema);
-
-export async function getDecks(): Promise<Deck[]> {
-  return fetchDecks(`${BASE_URL}/decks`, { method: "GET" });
-}
-
-export async function createDeck({
-  name,
-  description,
-  visibility,
-  language,
-}: CreateDeckRequest): Promise<Deck> {
-  return fetchDeck(`${BASE_URL}/decks`, {
-    method: "POST",
-    body: JSON.stringify({ name, description, visibility, language }),
-  });
-}
-
-export async function updateDeck(
-  id: number,
-  data: UpdateDeckRequest,
-): Promise<Deck> {
-  return fetchDeck(`${BASE_URL}/decks/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(data),
-  });
-}
-
-export async function deleteDeck(id: number): Promise<void> {
-  return apiFetchVoid(
-    `${BASE_URL}/decks/${id}`,
-    { method: "DELETE" },
-    "Failed to delete deck",
-  );
-}
-
-export async function studyDeck(id: number): Promise<void> {
-  return apiFetchVoid(
-    `${BASE_URL}/decks/study/${id}`,
-    { method: "POST" },
-    "Failed to start studying deck",
-  );
-}
-
-export async function stopStudyingDeck(id: number): Promise<void> {
-  return apiFetchVoid(
-    `${BASE_URL}/decks/study/${id}`,
-    { method: "DELETE" },
-    "Failed to stop studying deck",
-  );
-}
 
 // --- Flashcard operations ---
 export async function getFlashcards(
