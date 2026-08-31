@@ -49,7 +49,7 @@ const generalFaqs: FAQItem[] = [
         either to or from the language you are currently learning. While
         translating, you can save words or entire phrases as Flashcards, which
         you can <StyledLink href="/dashboard/flashcards">edit</StyledLink> or{" "}
-        <StyledLink href="/dashboard/study"> study</StyledLink> later.
+        <StyledLink href="/dashboard"> study</StyledLink> later.
       </p>
     ),
   },
@@ -57,8 +57,10 @@ const generalFaqs: FAQItem[] = [
     question: "Which languages are supported?",
     answer: (
       <p>
-        Currently, Russian, Spanish, Portuguese, French and Italian are
-        supported.
+        Russian. grammr started out spread across half a dozen languages and did
+        none of them especially well; it is now a Russian-learning app, with a
+        real dictionary behind it. More languages will return as their
+        dictionaries are built.
       </p>
     ),
   },
@@ -121,32 +123,36 @@ const openSourceFaqs: FAQItem[] = [
 
 export default function Help() {
   return (
-    <PageLayout
-      header={{
-        title: "Help & FAQ",
-        description:
-          "Get answers to common questions, ask for help or submit feedback",
-        backHref: "/dashboard",
-        backLabel: "Back to Dashboard",
-      }}
-    >
-      <div className="space-y-12">
-        <FAQSection
-          id="general"
-          title="General Questions"
-          icon={<BookOpenCheck className="text-primary mr-2" />}
-          items={generalFaqs}
-        />
-        <FAQSection
-          id="open-source"
-          title="Open Source & Licensing"
-          icon={<Code2 className="text-primary mr-2" />}
-          items={openSourceFaqs}
-        />
-        <div className="pt-12" />
-        <Footer />
-      </div>
-    </PageLayout>
+    // Padded here rather than in the root layout, which leaves spacing to each
+    // section so the dashboard can clear its fixed tab bar.
+    <div className="flex flex-1 flex-col p-4 md:p-6">
+      <PageLayout
+        header={{
+          title: "Help & FAQ",
+          description:
+            "Get answers to common questions, ask for help or submit feedback",
+          backHref: "/dashboard",
+          backLabel: "Back to Dashboard",
+        }}
+      >
+        <div className="space-y-12">
+          <FAQSection
+            id="general"
+            title="General Questions"
+            icon={<BookOpenCheck className="text-primary mr-2" />}
+            items={generalFaqs}
+          />
+          <FAQSection
+            id="open-source"
+            title="Open Source & Licensing"
+            icon={<Code2 className="text-primary mr-2" />}
+            items={openSourceFaqs}
+          />
+          <div className="pt-12" />
+          <Footer />
+        </div>
+      </PageLayout>
+    </div>
   );
 }
 

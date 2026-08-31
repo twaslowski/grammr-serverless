@@ -17,8 +17,6 @@ export default function TranslationPage() {
         title: "Translate",
         description:
           "Enter text to translate and click on words to see their literal meanings.",
-        backHref: "/dashboard",
-        backLabel: "Back to Dashboard",
       }}
     >
       <TranslationForm profile={profile} />

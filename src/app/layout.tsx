@@ -64,7 +64,12 @@ export default function RootLayout({
                 <Header />
               </div>
               <Toaster />
-              <main className="flex flex-col flex-1 p-6 overflow-auto">
+              {/*
+                Padding lives with each section rather than here: the dashboard
+                needs extra bottom padding to clear its fixed tab bar, and the
+                landing page sets its own hero spacing.
+              */}
+              <main className="flex flex-1 flex-col overflow-y-auto overscroll-contain">
                 {children}
               </main>
             </div>

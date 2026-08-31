@@ -1,24 +1,9 @@
-import { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-import { PageLayout } from "@/components/page-header";
-import { StudySession } from "@/components/study";
-
-export const metadata: Metadata = {
-  title: "Study | Grammr",
-  description: "Review your flashcards with spaced repetition",
-};
-
+/**
+ * Studying moved to `/dashboard`, the first tab. Kept as a redirect so
+ * bookmarks, the PWA shortcut and any link still pointing here keep working.
+ */
 export default function StudyPage() {
-  return (
-    <PageLayout
-      header={{
-        title: "Study Session",
-        description: "Review your flashcards",
-        backHref: "/dashboard",
-        backLabel: "Back to Dashboard",
-      }}
-    >
-      <StudySession />
-    </PageLayout>
-  );
+  redirect("/dashboard");
 }

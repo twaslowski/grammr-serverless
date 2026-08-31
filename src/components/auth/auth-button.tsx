@@ -4,11 +4,10 @@ import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 
-import { UserButton } from "@/components/auth/user-button";
+import { UserMenu } from "@/components/navigation/user-menu";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
-
-import { LogoutButton } from "./logout-button";
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
@@ -30,13 +29,13 @@ export function AuthButton() {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
+  // Signed in, the theme control lives inside the menu along with everything
+  // else that is not a tab. Signed out there is no menu, so it stays inline.
   return user ? (
-    <div className="flex items-center gap-4">
-      <UserButton />
-      <LogoutButton />
-    </div>
+    <UserMenu />
   ) : (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-2">
+      <ThemeSwitcher />
       <Button asChild size="sm" variant={"outline"}>
         <Link href="/auth/login">Sign in</Link>
       </Button>

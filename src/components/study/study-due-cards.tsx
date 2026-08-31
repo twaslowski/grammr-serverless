@@ -75,7 +75,7 @@ export function StudyDueCards() {
   }
 
   return (
-    <Link href="/dashboard/study">
+    <Link href="/dashboard">
       <Card className="bg-primary/5 border-primary/20 hover:bg-primary/10 transition-colors cursor-pointer group">
         <CardHeader className="flex flex-row items-center gap-4">
           <div className="p-2 bg-primary/20 rounded-lg">
@@ -85,7 +85,7 @@ export function StudyDueCards() {
             <CardTitle className="text-lg flex items-center gap-2">
               {dueCards.dueCount} {dueCards.dueCount === 1 ? "Card" : "Cards"}{" "}
               to Review
-              <ArrowRight className="h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </CardTitle>
             <CardDescription>
               {dueCards.newCount > 0 && (

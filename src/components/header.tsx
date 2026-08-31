@@ -1,25 +1,15 @@
-import { Home } from "lucide-react";
 import Link from "next/link";
 
 import { AuthButton } from "@/components/auth/auth-button";
-import { InstallPrompt } from "@/components/pwa/install-pwa-button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Button } from "@/components/ui/button";
 
 export const Header = () => {
   return (
-    <div className="flex items-center justify-between p-2">
-      <Link href="/dashboard">
-        <Button size="icon" variant="ghost" aria-label="Home">
-          <Home className="w-6 h-6" />
-        </Button>
+    <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-2 md:px-6">
+      <Link href="/dashboard" className="text-lg font-bold tracking-tight">
+        grammr
       </Link>
 
-      <div className="flex items-center gap-4">
-        <InstallPrompt />
-        <AuthButton />
-        <ThemeSwitcher />
-      </div>
+      <AuthButton />
     </div>
   );
 };
