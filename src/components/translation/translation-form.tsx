@@ -121,7 +121,7 @@ export function TranslationForm({ profile }: TranslationFormProps) {
               </span>
               <Button
                 variant="ghost"
-                size="icon"
+                size="touch"
                 onClick={handleSwapLanguages}
                 className="h-8 w-8"
                 title="Swap languages"

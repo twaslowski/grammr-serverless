@@ -65,6 +65,18 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /*
+    Suppress pull-to-refresh and the rubber-band overscroll only in the
+    installed app, where they read as glitches rather than browser chrome. In a
+    tab they are the browser's behaviour to offer, not ours to take away.
+  */
+  @media (display-mode: standalone) {
+    html,
+    body {
+      overscroll-behavior-y: none;
+    }
+  }
 }
 
 .accordion-chevron {

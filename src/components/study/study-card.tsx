@@ -121,7 +121,7 @@ export function StudyCard({
             // Front of card - show the word/phrase
             <div className="space-y-4">
               <h2 className="text-3xl font-bold">{card.flashcard.front}</h2>
-              <Button onClick={handleFlip} size="lg" className="gap-2">
+              <Button onClick={handleFlip} size="lg" className="min-h-14 gap-2">
                 <RotateCcw className="h-4 w-4" />
                 Show Answer
               </Button>
@@ -153,7 +153,7 @@ export function StudyCard({
                     onClick={() => handleRating(option.rating)}
                     disabled={isSubmitting}
                     className={cn(
-                      "flex flex-col h-auto py-3",
+                      "flex h-auto min-h-14 flex-col py-3",
                       RATING_COLORS[option.rating],
                     )}
                   >

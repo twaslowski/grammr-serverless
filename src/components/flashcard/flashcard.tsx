@@ -54,9 +54,9 @@ export function Flashcard({
                 />
                 <Button
                   variant="ghost"
-                  size="icon"
+                  size="touch"
                   onClick={() => onDelete(flashcard.id)}
-                  className="min-h-11 min-w-11 text-destructive hover:text-destructive"
+                  className="text-destructive hover:text-destructive"
                   title="Delete flashcard"
                   aria-label="Delete flashcard"
                 >

@@ -56,12 +56,7 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="user-menu"
-          className="min-h-11 min-w-11"
-        >
+        <Button variant="ghost" size="touch" aria-label="user-menu">
           <UserIcon className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>

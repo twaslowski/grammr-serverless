@@ -29,6 +29,11 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#000000",
+  // Without `cover`, every `env(safe-area-inset-*)` resolves to zero on iOS and
+  // the bottom tab bar sits under the home indicator.
+  viewportFit: "cover",
+  // Keeps the soft keyboard from covering the tab bar and the controls above it.
+  interactiveWidget: "resizes-content",
 };
 
 const geistSans = Geist({

@@ -25,6 +25,12 @@ const buttonVariants = cva(
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
+        /**
+         * 44px square — the smallest target that is reliably hittable with a
+         * thumb. Use for icon-only controls a reader taps on a phone; `icon`
+         * is 36px and fine for a mouse but not for a fingertip.
+         */
+        touch: "h-11 w-11",
       },
     },
     defaultVariants: {

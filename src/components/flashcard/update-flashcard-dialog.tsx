@@ -97,7 +97,7 @@ export function UpdateFlashcardDialog({
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          size="sm"
+          size="touch"
           aria-label={`edit-flashcard-${flashcard.id}`}
         >
           <Edit2 className="h-4 w-4" />

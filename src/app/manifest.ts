@@ -2,11 +2,14 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "grammr – Language Learning Toolkit",
+    id: "/dashboard",
+    name: "grammr – Learn Russian",
     short_name: "grammr",
     description:
-      "Understand grammar with context. Analyze sentences, build flashcard decks, and learn languages systematically.",
-    start_url: "/",
+      "Look up any Russian word, translate with a grammatical breakdown, and review it all with spaced repetition.",
+    // Opens on the Study tab. Installed users are here to review, not to read
+    // the landing page they already converted from.
+    start_url: "/dashboard",
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#000000",
@@ -21,6 +24,12 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: "512x512",
         type: "image/png",
       },
+    ],
+    shortcuts: [
+      { name: "Study", url: "/dashboard" },
+      { name: "Cards", url: "/dashboard/flashcards" },
+      { name: "Dictionary", url: "/dashboard/dictionary" },
+      { name: "Translate", url: "/dashboard/translate" },
     ],
   };
 }
