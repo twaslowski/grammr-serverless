@@ -12,10 +12,6 @@ language is English or German needs.
 It is 22.9 GB uncompressed, so it is streamed and filtered on `lang_code` rather
 than downloaded: nothing larger than one JSON line is ever held in memory. Pass
 ``--source`` a local path to work against a file already on disk.
-
-This module is not deployed. It follows `lambda/preprocessing` in living under
-`lambda/` as offline data tooling with no Terraform module of its own, and it
-depends on nothing outside the standard library.
 """
 
 import argparse

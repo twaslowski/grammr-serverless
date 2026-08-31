@@ -3,7 +3,7 @@
 Builds the dictionary artifact that `lambda/dictionary` serves.
 
 This is offline tooling, not a deployed function — the same arrangement as
-`lambda/preprocessing`: it lives under `lambda/` because it belongs to that
+`../build/preprocessing`: it lives under `lambda/` because it belongs to that
 service, but it has no Terraform module and is never packaged.
 
 ## Data source
