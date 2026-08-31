@@ -534,11 +534,16 @@ pnpm e2e -- --ui          # Run with UI mode
 pnpm e2e -- --project=chromium-ru  # Run specific project
 ```
 
-**Multi-Language Testing:**
+**Language coverage:**
 
-- Tests run across multiple languages: `ru`, `it`, `fr`, `es`, `pt`
-- Projects defined in `playwright.config.ts`
-- Use `testTargetLanguages` array to configure
+- The suite runs against `ru` only — the one language the UI offers. Set by
+  `testTargetLanguages` in `e2e/test-data.ts`; `playwright.config.ts` derives
+  its projects from it and needs no change to add one back.
+- `languageTestData` deliberately stays a full record: the Lambdas still serve
+  the other languages, and pruning it would only have to be undone.
+- Three device profiles per language: `chromium-ru`, `firefox-ru` and
+  `mobile-ru` (Pixel 7). The mobile project is not redundant — the bottom tab
+  bar, safe-area padding and touch targets only exist below `md`.
 
 **Best Practices:**
 
@@ -941,6 +946,9 @@ src/lib/api/with-api-handler.ts      # API route wrapper
 src/lib/api/validated-fetcher.ts     # Client-side API helpers
 src/lib/api/api-gateway.ts           # callApiGateway + config
 src/lib/client-only.ts               # useIsClient / useIsStandalone / useIsIOS
+src/lib/server/ensure-profile.ts     # Profile auto-provisioning (never upsert!)
+src/components/navigation/tabs.ts    # The four tabs; the whole nav model
+src/components/flashcard/card-detail.tsx # Back type -> disclosure content
 src/types/*                          # Wire schemas (no DB imports!)
 drizzle.config.ts                    # Drizzle configuration
 next.config.ts                       # Next.js configuration

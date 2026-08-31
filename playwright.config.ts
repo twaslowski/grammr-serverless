@@ -43,12 +43,21 @@ export default defineConfig({
       grep: new RegExp(`authenticate-${lang}`),
     })),
 
-    // One project per browser/language pair.
-    ...(["chromium", "firefox"] as const).flatMap((browser) =>
+    // One project per browser/language pair. The mobile profile is not
+    // redundant with the desktop ones: the tab bar, the safe-area padding and
+    // the touch targets only exist below the `md` breakpoint, so a
+    // desktop-only suite would never render them.
+    ...(["chromium", "firefox", "mobile"] as const).flatMap((browser) =>
       testTargetLanguages.map((lang) => ({
         name: `${browser}-${lang}`,
         use: {
-          ...devices[browser === "chromium" ? "Desktop Chrome" : "Desktop Firefox"],
+          ...devices[
+            browser === "chromium"
+              ? "Desktop Chrome"
+              : browser === "firefox"
+                ? "Desktop Firefox"
+                : "Pixel 7"
+          ],
           storageState: `e2e/.auth/user-${lang}.json`,
         },
         dependencies: [`setup-${lang}`],

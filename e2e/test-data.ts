@@ -206,9 +206,14 @@ export const languageTestData: Record<LanguageCode, LanguageTestData> = {
 };
 
 /**
- * Target languages that can be learned (excludes English and German which are typically source languages)
+ * The languages the suite runs against.
+ *
+ * Russian only: it is the one language the UI offers. `languageTestData` stays
+ * a full record rather than being narrowed to match -- the data is still
+ * correct, the Lambdas still serve those languages, and pruning it would only
+ * have to be undone when the next dictionary artifact is published.
  */
-export const testTargetLanguages: LanguageCode[] = ["ru", "it", "fr", "es", "pt"];
+export const testTargetLanguages: LanguageCode[] = ["ru"];
 
 /**
  * Get test data for a specific language

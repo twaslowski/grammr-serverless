@@ -194,9 +194,9 @@ Zip, `python3.14`, stdlib only, 37 KB.
   `../../src/app/api/v1/dictionary/route.ts`, pre-flight warm-up.
 - `../../src/components/dictionary` — one debounced input, **no POS picker, no submit
   button**. `InflectionsTable` reused unchanged; `toParadigm` is a projection.
-- `/dashboard/dictionary`; `/dashboard/inflect` redirects there when the language
-  has `dictionaryEnabled`, and still renders the old form for the Romance
-  languages. Nav split accordingly.
+- `/dashboard/dictionary`. (Since superseded: `/dashboard/inflect` and the
+  inflection form were removed outright in the Russian-only redesign — see
+  `russian-only-redesign.md`. The dictionary is the only entry point now.)
 - `word-details-dialog.tsx` — a "Definitions" section from the dictionary,
   alongside (not replacing) the contextual LLM translation.
 

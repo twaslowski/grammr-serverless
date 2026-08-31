@@ -1,22 +1,30 @@
 # grammr
 
-**A modular language learning platform focused on grammar mastery through sentence translation, morphological analysis,
-and spaced repetition.**
+**A Russian learning app built on a dictionary, a morphological analyser and spaced repetition.**
 
-grammr helps language learners understand and apply grammatical concepts across multiple languages. Create flashcards
-with sentences in your target language, get instant translations with grammatical breakdowns, analyze word morphology,
-and generate inflected forms—all while using a scientifically-backed spaced repetition system to reinforce learning.
+grammr is a phone-first app for learning Russian. Look up any word — inflected forms resolve to their dictionary
+form — translate sentences with a word-by-word grammatical breakdown, save either as a flashcard, and review with
+FSRS.
+
+It used to spread itself across six languages and do none of them especially well. The UI is Russian-only now; the
+data model and the NLP services below are not, so a language returns as soon as its dictionary artifact is built.
 
 ## Features
 
-- 🌍 **Multi-Language Support**: Spanish, Italian, French, Portuguese, Romanian, Russian, and more
-- 📝 **Sentence & Literal Translation**: Context-aware translation preserving grammatical structure
-- 🔬 **Morphological Analysis**: Deep grammatical analysis using spaCy models (tense, case, number, gender, etc.)
-- 📖 **Dictionary**: Look up any word — meanings, grammatical identity, and its forms when it has any
-- 🔄 **Inflection Generation**: Generate all forms of verbs, nouns, and adjectives
-- 🃏 **Smart Flashcards**: Spaced repetition system (FSRS algorithm) for optimal learning
+- 📖 **Dictionary**: Any word — senses, grammatical identity, and its full paradigm where it has one
+- 📝 **Translation with breakdown**: Context-aware translation, with per-word morphology on tap
+- 🃏 **Flashcards**: FSRS spaced repetition, cards saved from either surface
+- ⌨️ **Latin → Cyrillic input**: A toggle on the fields that need it, no Cyrillic keyboard required
 - 🎤 **Text-to-Speech**: Native pronunciation using AWS Polly
-- 🏗️ **Modular Architecture**: Use any component as a standalone microservice
+- 📱 **Installable PWA**: Built for a phone, still usable on a desktop
+- 🏗️ **Modular Architecture**: Every NLP service is a standalone microservice
+
+### Language support
+
+Russian in the UI. The Lambdas keep broader coverage — Romance-language conjugation via `inflections-latin`,
+multi-language morphology and translation — and `LanguageCodeSchema` still spans `en`, `de`, `ru`, `it`, `fr`,
+`es`, `pt`. Adding a language back means publishing a dictionary artifact and setting `dictionaryEnabled` in
+`src/types/languages.ts`.
 
 ## Architecture
 
