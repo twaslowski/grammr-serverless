@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { RotateCcw } from "lucide-react";
 
 import { Analysis } from "@/components/flashcard/analysis";
-import { InflectionsDialog } from "@/components/inflection";
+import { cardDetail } from "@/components/flashcard/card-detail";
+import { CardDisclosure } from "@/components/flashcard/card-disclosure";
 import { TTSButton } from "@/components/tts/tts-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -31,6 +32,11 @@ interface FlashcardBackProps {
   notes?: string | null;
 }
 
+/**
+ * The answer itself. Any further detail is reached through `CardDisclosure`
+ * below the card, the same way it is in the list -- previously the `word`
+ * lemma was silently a dialog trigger, which nothing on screen signalled.
+ */
 function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
   switch (back.type) {
     case "analysis":
@@ -45,18 +51,11 @@ function FlashcardBackComponent({ back, notes }: FlashcardBackProps) {
       );
     case "word":
       return (
-        <div>
-          <InflectionsDialog
-            paradigm={back.paradigm}
-            displayHeader={true}
-            displayAddToFlashcards={false}
-            trigger={
-              <p className="text-3xl font-bold text-primary cursor-pointer">
-                {back.paradigm.lemma}
-              </p>
-            }
-          />
-          <p className="text-2xl text-primary mt-4">{back.translation}</p>
+        <div className="space-y-4">
+          <p className="text-3xl font-bold text-primary">
+            {back.paradigm.lemma}
+          </p>
+          <p className="text-2xl text-primary">{back.translation}</p>
           {notes && (
             <p className="text-sm text-muted-foreground italic">{notes}</p>
           )}
@@ -83,6 +82,10 @@ export function StudyCard({
   isSubmitting,
 }: StudyCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+
+  // The same disclosure the list uses, so a card behaves identically wherever
+  // it is seen.
+  const detail = cardDetail(card.flashcard.back);
 
   const handleFlip = () => {
     setIsFlipped(true);
@@ -135,6 +138,11 @@ export function StudyCard({
         {isFlipped && (
           <CardContent className="border-t pt-4">
             <div className="space-y-3">
+              {detail && (
+                <div className="pb-1">
+                  <CardDisclosure detail={detail} />
+                </div>
+              )}
               <p className="text-sm text-center text-muted-foreground">
                 How well did you remember?
               </p>

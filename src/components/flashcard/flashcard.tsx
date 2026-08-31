@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { Table2, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 import { Analysis } from "@/components/flashcard/analysis";
+import { cardDetail } from "@/components/flashcard/card-detail";
+import { CardDisclosure } from "@/components/flashcard/card-disclosure";
 import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
-import { InflectionsDialog } from "@/components/inflection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FlashcardWithDeck } from "@/types/flashcards";
@@ -30,17 +31,21 @@ export function Flashcard({
       flashcard.front
     );
 
+  // Whatever this card has behind it, reached the same way as every other
+  // card's — rather than a button only paradigm cards got.
+  const detail = cardDetail(flashcard.back);
+
   return (
     <Card>
       <CardHeader className="pb-2">
-        <div className="flex items-start justify-between">
-          <div>
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
             <CardTitle className="text-lg">{flashcardFront}</CardTitle>
             <p className="text-sm text-muted-foreground">
               {flashcard.back.translation}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1">
             {isOwner && (
               <>
                 <UpdateFlashcardDialog
@@ -49,10 +54,11 @@ export function Flashcard({
                 />
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
                   onClick={() => onDelete(flashcard.id)}
-                  className="text-destructive hover:text-destructive"
+                  className="min-h-11 min-w-11 text-destructive hover:text-destructive"
                   title="Delete flashcard"
+                  aria-label="Delete flashcard"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -61,24 +67,11 @@ export function Flashcard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
-        {flashcard.back.type === "word" && (
-          <div className="mt-2">
-            <InflectionsDialog
-              paradigm={flashcard.back.paradigm}
-              displayHeader={true}
-              displayAddToFlashcards={false}
-              trigger={
-                <Button variant="ghost" size="sm" className="gap-1 -ml-2">
-                  <Table2 className="h-4 w-4" />
-                  View Inflections ({flashcard.back.paradigm.inflections.length}
-                  )
-                </Button>
-              }
-            />
-          </div>
-        )}
-      </CardContent>
+      {detail && (
+        <CardContent className="pt-0">
+          <CardDisclosure detail={detail} />
+        </CardContent>
+      )}
     </Card>
   );
 }
