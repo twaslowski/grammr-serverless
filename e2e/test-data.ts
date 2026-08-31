@@ -5,12 +5,7 @@ export interface LanguageTestData {
   name: string;
   sourceLanguage: LanguageCode;
   targetLanguage: LanguageCode;
-  /**
-   * Present only for languages with a published dictionary artifact.
-   *
-   * Its presence also means `/dashboard/inflect` redirects to the dictionary for
-   * this language, so `inflections.spec.ts` skips it -- see the guard there.
-   */
+  /** Present only for languages with a published dictionary artifact. */
   dictionary?: {
     /** A headword that resolves directly. */
     lemma: string;

@@ -111,10 +111,5 @@ for (const targetLanguage of testTargetLanguages) {
         page.getByRole("link", { name: "CC BY-SA 4.0" }).first(),
       ).toBeVisible();
     });
-
-    test("redirects the old inflection page here", async ({ page }) => {
-      await page.goto("/dashboard/inflect");
-      await expect(page).toHaveURL(/\/dashboard\/dictionary/);
-    });
   });
 }

@@ -25,43 +25,19 @@ for (const targetLanguage of testTargetLanguages) {
         return;
       }
 
-      // Step 1: get a paradigm on screen. Which page that is depends on the
-      // language: where a dictionary artifact exists, /dashboard/inflect
-      // redirects to it, and the dictionary needs neither a part of speech nor a
-      // submit. Everything after this point is identical, which is why this
-      // branches rather than being a separate spec.
-      if (testData.dictionary) {
-        await page.goto("/dashboard/dictionary");
-        await page
-          .getByRole("searchbox", { name: new RegExp(testData.name, "i") })
-          .fill(testData.inflections.verb.word);
-        await expect(
-          page.getByRole("heading", {
-            level: 2,
-            name: new RegExp(testData.inflections.verb.word),
-          }),
-        ).toBeVisible({ timeout: 30000 });
-      } else {
-        await page.goto("/dashboard/inflect");
-
-        // Enter a verb
-        await page.getByLabel(/Word/i).fill(testData.inflections.verb.word);
-
-        // Select verb if POS distinction is needed
-        if (testData.inflections.distinguishPos) {
-          await page.getByRole("button", { name: "Verb" }).click();
-        }
-
-        // Submit the form
-        await page.getByRole("button", { name: "Inflect" }).click();
-
-        // Wait for loading to complete
-        await expect(
-          page.getByRole("button", { name: /Inflecting/i }),
-        ).not.toBeVisible({
-          timeout: 20000,
-        });
-      }
+      // Step 1: get a paradigm on screen. The dictionary is the only way in
+      // now -- the inflection form is gone -- and it needs neither a part of
+      // speech nor a submit.
+      await page.goto("/dashboard/dictionary");
+      await page
+        .getByRole("searchbox", { name: new RegExp(testData.name, "i") })
+        .fill(testData.inflections.verb.word);
+      await expect(
+        page.getByRole("heading", {
+          level: 2,
+          name: new RegExp(testData.inflections.verb.word),
+        }),
+      ).toBeVisible({ timeout: 30000 });
 
       // Click the "Create Flashcard" button
       const createFlashcardButton = page
