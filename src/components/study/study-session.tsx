@@ -3,26 +3,35 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 
+import { StudyDashboard } from "@/components/dashboard/study-dashboard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { loadSession, submitReview } from "@/lib/study";
 import { Rating, StudyCardItem } from "@/types/fsrs";
 
 import { StudyCard } from "./study-card";
-import { StudyComplete } from "./study-complete";
 import { StudyProgress } from "./study-progress";
 
 const BATCH_SIZE = 10;
 const REFETCH_THRESHOLD = 3;
 
-export function StudySession() {
+interface StudySessionProps {
+  /**
+   * Which face of the tab to open on. `"session"` is the default and the
+   * behaviour the tab has always had; `"dashboard"` skips the queue fetch and
+   * shows the idle view, which is what `/dashboard?dashboard=1` is for.
+   */
+  initialView?: "session" | "dashboard";
+}
+
+export function StudySession({ initialView = "session" }: StudySessionProps) {
   const [cardQueue, setCardQueue] = useState<StudyCardItem[]>([]);
   const [progress, setProgress] = useState({
     reviewed: 0,
     remaining: 0,
     total: 0,
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(initialView === "session");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,11 +55,19 @@ export function StudySession() {
 
       if (isInitialLoad) {
         setCardQueue(session.cards);
-        setProgress({
-          reviewed: 0,
+        // `reviewed` carries over rather than resetting to 0. It starts at 0 on
+        // mount, so this only differs on a "Check again", where zeroing it would
+        // retract the credit for cards the reader really did review in this
+        // sitting -- the headline would drop from "Nice work, 12 reviewed" back
+        // to "All caught up" as a reward for tapping refresh.
+        setProgress((prev) => ({
+          reviewed: prev.reviewed,
           remaining: session.sessionProgress.remaining,
-          total: session.sessionProgress.total,
-        });
+          // `total` has to absorb the carried-over count too, or the progress
+          // bar divides 12 reviewed by the 3 cards that have since fallen due
+          // and renders 400%.
+          total: prev.reviewed + session.sessionProgress.total,
+        }));
         hasMoreCardsRef.current = session.cards.length > 0;
       } else {
         setCardQueue((prev) => {
@@ -81,11 +98,13 @@ export function StudySession() {
   }, []);
 
   useEffect(() => {
+    if (initialView === "dashboard") return;
+
     // Effect-driven data fetching: loading/result state is set after an await.
     // The real fix is to fetch on the server and pass the data in as props.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchCards(true);
-  }, [fetchCards]);
+  }, [fetchCards, initialView]);
 
   // Background fetch when queue is running low
   useEffect(() => {
@@ -125,9 +144,11 @@ export function StudySession() {
     }
   };
 
-  const handleStudyMore = () => {
-    setProgress({ reviewed: 0, remaining: 0, total: 0 });
-    setCardQueue([]);
+  // "Check again" rather than "study more": when the queue empties the server
+  // has told us there is nothing left, so the only thing a refetch can turn up
+  // is a card that has fallen due since. The reviewed count is deliberately
+  // kept — it is what the session just achieved, not a per-fetch counter.
+  const handleCheckAgain = () => {
     void fetchCards(true);
   };
 
@@ -154,12 +175,12 @@ export function StudySession() {
     );
   }
 
-  // No more cards to study
+  // Nothing due: the tab's idle face.
   if (cardQueue.length === 0) {
     return (
-      <StudyComplete
+      <StudyDashboard
         reviewed={progress.reviewed}
-        onStudyMore={handleStudyMore}
+        onCheckAgain={handleCheckAgain}
       />
     );
   }

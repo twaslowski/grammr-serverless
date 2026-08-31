@@ -138,14 +138,6 @@ export const StudySessionSchema = z.object({
 });
 export type StudySession = z.infer<typeof StudySessionSchema>;
 
-// Due cards count response
-export const DueCardsCountSchema = z.object({
-  dueCount: z.number(),
-  newCount: z.number(),
-  reviewCount: z.number(),
-});
-export type DueCardsCount = z.infer<typeof DueCardsCountSchema>;
-
 // Submit review response
 export const SubmitReviewResponseSchema = z.object({
   success: z.boolean(),

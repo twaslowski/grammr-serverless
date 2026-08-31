@@ -75,16 +75,19 @@ for (const targetLanguage of testTargetLanguages) {
         timeout: 5000,
       });
 
-      // Step 2: Navigate to dashboard and check due cards count
+      // Step 2: the new card is due, so the Study tab opens straight into a
+      // session containing it.
+      //
+      // This used to assert a "Study Now" button, which belonged to
+      // `StudyDueCards` -- a widget left unrendered by the four-tab refactor
+      // and since deleted. The assertion had been vacuous ever since; it only
+      // looked like it passed because step 1 fails first without a dictionary
+      // Lambda.
       await page.goto("/dashboard");
 
-      // Wait for the due cards component to load
-      // The component should show at least 1 card due (the one we just created)
       await expect(
-        page.getByRole("button", { name: /Study Now/i }),
-      ).toBeVisible({
-        timeout: 1000,
-      });
+        page.getByRole("button", { name: /Show Answer/i }),
+      ).toBeVisible({ timeout: 10000 });
     });
 
     /**

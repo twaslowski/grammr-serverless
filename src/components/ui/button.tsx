@@ -47,6 +47,12 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
+/**
+ * `role="button"` is deliberately *not* set here. It is redundant on a real
+ * `<button>`, and under `asChild` it overrode the implicit role of whatever was
+ * slotted in — so every `<Button asChild><Link/></Button>` in the app announced
+ * a navigation control as a button, losing the "opens a link" affordance.
+ */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
@@ -54,7 +60,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        role="button"
         {...props}
       />
     );

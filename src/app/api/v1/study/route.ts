@@ -1,7 +1,7 @@
 import { and, eq, lte, ne } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-import { DueCardsQuerySchema } from "@/app/api/v1/study/schema";
+import { StudyBatchQuerySchema } from "@/app/api/v1/study/schema";
 import { db } from "@/db/connect";
 import { decks, flashcards, flashcardStudy } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
@@ -13,7 +13,7 @@ import { shuffle } from "@/lib/shuffle";
  */
 export const GET = withApiHandler(
   {
-    querySchema: DueCardsQuerySchema,
+    querySchema: StudyBatchQuerySchema,
   },
   async ({ user, query }) => {
     const limit = query.limit;

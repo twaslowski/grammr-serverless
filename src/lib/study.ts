@@ -1,7 +1,5 @@
 import { createValidatedFetcher } from "@/lib/api/validated-fetcher";
 import {
-  DueCardsCount,
-  DueCardsCountSchema,
   Rating,
   StudySession,
   StudySessionSchema,
@@ -11,21 +9,8 @@ import {
 
 const BASE_URL = "/api/v1/study";
 
-const fetchDueCardsCount = createValidatedFetcher(DueCardsCountSchema);
 const fetchSession = createValidatedFetcher(StudySessionSchema);
 const postReview = createValidatedFetcher(SubmitReviewResponseSchema);
-
-/**
- * Fetch the count of due cards for study
- */
-export async function getDueCardsCount(
-  includeNew: boolean = true,
-): Promise<DueCardsCount> {
-  const params = new URLSearchParams();
-  params.set("include_new", String(includeNew));
-
-  return fetchDueCardsCount(`${BASE_URL}/due?${params}`, { method: "GET" });
-}
 
 /**
  * Fetch the next card to study with scheduling options
