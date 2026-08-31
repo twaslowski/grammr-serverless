@@ -65,7 +65,7 @@ export function DictionaryEntryCard({
         <div className="flex shrink-0 gap-x-2">
           {/* The unstressed form: stress marks are a reading aid, not something
               to hand to a speech synthesiser or put on a flashcard front. */}
-          <TTSButton text={entry.lemma} />
+          <TTSButton text={entry.lemma} language={languageCode} />
           {/* The "word" back requires a paradigm -- `study-card.tsx` reads
               `back.paradigm.lemma` to render the prompt -- so an entry with no
               table is stored as a "phrase". That is not a workaround: with no
