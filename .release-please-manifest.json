@@ -1,5 +1,5 @@
 {
   "lambda/morphology": "0.2.1",
-  "lambda/inflections-ru": "0.1.7",
+  "lambda/inflections-ru": "0.2.0",
   "lambda/inflections-latin": "0.3.1"
 }
