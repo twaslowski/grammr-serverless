@@ -50,7 +50,7 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
-      router.push("/auth/sign-up/select-language");
+      router.push("/dashboard");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {

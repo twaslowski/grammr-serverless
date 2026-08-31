@@ -1,10 +1,9 @@
-import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db/connect";
-import { decks, deckStudy, profiles } from "@/db/schemas/schema";
+import { profiles } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
-import { LanguageCode } from "@/types/languages";
+import { syncDeckStudies } from "@/lib/server/decks";
 import { ProfileSchema } from "@/types/profile";
 
 const SaveProfileRequestSchema = ProfileSchema.pick({
@@ -42,38 +41,6 @@ export const POST = withApiHandler(
     });
   },
 );
-
-export const syncDeckStudies = async (
-  userId: string,
-  language: LanguageCode,
-) => {
-  const publicDecks = await getPublicDecks(language);
-
-  await Promise.all(publicDecks.map((deck) => studyDeck(userId, deck.id)));
-};
-
-export const getPublicDecks = async (language: LanguageCode) => {
-  return db
-    .select()
-    .from(decks)
-    .where(and(eq(decks.language, language), eq(decks.visibility, "public")));
-};
-
-export const studyDeck = async (userId: string, deckId: number) => {
-  await db
-    .insert(deckStudy)
-    .values({
-      userId,
-      deckId,
-      isActive: true,
-    })
-    .onConflictDoUpdate({
-      target: [deckStudy.userId, deckStudy.deckId],
-      set: {
-        isActive: true,
-      },
-    });
-};
 
 // PUT is just an alias for POST for this endpoint
 export const PUT = POST;

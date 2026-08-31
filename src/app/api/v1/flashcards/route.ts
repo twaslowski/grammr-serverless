@@ -10,6 +10,7 @@ import {
   flashcardStudy,
 } from "@/db/schemas/schema";
 import { withApiHandler } from "@/lib/api/with-api-handler";
+import { ensureProfile } from "@/lib/server/ensure-profile";
 import { FlashcardWithDeck } from "@/types/flashcards";
 
 import {
@@ -109,6 +110,11 @@ export const POST = withApiHandler(
     // If no deck_id provided, get the user's default deck
     let targetDeckId = deck_id;
     if (!targetDeckId) {
+      // The default deck is created by the `handle_new_profile()` trigger, so a
+      // user who reaches this route before ever loading the dashboard would
+      // otherwise have no deck to write to.
+      await ensureProfile(user.id);
+
       const defaultDeck = await db
         .select()
         .from(decks)

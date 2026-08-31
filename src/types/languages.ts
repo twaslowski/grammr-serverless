@@ -2,6 +2,16 @@ import { z } from "zod";
 
 import { PartOfSpeech } from "@/types/inflections";
 
+/**
+ * The languages a new profile is provisioned with.
+ *
+ * The UI only offers Russian, but the enum, `allLanguages` and every Lambda
+ * stay multi-language: adding a language back is a matter of publishing an
+ * artifact and surfacing it, not of widening the data model again.
+ */
+export const DEFAULT_SOURCE_LANGUAGE = "en" as const;
+export const DEFAULT_TARGET_LANGUAGE = "ru" as const;
+
 export const LanguageCodeSchema = z.enum([
   "en",
   "ru",
