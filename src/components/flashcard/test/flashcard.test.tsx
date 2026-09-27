@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Flashcard } from "@/components/flashcard/flashcard";
-import { FlashcardWithDeck } from "@/types/flashcards";
+import { FlashcardWithDeck, ParadigmFlashcardBack } from "@/types/flashcards";
 
 import {
   analysisFlashcardFixture,
@@ -56,6 +56,40 @@ describe("Flashcard", () => {
     expect(breakdown).toHaveAttribute("aria-expanded", "false");
     await user.click(breakdown);
     expect(breakdown).toHaveAttribute("aria-expanded", "true");
+  });
+
+  /**
+   * A noun's gender is inherent to the lexeme, so it appears on none of the
+   * forms behind the disclosure — and the table is rendered without its own
+   * header here. The card has to say it, or the list never does.
+   */
+  it("states the part of speech and inherent gender of a word card", () => {
+    renderCard(wordFlashcardFixture);
+
+    expect(screen.getByText("Noun · Masculine")).toBeInTheDocument();
+  });
+
+  it("names the part of speech alone when the lexeme has no gender", () => {
+    renderCard({
+      ...wordFlashcardFixture,
+      back: {
+        ...wordFlashcardFixture.back,
+        type: "word",
+        paradigm: {
+          ...(wordFlashcardFixture.back as ParadigmFlashcardBack).paradigm,
+          lemma: "ножницы",
+          lemmaFeatures: [],
+        },
+      },
+    });
+
+    expect(screen.getByText("Noun")).toBeInTheDocument();
+  });
+
+  it("says nothing about a phrase card, which has no lexeme behind it", () => {
+    renderCard(simpleFlashcardFixture);
+
+    expect(screen.queryByText(/Noun|Verb|Masculine/)).not.toBeInTheDocument();
   });
 
   it("renders no disclosure for a phrase card, which has nothing behind it", () => {

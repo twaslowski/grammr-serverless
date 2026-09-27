@@ -268,6 +268,22 @@ export function getFeatureDisplayLabel(feature: Feature): string {
 }
 
 /**
+ * A lexeme in one line: its part of speech, then whatever it carries
+ * inherently — for a Russian noun, its gender.
+ *
+ * Inherent features are the ones a paradigm holds on `lemmaFeatures` rather
+ * than on a cell, so this is the only place they are ever stated. Shared
+ * because a word is described in more than one place and should read the same
+ * in all of them: above its own inflection table, and on the flashcard made
+ * from it, which renders that table with the header suppressed.
+ */
+export function getLexemeLabel(pos: string, lemmaFeatures: Feature[]): string {
+  return [getPosLabel(pos), ...lemmaFeatures.map(getFeatureDisplayLabel)].join(
+    " · ",
+  );
+}
+
+/**
  * Display order for a token's features.
  *
  * One canonical order rather than a per-part-of-speech one: it reproduces the

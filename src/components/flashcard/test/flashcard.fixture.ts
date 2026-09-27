@@ -38,7 +38,9 @@ export const wordFlashcardFixture: Flashcard = {
     paradigm: {
       partOfSpeech: "NOUN",
       lemma: "стол",
-      lemmaFeatures: [],
+      // Gender lives here rather than on a form, which is why the card has to
+      // state it separately from the table.
+      lemmaFeatures: [{ type: "GENDER", value: "MASC" }],
       inflections: [
         { lemma: "стол", inflected: "стола", features: [] },
         { lemma: "стол", inflected: "столу", features: [] },

@@ -9,6 +9,7 @@ import { CardDisclosure } from "@/components/flashcard/card-disclosure";
 import { UpdateFlashcardDialog } from "@/components/flashcard/update-flashcard-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getLexemeLabel } from "@/lib/feature-labels";
 import { FlashcardWithDeck } from "@/types/flashcards";
 
 interface FlashcardProps {
@@ -35,6 +36,18 @@ export function Flashcard({
   // card's — rather than a button only paradigm cards got.
   const detail = cardDetail(flashcard.back);
 
+  // Gender is a property of the lexeme, so it appears nowhere in the table of
+  // forms behind the disclosure — and the table's own header, which is where
+  // it is normally stated, is suppressed here. Without this line there is no
+  // way to tell a masculine noun from a feminine one anywhere in the list.
+  const lexeme =
+    flashcard.back.type === "word"
+      ? getLexemeLabel(
+          flashcard.back.paradigm.partOfSpeech,
+          flashcard.back.paradigm.lemmaFeatures,
+        )
+      : null;
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -44,6 +57,9 @@ export function Flashcard({
             <p className="text-sm text-muted-foreground">
               {flashcard.back.translation}
             </p>
+            {lexeme && (
+              <p className="text-xs text-muted-foreground">{lexeme}</p>
+            )}
           </div>
           <div className="flex shrink-0 items-center gap-1">
             {isOwner && (

@@ -3,11 +3,7 @@
 import { CreateFlashcardDialog } from "@/components/flashcard";
 import { TTSButton } from "@/components/tts/tts-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  getFeatureDisplayLabel,
-  getFeatureValueLabel,
-  getPosLabel,
-} from "@/lib/feature-labels";
+import { getFeatureValueLabel, getLexemeLabel } from "@/lib/feature-labels";
 import { paradigmLayout } from "@/lib/inflections";
 import {
   CASE_ORDER,
@@ -83,10 +79,7 @@ function InflectionsTableHeader({
 }: InflectionsTableProps) {
   const { partOfSpeech, lemma, lemmaFeatures } = paradigm;
 
-  const subtitle = [
-    getPosLabel(partOfSpeech),
-    ...lemmaFeatures.map(getFeatureDisplayLabel),
-  ].join(" · ");
+  const subtitle = getLexemeLabel(partOfSpeech, lemmaFeatures);
 
   return (
     <CardHeader className="flex flex-row justify-between items-start">
