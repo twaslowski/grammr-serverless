@@ -6,6 +6,8 @@ import toast from "react-hot-toast";
 
 import { useProfile } from "@/components/dashboard/profile-provider";
 import { useFlashcardPages } from "@/components/flashcard/use-flashcard-pages";
+import { TranslitToggle } from "@/components/translit/translit-toggle";
+import { useTranslit } from "@/components/translit/use-translit";
 import { Card, CardContent } from "@/components/ui/card";
 import { useConfirm } from "@/components/ui/confirmation-provider";
 import { InfiniteScrollSentinel } from "@/components/ui/infinite-scroll-sentinel";
@@ -29,6 +31,7 @@ export function FlashcardList() {
     remove,
     replace,
   } = useFlashcardPages();
+  const translit = useTranslit();
 
   const handleDelete = (id: number) => {
     confirm({
@@ -59,9 +62,14 @@ export function FlashcardList() {
           type="search"
           placeholder="Search your cards..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => setSearch(translit.convert(search, e.target.value))}
           aria-label="Search flashcards"
-          className="h-11 pl-9"
+          className="h-11 pl-9 pr-12"
+        />
+        <TranslitToggle
+          enabled={translit.enabled}
+          onToggle={translit.toggle}
+          className="absolute right-1 top-1/2 -translate-y-1/2"
         />
       </div>
 
