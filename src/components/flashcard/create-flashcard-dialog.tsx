@@ -108,7 +108,6 @@ export function CreateFlashcardDialog({
                 value={front}
                 onChange={(e) => setFront(e.target.value)}
                 placeholder="Enter word or phrase..."
-                readOnly={true}
                 disabled={isLoading}
               />
             </div>

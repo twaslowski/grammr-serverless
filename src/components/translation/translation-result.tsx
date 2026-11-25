@@ -41,7 +41,7 @@ export function TranslationResult({
             </p>
             <div className="flex gap-x-1">
               <CreateFlashcardDialog
-                front={translatedText}
+                front={originalText}
                 back={{
                   ...morphologicalAnalysis,
                   type: "analysis",
@@ -50,7 +50,7 @@ export function TranslationResult({
               />
               <TTSButton
                 variant="outline"
-                text={translatedText}
+                text={originalText}
                 language={sourceLanguage}
               />
               <CopyButton variant="outline" text={translatedText} />
